@@ -446,9 +446,14 @@
 	/* Add this to your existing styles */
 	#imageContainer {
 		display: grid;
-		grid-template-columns: repeat(2, 1fr);
+		grid-template-columns: 1fr;
 		gap: 1em;
 	}
+
+	.image-wrapper img {
+		max-width: 100% !important;
+	}
+
 	.image-wrapper {
 		display: flex;
 		flex-direction: column;
@@ -472,6 +477,34 @@
         }
 	}
 
+	#image-layout-options {
+		display:none;
+	}
+
+	#image-list {
+		display:flex;
+		flex-direction:column;
+		gap: 1em;
+	}
+
+	#image-list ul {
+		list-style-type:none;
+		margin:0;
+		padding:0;
+		display:flex;
+		flex-direction:column;
+	}
+
+	#image-list li {
+		border:1px solid lightgrey;
+		padding:.5em;
+		margin-top:-1px;
+	}
+
+	.remove-button {
+		width:100%;
+	}
+
 </style>
 
 </head>
@@ -489,8 +522,9 @@
 				<label for="importJsonButton" class="custom-file-upload">
 			    Upload JSON
 			</label>
+			<div id="file-actions">
 			<input type="file" id="importJsonButton" accept=".json">
-			
+			</div>
 		</div>
 
 	</header>
@@ -553,13 +587,14 @@
 
 			<section id="files" class="container flex-column">
 				<h2>Layout Images</h2>
-				<div class="flex-column">
+				<div class="flex-column" id="image-layout-options">
 					<select id="imageLayoutSelect"></select>
 					<input type="file" id="imageUpload" accept="image/*,application/pdf">
 					<button id="uploadImageButton">Upload Image</button>
 					
 				</div>
 				<div id="imageContainer"></div>
+				<div id="image-list"></div>
 			</section>
 		</div>
 

@@ -1,5 +1,3 @@
-console.log("script loaded");
-
 //variables
 
 //default json
@@ -2200,10 +2198,27 @@ let selectLayout = document.getElementById("layoutSelect");
 let consoleSelect = document.getElementById('consoleSelect');
 
 // Object to store uploaded images
-const layoutImages = {};
-
+let layoutImages = {};
 
 //functions
+
+//get current layout state
+
+function getCurrentState() {
+   // Split the selected layout into an array of individual words
+   let parts = layoutSelection.split(" ");
+
+   // Assign the first word to the 'device' variable
+   let device = parts[0].toString();
+
+   // Assign the second word to the 'layout' variable
+   let layout = parts[1].toString();
+
+   // Get the checked radio button with name 'orientation'
+   let orientation = document.querySelector('input[name="orientation"]:checked').id;
+
+    return { device, layout, orientation };
+}
 
 // console selection in metadata
 let selectConsole = document.getElementById('consoleSelect');
@@ -2445,7 +2460,7 @@ function loadLayout() {
     });
     } else {
         // Handle the case where the screenArray doesn't exist
-        console.log("Screen array does not exist.");
+        //console.log("Screen array does not exist.");
     }
     
 
@@ -3122,40 +3137,6 @@ document.getElementById('copy-json').addEventListener('click', function() {
     alert('JSON copied to clipboard!');
 });
 
-
-document.getElementById('uploadImageButton').addEventListener('click', function() {
-    const imageUpload = document.getElementById('imageUpload');
-    const imageLayoutSelect = document.getElementById('imageLayoutSelect');
-
-    if (!imageUpload) {
-        console.error("Image upload element not found");
-        return;
-    }
-
-    if (!imageLayoutSelect) {
-        console.error("Image layout select element not found");
-        return;
-    }
-
-    const file = imageUpload.files[0];
-    const selectedLayout = imageLayoutSelect.value;
-    
-    if (file && selectedLayout) {
-        if (file.type === 'application/pdf') {
-            handlePdfUpload(file, selectedLayout);
-        } else if (file.type.startsWith('image/')) {
-            handleImageUpload(file, selectedLayout);
-        } else {
-            alert('Please upload a PDF or image file.');
-            imageUpload.value = ''; // Clear the file input
-        }
-    } else if (!selectedLayout) {
-        alert('Please select a layout before uploading a file.');
-    } else {
-        alert('Please select a file to upload.');
-    }
-});
-
 function handleImageUpload(file, selectedLayout) {
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -3166,7 +3147,6 @@ function handleImageUpload(file, selectedLayout) {
     };
     reader.readAsDataURL(file);
 }
-
 
 document.getElementById('delete-button').addEventListener('click', function() {
     let currentItemName = document.querySelector(".item-name").innerHTML;
@@ -3505,25 +3485,6 @@ function updateUIWithNewJsonData() {
 // Set up PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.worker.min.js';
 
-document.getElementById('uploadImageButton').addEventListener('click', function() {
-    const file = document.getElementById('imageUpload').files[0];
-    const selectedLayout = document.getElementById('imageLayoutSelect').value;
-    
-    if (file && selectedLayout) {
-        if (file.type === 'application/pdf') {
-            handlePdfUpload(file, selectedLayout);
-        } else if (file.type.startsWith('image/')) {
-            handleImageUpload(file, selectedLayout);
-        } else {
-            alert('Please upload a PDF or image file.');
-            document.getElementById('imageUpload').value = ''; // Clear the file input
-        }
-    } else if (!selectedLayout) {
-        alert('Please select a layout before uploading a file.');
-    } else {
-        alert('Please select a file to upload.');
-    }
-});
 
 // Define layoutOptions as a global variable
 const layoutOptions = layoutTypes.flatMap(layout => {
@@ -3545,47 +3506,63 @@ function populateImageLayoutSelect() {
     });
 }
 
-// Handle image upload
+// Handle image or PDF upload
 document.getElementById('uploadImageButton').addEventListener('click', function() {
-    const file = document.getElementById('imageUpload').files[0];
-    const selectedLayout = document.getElementById('imageLayoutSelect').value;
-    
+    let file = document.getElementById('imageUpload').files[0];
+    //console.log(file)
+    let selectedLayout = document.getElementById('imageLayoutSelect').value;
+    layoutImages[selectedLayout] = file;
     if (file && selectedLayout) {
-        const imageUrl = URL.createObjectURL(file);
-        layoutImages[selectedLayout] = imageUrl;
-        displayUploadedImages();
-        updateLayoutBackground();
+        if (file.type === 'application/pdf') {
+            //console.log(file);
+            fileName = file.name;
+            handlePdfUpload(file, fileName);
+            updateLayoutBackground();
+            displayUploadedImages();
+            updateJson();
+        } else if (file.type.startsWith('image/')) {
+            handleImageUpload(file, selectedLayout);
+        } else {
+            alert('Please upload a PDF or image file.');
+        }
     } else {
         alert('Please select both a layout and an image file.');
     }
 });
 
-// Display all uploaded images below the layout images
+// Display the uploaded image for the current state
 function displayUploadedImages() {
     const imageContainer = document.getElementById('imageContainer');
     imageContainer.innerHTML = '';
 
-    for (const [layout, imageUrl] of Object.entries(layoutImages)) {
+    const selectedLayout = document.getElementById('imageLayoutSelect').value;
+    const imageList = document.getElementById('image-list');
+    imageList.innerHTML = '<h3>Uploaded Images:</h3>';
+
+    const ul = document.createElement('ul');
+    imageList.appendChild(ul);
+
+    for (const [layoutKey, imageUrl] of Object.entries(layoutImages)) {
         const imgWrapper = document.createElement('div');
         imgWrapper.className = 'image-wrapper';
+        imgWrapper.id = `image-${layoutKey.replace(/\s+/g, '-')}`;
+        imgWrapper.style.display = layoutKey === selectedLayout ? 'flex' : 'none';
 
         const img = document.createElement('img');
         img.src = imageUrl;
-        img.alt = layout;
-        img.style.maxWidth = '100px';
+        img.alt = layoutKey;
         img.style.height = 'auto';
-        updateLayoutBackground();
 
         const label = document.createElement('p');
-        label.textContent = layout;
+        label.textContent = layoutKey;
 
         const removeButton = document.createElement('button');
+        removeButton.className = 'remove-button'
         removeButton.textContent = 'Remove';
         removeButton.onclick = function() {
-            URL.revokeObjectURL(imageUrl);
-            delete layoutImages[layout];
-            displayUploadedImages();
-            updateLayoutBackground();
+            document.getElementById('layout-object').style.backgroundImage = 'unset';
+            URL.revokeObjectURL(layoutImages[layoutKey]);
+            delete layoutImages[layoutKey];
         };
 
         imgWrapper.appendChild(img);
@@ -3593,16 +3570,33 @@ function displayUploadedImages() {
         imgWrapper.appendChild(removeButton);
         imageContainer.appendChild(imgWrapper);
 
-    }
+        // Add to image list
+        const listItem = document.createElement('li');
+        listItem.textContent = layoutKey;
+        ul.appendChild(listItem);
+    } 
+
+    updateLayoutBackground();
 }
+
+// Add event listener to imageLayoutSelect
+document.getElementById('imageLayoutSelect').addEventListener('change', function() {
+    const selectedLayout = this.value;
+    document.querySelectorAll('#imageContainer .image-wrapper').forEach(wrapper => {
+        wrapper.style.display = wrapper.id === `image-${selectedLayout.replace(/\s+/g, '-')}` ? 'flex' : 'none';
+    });
+});
 
 // Update layout background based on selected layout
 function updateLayoutBackground() {
-    const selectedLayout = layoutSelection;
+    let currentState = getCurrentState();
+    let currentDevice = currentState.device;
+    let currentLayout = currentState.layout;
+    let currentOrientation = currentState.orientation;
+
     const layoutObject = document.getElementById('layout-object');
-    const selectedOrientation = document.querySelector('input[name="orientation"]:checked').id;
-    const layoutKey = `${selectedLayout} - ${selectedOrientation}`;
-    console.log("layoutKey: " + layoutKey);
+    const layoutKey = `${currentDevice} ${currentLayout} - ${currentOrientation}`;
+    //console.log("layoutKey: " + layoutKey);
     if (selectedLayout && layoutImages[layoutKey]) {
         layoutObject.style.backgroundImage = `url(${layoutImages[layoutKey]})`;
         layoutObject.style.backgroundSize = 'contain';
@@ -3614,74 +3608,30 @@ function updateLayoutBackground() {
 // Add event listener to layout select
 selectLayout.addEventListener('change', function() {
     layoutSelection = selectLayout.value; // Update the layoutSelection value
+    document.getElementById('layout-object').style.backgroundImage = 'unset';
     updateLayoutBackground();
 });
 
 // Add event listeners to orientation radio buttons
 document.querySelectorAll('input[name="orientation"]').forEach((radio) => {
-    radio.addEventListener('change', updateLayoutBackground);
-});
+        radio.addEventListener('change', function() {
+        document.getElementById('layout-object').style.backgroundImage = 'unset';
+        updateLayoutBackground();
+    })}
+);
 
 // Call these functions to initialize
 populateImageLayoutSelect();
-
-// Only call displayUploadedImages if a layout is selected
-if (layoutSelection) {
-    displayUploadedImages();
-    updateLayoutBackground();
-}
 
 // Add event listener to layout select
 selectLayout.addEventListener('change', function() {
     layoutSelection = selectLayout.value; // Update the layoutSelection value
+    document.getElementById('image-layout-options').style.display = 'flex';
 });
 
 // Call these functions to initialize
 populateImageLayoutSelect();
 
-// Only call displayUploadedImages if a layout is selected
-if (layoutSelection) {
-    displayUploadedImages();
-    updateLayoutBackground();
-}
-
-function handlePdfUpload(file, selectedLayout) {
-    const fileReader = new FileReader();
-    
-    fileReader.onload = function() {
-        const typedarray = new Uint8Array(this.result);
-
-        pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
-            pdf.getPage(1).then(function(page) {
-                const scale = 1.5;
-                const viewport = page.getViewport({ scale: scale });
-
-                const canvas = document.createElement('canvas');
-                const context = canvas.getContext('2d', { willReadFrequently: true });
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-
-                const renderContext = {
-                    canvasContext: context,
-                    viewport: viewport
-                };
-
-                page.render(renderContext).promise.then(function() {
-                    const imageUrl = canvas.toDataURL('image/png');
-                    layoutImages[selectedLayout] = imageUrl;
-
-                    // Update defaultJsonOutput with the filename
-                    //updateDefaultJsonOutput(selectedLayout, file.name);
-                    updateJson();
-                    displayUploadedImages();
-                    updateLayoutBackground();
-                });
-            });
-        });
-    };
-
-    fileReader.readAsArrayBuffer(file);
-}
 
 // Update the file input to accept PDFs as well
 document.getElementById('imageUpload').accept = "image/*,application/pdf";
@@ -3713,11 +3663,13 @@ function getSelectedOrientation() {
     return document.querySelector('input[name="orientation"]:checked').id;
 }
 
+// ... existing code ...
+
 // Add a new button for uploading the .zip file
 const zipUploadButton = document.createElement('button');
 zipUploadButton.id = 'uploadZipButton';
 zipUploadButton.innerText = 'Upload .zip File';
-document.getElementById("header-actions").appendChild(zipUploadButton);
+document.getElementById('file-actions').appendChild(zipUploadButton);
 
 const zipUploadInput = document.createElement('input');
 zipUploadInput.type = 'file';
@@ -3749,11 +3701,10 @@ async function handleZipUpload(event) {
             // Replace defaultJsonOutput with the imported JSON
             defaultJsonOutput = jsonContent;
 
-             // Fill in the text fields with values from info.json
-             document.getElementById('name').value = jsonContent.name || '';
-             document.getElementById('identifier').value = jsonContent.gameTypeIdentifier || '';
- 
-
+            // Fill in the text fields with values from info.json
+            document.getElementById('name').value = jsonContent.name || '';
+            document.getElementById('identifier').value = jsonContent.gameTypeIdentifier || '';
+            
             // Automatically select the console and layout
             selectConsoleBasedOnIdentifier(jsonContent);
             automaticSelectLayout();
@@ -3761,6 +3712,7 @@ async function handleZipUpload(event) {
             // Handle image/PDF files
             for (const fileName in zipContent.files) {
                 if (fileName !== 'info.json') {
+                    //console.log(zipContent);
                     const fileData = await zipContent.file(fileName).async('blob');
                     if (fileName.endsWith('.pdf')) {
                         handlePdfUpload(fileData, fileName);
@@ -3779,6 +3731,51 @@ async function handleZipUpload(event) {
     }
 }
 
+function ensureExtendedEdges(jsonContent) {
+    function addDefaultEdges(item) {
+        if (!item.extendedEdges) {
+            item.extendedEdges = {};
+        }
+        item.extendedEdges.top = item.extendedEdges.top || 0;
+        item.extendedEdges.bottom = item.extendedEdges.bottom || 0;
+        item.extendedEdges.left = item.extendedEdges.left || 0;
+        item.extendedEdges.right = item.extendedEdges.right || 0;
+    }
+
+    for (let device in jsonContent.representations) {
+        for (let layout in jsonContent.representations[device]) {
+            for (let orientation in jsonContent.representations[device][layout]) {
+                jsonContent.representations[device][layout][orientation].items.forEach(item => {
+                    addDefaultEdges(item);
+                });
+            }
+        }
+    }
+
+    return jsonContent;
+}
+
+function selectConsoleBasedOnIdentifier(jsonContent) {
+    const identifierMapping = {
+        "com.delta.n64.standard": "n64",
+        "com.delta.gba.standard": "gba",
+        "com.delta.gbc.standard": "gbc",
+        "com.delta.nes.standard": "nes",
+        "com.delta.snes.standard": "snes",
+        "com.delta.nds.standard": "nds"
+    };
+
+    // Check the identifier at the top level of the JSON
+    let identifier = jsonContent.identifier;
+    if (identifier && identifierMapping[identifier]) {
+        document.getElementById('consoleSelect').value = identifierMapping[identifier];
+        //console.log(`Console selected: ${identifierMapping[identifier]}`);
+        document.getElementById('selectedConsole').innerText = identifierMapping[identifier];
+    } else {
+        console.log("No matching identifier found or identifier is missing.");
+    }
+}
+
 function handleImageUpload(file, fileName) {
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -3791,6 +3788,61 @@ function handleImageUpload(file, fileName) {
         }
     };
     reader.readAsDataURL(file);
+}
+
+async function handlePdfUpload(files, fileName) {
+    // Convert single file to array if necessary
+    const fileArray = Array.isArray(files) ? files : [files];
+    const fileNameArray = Array.isArray(fileName) ? fileName : [fileName];
+
+    for (let i = 0; i < fileArray.length; i++) {
+        const file = fileArray[i];
+        const currentFileName = fileNameArray[i];
+
+        const fileReader = new FileReader();
+        
+        await new Promise((resolve) => {
+            fileReader.onload = async function() {
+                const typedarray = new Uint8Array(this.result);
+
+                try {
+                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                    const page = await pdf.getPage(1);
+                    
+                    const scale = 1.5;
+                    const viewport = page.getViewport({ scale: scale });
+
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d', { willReadFrequently: true });
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    const renderContext = {
+                        canvasContext: context,
+                        viewport: viewport
+                    };
+
+                    await page.render(renderContext).promise;
+
+                    const imageUrl = canvas.toDataURL('image/png');
+                    const layoutKey = findLayoutKeyByFileName(currentFileName);
+                    if (layoutKey) {
+                        layoutImages[layoutKey] = imageUrl;
+                    }
+                } catch (error) {
+                    console.error(`Error processing PDF ${currentFileName}:`, error);
+                }
+
+                resolve();
+            };
+
+            fileReader.readAsArrayBuffer(file);
+        });
+    }
+
+    // After processing all files, update the display and background
+    displayUploadedImages();
+    updateLayoutBackground();
 }
 
 function findLayoutKeyByFileName(fileName) {
@@ -3806,4 +3858,3 @@ function findLayoutKeyByFileName(fileName) {
     }
     return null;
 }
-
