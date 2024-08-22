@@ -2239,6 +2239,8 @@ consoleTypes.forEach(function(consoleType) {
     selectLayout.appendChild(option);
 });
 
+
+
 // Add event listener to capture the selected value from consoleTypes
 selectConsole.addEventListener('change', function() {
     consoleSelection = selectConsole.value; // Store the selected value
@@ -2276,6 +2278,7 @@ function checkSelectionsAndAddButtons() {
     let layoutSelected = layoutSelection !== ""; // Check if a layout is selected
 
     if (deviceSelected && layoutSelected) {
+        document.getElementById("layout-container").style.display = "flex";
         addButtons(); // Only run addButtons if both selections are made
     }
 }
@@ -2620,42 +2623,42 @@ function makeResizable(resizableElement) {
 //submit metadata
 
 // Add an event listener to the button
-document.getElementById("submitButton").addEventListener("click", function() {
-    // Get the value of the input field
+// document.getElementById("submitButton").addEventListener("click", function() {
+//     // Get the value of the input field
 
-    let nameValue = document.getElementById("name").value;
-    let consoleTypeValue = document.getElementById("consoleSelect").value;
-    console.log(consoleTypeValue);
-    let identifierValue = document.getElementById("identifier").value;
-    // Get the checkbox element
-    let debugCheckbox = document.getElementById('debug');
+//     let nameValue = document.getElementById("name").value;
+//     let consoleTypeValue = document.getElementById("consoleSelect").value;
+//     console.log(consoleTypeValue);
+//     let identifierValue = document.getElementById("identifier").value;
+//     // Get the checkbox element
+//     let debugCheckbox = document.getElementById('debug');
 
-    // Convert the checkbox state to true or false
-    let debugValue = debugCheckbox.checked;
+//     // Convert the checkbox state to true or false
+//     let debugValue = debugCheckbox.checked;
     
-    // Store it in a variable
-    skinName = nameValue; 
-    consoleType = consoleTypeValue;
-    identifier = identifierValue;
-    debug = debugValue;
+//     // Store it in a variable
+//     skinName = nameValue; 
+//     consoleType = consoleTypeValue;
+//     identifier = identifierValue;
+//     debug = debugValue;
 
-    // if (document.getElementById("debug").checked) {
-    //     debugValue == "true" 
-    // } else {
-    //     debugValue == "false"
-    // }
-    // debug = debugValue;
+//     // if (document.getElementById("debug").checked) {
+//     //     debugValue == "true" 
+//     // } else {
+//     //     debugValue == "false"
+//     // }
+//     // debug = debugValue;
 
-    let formattedName = nameValue.toLowerCase().replace(/\s+/g, '-');
+//     let formattedName = nameValue.toLowerCase().replace(/\s+/g, '-');
 
-    defaultJsonOutput.name = skinName;
-    defaultJsonOutput.identifier = "com.delta." + consoleTypeValue + "." + formattedName;
-    defaultJsonOutput.gameTypeIdentifier = "com.rileytestut.delta.game." + consoleTypeValue;
-    defaultJsonOutput.debug = debug;
+//     defaultJsonOutput.name = skinName;
+//     defaultJsonOutput.identifier = "com.delta." + consoleTypeValue + "." + formattedName;
+//     defaultJsonOutput.gameTypeIdentifier = "com.rileytestut.delta.game." + consoleTypeValue;
+//     defaultJsonOutput.debug = debug;
 
-    updateJson();
+//     updateJson();
 
-});
+// });
 
 function getCurrentElement(itemId) {
     // Split the selected layout into an array of individual words
@@ -3425,7 +3428,7 @@ document.getElementById('importJsonButton').addEventListener('change', function(
 function placeNameInInput(jsonContent) {
     // Check if the "name" field exists in the JSON
     if (jsonContent.name) {
-        document.getElementById('name').value = jsonContent.name;
+        document.getElementById('nameInput').value = jsonContent.name;
         console.log(`Name field set to: ${jsonContent.name}`);
     } else {
         console.log("Name field is missing in the JSON.");
@@ -3435,7 +3438,7 @@ function placeNameInInput(jsonContent) {
 function placeGameTypeIdentifierInInput(jsonContent) {
     // Check if the "gameTypeIdentifier" field exists in the JSON
     if (jsonContent.gameTypeIdentifier) {
-        document.getElementById('identifier').value = jsonContent.gameTypeIdentifier;
+        document.getElementById('identifierInput').value = jsonContent.gameTypeIdentifier;
         console.log(`Identifier field set to: ${jsonContent.gameTypeIdentifier}`);
     } else {
         console.log("gameTypeIdentifier field is missing in the JSON.");
@@ -3727,8 +3730,8 @@ async function handleZipUpload(event) {
                     defaultJsonOutput = jsonContent;
 
                     // Fill in the text fields with values from info.json
-                    document.getElementById('name').value = jsonContent.name || '';
-                    document.getElementById('identifier').value = jsonContent.gameTypeIdentifier || '';
+                    document.getElementById('nameInput').value = jsonContent.name || '';
+                    document.getElementById('identifierInput').value = jsonContent.gameTypeIdentifier || '';
                     
                     // Automatically select the console and layout
                     selectConsoleBasedOnIdentifier(jsonContent);
@@ -3978,3 +3981,59 @@ async function saveProjectAsZip() {
     link.click();
     document.body.removeChild(link);
 }
+
+//metadata update
+
+function updateMetadata() {
+    const nameInput = document.getElementById('nameInput').value;
+    defaultJsonOutput.name = nameInput;
+
+    // Format the identifier
+    const formattedName = nameInput.toLowerCase().replace(/\s+/g, '-');
+    defaultJsonOutput.identifier = `com.rileytestut.delta.game.${formattedName}`;
+
+    // Update the identifier input field to show the formatted identifier
+    document.getElementById('identifierInput').value = defaultJsonOutput.identifier;
+
+    defaultJsonOutput.debug = document.getElementById('debugCheckbox').checked;
+
+    const selectedConsole = document.getElementById('consoleSelect').value;
+    if (selectedConsole && !defaultJsonOutput.representations[selectedConsole]) {
+        defaultJsonOutput.representations[selectedConsole] = {};
+    }
+
+    const orientation = document.querySelector('input[name="orientation"]:checked').id;
+    const selectedLayout = document.getElementById('layoutSelect').value;
+
+    if (selectedConsole && selectedLayout) {
+        if (!defaultJsonOutput.representations[selectedConsole][selectedLayout]) {
+            defaultJsonOutput.representations[selectedConsole][selectedLayout] = {};
+        }
+        if (!defaultJsonOutput.representations[selectedConsole][selectedLayout][orientation]) {
+            defaultJsonOutput.representations[selectedConsole][selectedLayout][orientation] = {
+                assets: {}
+            };
+        }
+    }
+
+    // Update the displayed JSON
+    updateJsonDisplay();
+}
+
+// Function to update the displayed JSON
+function updateJsonDisplay() {
+    document.getElementById('code').textContent = JSON.stringify(defaultJsonOutput, null, 2);
+}
+
+// Add event listeners to input fields
+document.getElementById('nameInput').addEventListener('input', updateMetadata);
+document.getElementById('debugCheckbox').addEventListener('change', updateMetadata);
+document.getElementById('consoleSelect').addEventListener('change', updateMetadata);
+
+// Add event listeners for orientation radio buttons
+document.querySelectorAll('input[name="orientation"]').forEach(radio => {
+    radio.addEventListener('change', updateMetadata);
+});
+
+// Initial update
+updateMetadata();
