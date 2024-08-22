@@ -2147,7 +2147,10 @@ let consoleScreenSizes = {
     }
 };
 
-//selection dropdowns
+let devices = [
+    "iphone",
+    "ipad"
+]
 
 let layoutTypes = [
         "",
@@ -3668,7 +3671,7 @@ function handlePdfUpload(file, selectedLayout) {
                     layoutImages[selectedLayout] = imageUrl;
 
                     // Update defaultJsonOutput with the filename
-                    updateDefaultJsonOutput(selectedLayout, file.name);
+                    //updateDefaultJsonOutput(selectedLayout, file.name);
                     updateJson();
                     displayUploadedImages();
                     updateLayoutBackground();
@@ -3683,9 +3686,15 @@ function handlePdfUpload(file, selectedLayout) {
 // Update the file input to accept PDFs as well
 document.getElementById('imageUpload').accept = "image/*,application/pdf";
 
+//here
 function updateDefaultJsonOutput(selectedLayout, filename) {
     // Split the selected layout into device and layout type
-    const [device, layoutType] = selectedLayout.split(' ');
+    const [device] = devices;
+    const [layoutType] = [
+        "standard",
+        "edgeToEdge",
+        "splitView"
+    ];
     const orientation = getSelectedOrientation();
 
     // Update the defaultJsonOutput
@@ -3703,3 +3712,98 @@ function updateDefaultJsonOutput(selectedLayout, filename) {
 function getSelectedOrientation() {
     return document.querySelector('input[name="orientation"]:checked').id;
 }
+
+// Add a new button for uploading the .zip file
+const zipUploadButton = document.createElement('button');
+zipUploadButton.id = 'uploadZipButton';
+zipUploadButton.innerText = 'Upload .zip File';
+document.getElementById("header-actions").appendChild(zipUploadButton);
+
+const zipUploadInput = document.createElement('input');
+zipUploadInput.type = 'file';
+zipUploadInput.id = 'zipUpload';
+zipUploadInput.accept = '.zip';
+zipUploadInput.style.display = 'none';
+document.body.appendChild(zipUploadInput);
+
+zipUploadButton.addEventListener('click', () => {
+    zipUploadInput.click();
+});
+
+zipUploadInput.addEventListener('change', handleZipUpload);
+
+async function handleZipUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const zip = new JSZip();
+        const zipContent = await zip.loadAsync(file);
+        const infoJsonFile = zipContent.file('info.json');
+
+        if (infoJsonFile) {
+            const infoJsonContent = await infoJsonFile.async('string');
+            let jsonContent = JSON.parse(infoJsonContent);
+
+            // Ensure all items have the required extendedEdges parameters
+            jsonContent = ensureExtendedEdges(jsonContent);
+
+            // Replace defaultJsonOutput with the imported JSON
+            defaultJsonOutput = jsonContent;
+
+             // Fill in the text fields with values from info.json
+             document.getElementById('name').value = jsonContent.name || '';
+             document.getElementById('identifier').value = jsonContent.gameTypeIdentifier || '';
+ 
+
+            // Automatically select the console and layout
+            selectConsoleBasedOnIdentifier(jsonContent);
+            automaticSelectLayout();
+
+            // Handle image/PDF files
+            for (const fileName in zipContent.files) {
+                if (fileName !== 'info.json') {
+                    const fileData = await zipContent.file(fileName).async('blob');
+                    if (fileName.endsWith('.pdf')) {
+                        handlePdfUpload(fileData, fileName);
+                    } else {
+                        handleImageUpload(fileData, fileName);
+                    }
+                }
+            }
+
+            // Update the layout
+            updateLayoutBackground();
+            updateJson();
+        } else {
+            alert('info.json file not found in the .zip archive.');
+        }
+    }
+}
+
+function handleImageUpload(file, fileName) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const imageUrl = e.target.result;
+        const layoutKey = findLayoutKeyByFileName(fileName);
+        if (layoutKey) {
+            layoutImages[layoutKey] = imageUrl;
+            displayUploadedImages();
+            updateLayoutBackground();
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+function findLayoutKeyByFileName(fileName) {
+    for (const device in defaultJsonOutput.representations) {
+        for (const layout in defaultJsonOutput.representations[device]) {
+            for (const orientation in defaultJsonOutput.representations[device][layout]) {
+                const assets = defaultJsonOutput.representations[device][layout][orientation].assets;
+                if (assets && assets.resizable === fileName) {
+                    return `${device} ${layout} - ${orientation}`;
+                }
+            }
+        }
+    }
+    return null;
+}
+

@@ -490,6 +490,7 @@
 			    Upload JSON
 			</label>
 			<input type="file" id="importJsonButton" accept=".json">
+			
 		</div>
 
 	</header>
@@ -556,6 +557,7 @@
 					<select id="imageLayoutSelect"></select>
 					<input type="file" id="imageUpload" accept="image/*,application/pdf">
 					<button id="uploadImageButton">Upload Image</button>
+					
 				</div>
 				<div id="imageContainer"></div>
 			</section>
@@ -600,7 +602,7 @@
 			</section>
 
 			<section class="container flex-column">
-				<h2>Add Items</h2>
+				<h2>Add Buttons</h2>
 				<div id="buttons-container"></div>
 			</section>
 		</div>
@@ -621,8 +623,11 @@
 			</div>
 		</div>
 	</section>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
-<script type="text/javascript" src="script.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
+<script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.worker.min.js';</script>
+	<script type="text/javascript" src="script.js"></script>
 
 </body>
 
