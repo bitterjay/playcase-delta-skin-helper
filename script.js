@@ -2180,6 +2180,21 @@ const buttonConfigs = {
     n64: ['menu', 'dpad', 'thumbstick', 'a', 'b', 'start', 'l', 'r', 'cUp', 'cDown', 'cLeft', 'cRight', 'z', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward']
 };
 
+
+//layout selection in metadata
+
+let layoutSelection = "";
+
+let selectLayout = document.getElementById("layoutSelect");
+
+
+// Ensure these variables are declared at the top before they are used
+let consoleSelect = document.getElementById('consoleSelect');
+
+// Object to store uploaded images
+const layoutImages = {};
+
+
 //functions
 
 // console selection in metadata
@@ -2193,24 +2208,44 @@ consoleTypes.forEach(function(consoleType) {
     selectConsole.appendChild(option);            // Add the option to the select element
 });
 
+ // Populate the layout dropdown
+ layoutTypes.forEach(function(layoutType) {
+    let option = document.createElement('option');
+    option.value = layoutType;
+    option.text = layoutType.toUpperCase(); // Optional: Display as uppercase
+    selectLayout.appendChild(option);
+});
+
 // Add event listener to capture the selected value from consoleTypes
 selectConsole.addEventListener('change', function() {
     consoleSelection = selectConsole.value; // Store the selected value
     document.getElementById('selectedConsole').innerText = consoleSelection;
     console.log("Selected console:", consoleSelection); // Optional: Log the selection
 
+    automaticSelectLayout();
 });
 
+//select first layout when console is selected
+function automaticSelectLayout() {
+    layoutSelect.disabled = false;
 
-//layout selection in metadata
+    // Automatically select the first non-empty option in layoutSelect
+    for (let i = 0; i < layoutSelect.options.length; i++) {
+        if (layoutSelect.options[i].value !== "") {
+            layoutSelect.selectedIndex = i;
+            layoutSelection = layoutSelect.value;
+            document.getElementById('selectedLayout').innerText = layoutSelection;
+            console.log("Automatically selected layout:", layoutSelection);
+            break;
+        }
+    }
 
-let layoutSelection = "";
+    // Trigger the change event on layoutSelect to update any dependent functions
+    layoutSelect.dispatchEvent(new Event('change'));
 
-let selectLayout = document.getElementById("layoutSelect");
-
-
-// Ensure these variables are declared at the top before they are used
-let consoleSelect = document.getElementById('consoleSelect');
+    // Call any functions that depend on both console and layout selection
+    checkSelectionsAndAddButtons();
+};
 
 // Function to check if both device and layout have been selected
 function checkSelectionsAndAddButtons() {
@@ -2224,20 +2259,13 @@ function checkSelectionsAndAddButtons() {
 
 // Listen for changes in the console and layout selections
 consoleSelect.addEventListener('change', checkSelectionsAndAddButtons);
+
 selectLayout.addEventListener('change', function() {
     layoutSelection = selectLayout.value; // Update the layoutSelection value
     checkSelectionsAndAddButtons();
 });
 
- // Populate the layout dropdown
-layoutTypes.forEach(function(layoutType) {
-    let option = document.createElement('option');
-    option.value = layoutType;
-    option.text = layoutType.toUpperCase(); // Optional: Display as uppercase
-    selectLayout.appendChild(option);
-});
-
-// Add event listener to capture the selected value
+// Add event listener to capture the selected value in layoutSelect
 layoutSelect.addEventListener('change', function() {
     layoutSelection = selectLayout.value; // Store the selected value
     document.getElementById('selectedLayout').innerText = layoutSelection;
@@ -3355,7 +3383,7 @@ document.getElementById('importJsonButton').addEventListener('change', function(
                 // Replace defaultJsonOutput with the imported JSON
                 defaultJsonOutput = jsonContent;
                 console.log("defaultJsonOutput has been updated:", defaultJsonOutput);
-
+    automaticSelectLayout();
                 // Optionally, refresh or update the UI to reflect the new data
                 updateUIWithNewJsonData(); // Implement this function as needed
             } catch (error) {
@@ -3365,6 +3393,8 @@ document.getElementById('importJsonButton').addEventListener('change', function(
         };
         reader.readAsText(file);
     }
+
+    
 });
 
 function placeNameInInput(jsonContent) {
@@ -3460,8 +3490,6 @@ document.getElementById('imageUpload').addEventListener('change', function(event
     }
 });
 
-// Object to store uploaded images
-const layoutImages = {};
 
 // Populate the image layout select
 function populateImageLayoutSelect() {
