@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PlayCase - Delta Skin Helper</title>
+
+<style>
+
+	:root {
+		--bg-color: #E8E8E8;
+		--container-color: #ffffff;
+		--border-radius: .5em;
+		--padding-xs: .3em .6em;
+		--padding-m: .8em 1.2em;
+		--text-xs: 12px;
+		--box-shadow: 0px 2px 5px rgba(0,0,0,.1);
+		--button-color: #000000;
+
+		--after-top: 0;
+		--after-left:0;
+	}
+
+	input, select {
+		padding:var(--padding-xs);
+	}
+
+	button {
+		padding:var(--padding-m);
+		border-radius:var(--border-radius);
+		border:0px;
+		background-color:var(--button-color);
+		color:white;
+	}
+
+	button:hover {
+		background-color:#3F3F3F;
+	}
+
+	#importJsonButton {
+	    display: none; /* Hide the file input */
+	}
+
+	.custom-file-upload {
+	    padding:var(--padding-m);
+		border-radius:var(--border-radius);
+		border:0px;
+		background-color:var(--button-color);
+		color:white;
+		font-size:13px;
+	}
+
+	.custom-file-upload:hover {
+	   background-color:#3F3F3F;
+	}
+
+
+	h1, h2, h3, h4, h5, h6 {
+		line-height: 1.2;
+		margin:0;
+	}
+
+	body {
+		background-color:var(--bg-color);
+		font-family: arial;
+	}
+
+	header {
+		display:flex;
+		justify-content:space-between;
+		align-items:center;
+		margin-bottom:1em;
+		box-shadow:var(--box-shadow);
+		padding:var(--padding-m);
+		background-color:white;
+	}
+
+	header .flex-row {
+		justify-content:center;
+		align-items:center;
+	}
+
+	#content {
+		display:grid;
+		grid-template-columns: 1fr 3fr 1fr;
+		gap:1em;
+		align-items:flex-start;
+		margin-bottom:1em;
+	}
+
+	#setup {
+		display:grid;
+		gap: 1em;
+	}
+
+	#metadata {
+		display:grid;
+		grid-template-columns: 1fr;
+		gap: 1em;
+	}
+
+	.container {
+		background-color:var(--container-color);
+		padding:1em;
+		border-radius:var(--border-radius);
+		box-shadow:var(--box-shadow);
+	}
+
+	.container__header {
+		justify-content: space-between !important;
+		border-bottom: 1px solid black;
+		align-items:center;
+	}
+
+	.block {
+		display:flex;
+		flex-direction:column;
+		gap:.5em;
+	}
+
+	.flex-row {
+		display:flex;
+		flex-direction:row;
+		justify-content:left;
+		gap: 1em;
+	}
+
+	.flex-column {
+		display:flex;
+		flex-direction:column;
+		justify-content:center;
+		gap: 1em;
+	}
+
+
+	#version {
+		background-color: black;
+		color:white;
+		padding:var(--padding-xs);
+		border-radius:var(--border-radius);
+		font-size:var(--text-xs);
+	}
+
+	.bubble {
+		background-color: black;
+		color:white;
+		padding:var(--padding-xs);
+		border-radius:var(--border-radius);
+	}
+
+	#layout {
+		text-align:center;
+	}
+
+	#layout-container {
+		display:flex;
+		justify-content:center;
+		align-items:top;
+		padding:1em;
+	}
+
+	#layout-object {
+		outline:1px solid black;
+		position:relative;
+		background-color:black;
+		color:white;
+		overflow:hidden;
+	}
+
+	.layout-item {
+		background-clip: content-box;
+		background-color:rgba(200,200,200,1);
+        position: absolute;
+        border: 1px solid black; /* Optional: for better visualization */
+        font-size:var(--text-xs);
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        cursor: move;
+        z-index:2;
+    }
+
+    .layout-item::after {
+	    content: "";
+	    position: absolute;
+	    background-color: rgba(0, 0, 255, .1);
+	    top:0;
+	    left:0;
+	    right:0;
+	    bottom:0;
+	    z-index:0;
+	    pointer-events:none;
+	}
+
+	.item-text {
+		z-index:10;
+	}
+
+    .layout-item:hover {
+    	background-color:rgba(125,125,125,.2);
+    }
+
+    .layout-item-inner {
+    	position:absolute;
+    	width:100%;
+    	height:100%;
+    	background-color:rgba(200,200,200,.5);
+    	z-index:1;
+    	top:0;
+    	left:0;
+    	pointer-events:none;
+    }
+
+    .screen-item {
+    	position:absolute;
+    	border: 1px solid black; /* Optional: for better visualization */
+    	background-color:rgba(255,0,0, 1);
+    	z-index:0;
+    }
+
+    .screen-item:hover {
+    	background-color:rgba(255,0,0, .3);
+    }
+
+    .layout-item.selected {
+	    background-color: rgba(0, 255, 0, .5);
+		outline: 2px solid red;
+	}
+
+    #code {
+        white-space: pre-wrap; /* Preserves formatting and new lines 
+        font-family: monospace; /* Uses a monospace font for better readability */
+        background-color: #f0f0f0; /* Light background color */
+        padding: 10px;
+        border: 1px solid #ccc;
+        overflow-x: hidden;
+    }
+
+    #code-container {
+    	height: 500px;
+    }
+
+    .focus-item {
+    	display:flex;
+    	flex-direction:column;
+    	gap: 1em;
+    }
+
+    .position-wrapper {
+    	grid-column: span 4;
+    	display:grid;
+    	grid-template-columns: 1fr 1fr;
+    }
+
+    .screen-position-wrapper {
+    	grid-column: span 4;
+    	display:grid;
+    	grid-template-columns: 1fr 1fr;
+    }
+
+    .screen-position-wrapper .form-group input, .screen-size-wrapper .form-group input, .position-wrapper .form-group input {
+    	width:80px;
+    }
+
+
+    .form-group {
+    	display:flex;
+    	flex-direction:column;
+    	gap: .5em;
+    	justify-content:center;
+    	align-items:center;
+    	font-size: var(--text-xs);
+    	padding:var(--padding-xs);
+    	width: -webkit-fill-available;
+    }
+
+    .form-group input {
+    	width:35px;
+    	text-align:center;
+    }
+
+    .size-wrapper {
+    	display:grid;
+    	grid-template-columns: 1fr 1fr 1fr 1fr;
+    	border:1px solid black;
+    	margin:20px;
+    	aspect-ratio:1/1;
+
+    }
+
+    .screen-size-wrapper {
+    	display:grid;
+    	grid-template-columns: 1fr 1fr;
+    	border: 1px solid black;
+    	margin:20px; 
+    	aspect-ratio: 1/1;
+    }
+
+
+    #form-x input, #form-y input {
+    	width:80px;
+    }
+
+     .size-wrapper #form-top {
+    	grid-column:span 4;
+    	order:1;
+    }
+
+    .size-wrapper #form-left {
+    	order:2;
+    	height:100%;
+    }
+
+    .size-wrapper #form-width {
+    	order:3;
+    	height:100px;
+    	border-top: 1px solid black;
+    	border-left: 1px solid black;
+    	border-bottom: 1px solid black;
+    	height:100%;
+    	aspect-ratio:1/2;
+    }
+
+    .size-wrapper #form-height {
+    	order:4;
+    	height:100px;
+    	border-top: 1px solid black;
+    	border-right: 1px solid black;
+    	border-bottom: 1px solid black;
+    	height:100%;
+    	aspect-ratio: 1 / 2;
+    }
+
+    .size-wrapper #form-right {
+    	order:5;
+    	height:100%;
+    }
+
+    .size-wrapper #form-bottom {
+    	grid-column:span 4;
+    	order:6;
+    }
+
+	#focus {
+		width:450px;
+		display:flex;
+		flex-direction:column;
+		gap: 1em;
+		display:none;
+	}
+
+	#focus-title {
+		display:flex;
+		flex-direction:row;
+		justify-content:space-between;
+		align-items:center;
+	}
+
+	#screen-size-info {
+		text-align:center;
+	}
+
+	input[type=number]::-webkit-inner-spin-button, 
+	input[type=number]::-webkit-outer-spin-button {  
+
+	opacity: 1;
+
+	}
+
+	.resize-handle {
+		width: 10px;
+		height: 10px;
+	/*    background-color: black;*/
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		cursor: se-resize;
+	}
+
+	.resize-handle:after {
+		content:'';
+		width:10px;
+		height:10px;
+		background: url('handle.svg');
+		postition:absolute;
+		display:block;
+
+	}
+
+	#output-info {
+		display:flex;
+		flex-direction:row;
+		justify-content:space-between;
+		align-items:center;
+	}
+
+	.focus-actions {
+		display:flex;
+		flex-direction:column;
+	}
+
+	#buttons-container {
+		display:grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));;
+		gap: 1em;
+	}
+
+	#buttons-container button {
+		font-size: var(--text-xs);
+	}
+
+	* {
+		transition: background-color .3s ;
+	}
+
+	#display-manipulation {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		gap: 1em;
+		padding: var(--padding-m);
+	}
+
+	.item-text {
+		background-color:rgba(0,0,0,.3);
+		padding:4px 8px;
+		border-radius:5px;
+	}
+
+	#header-actions {
+		display:flex;
+		flex-direction:row;
+		gap:1em;
+		justify-content:center;
+		align-items:center;
+	}
+
+	/* Add this to your existing styles */
+	#imageContainer {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+	}
+	.image-wrapper {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content:center;
+		text-align: center;
+	}
+
+	@media (max-width: 480px) {
+		#content {
+			grid-template-columns: 1fr;
+		}
+
+		#layout-container {
+            padding: 0.5em;
+        }
+
+        #layout-object {
+            transform: scale(1);
+            transform-origin: top left;
+        }
+	}
+
+</style>
+
+</head>
+
+<body>
+
+	<header>
+
+		<div class="flex-row">
+			<h1>PlayCase - Delta Skin Helper</h1>
+			<div id="version">0.01</div>
+		</div>
+
+		<div id="header-actions">
+				<label for="importJsonButton" class="custom-file-upload">
+			    Upload JSON
+			</label>
+			<input type="file" id="importJsonButton" accept=".json">
+		</div>
+
+	</header>
+
+	<div id="content">
+
+		<div id="setup">
+			<section id="metadata" class="container">
+
+				<h2>Metadata</h2>
+
+				<div class="block">
+					<label  for="name">Name</label>
+					<input type="text" id="name" name="name" autocomplete="off">
+				</div>
+
+				<div class="block">
+					<label for="consoleSelect">Device Selection</label>
+					<select id="consoleSelect"></select>
+					
+				</div>
+
+				<div class="block">
+					<label for="identifier">Skin Name (Game Type Identifier)</label>
+					<input type="text" id="identifier" name="identifier">
+				</div>
+
+				<div class="block flex-row">
+					<input type="checkbox" id="debug" name="debug">
+					<label for="debug">debug</label>
+				</div>
+				
+
+			</section>
+
+			<section id="layout-selections" class="container flex-column">
+
+				<h2>Layout Selection</h2>
+
+				<div class="block">
+					<select id="layoutSelect"></select>
+				</div>
+
+				<div class="block">
+					<legend>Orientation</legend>
+					<div class="flex-row">
+						<input type="radio" id="portrait" name="orientation" checked="checked" />
+						<label for="portrait">Portrait</label>
+						<input type="radio" id="landscape" name="orientation" />
+						<label for="landscape">Landscape</label>
+					</div>
+				</div>
+
+			</section>
+
+			<section id="actions" class="container flex-column">
+				<h2>Update Metadata</h2>
+				<button id="submitButton">Submit</button>
+			</section>
+
+			<section id="files" class="container flex-column">
+				<h2>Layout Images</h2>
+				<div class="flex-column">
+					<select id="imageLayoutSelect"></select>
+					<input type="file" id="imageUpload" accept="image/*,application/pdf">
+					<button id="uploadImageButton">Upload Image</button>
+				</div>
+				<div id="imageContainer"></div>
+			</section>
+		</div>
+
+		<div id="design">
+			<section id="layout" class="container">
+					<div class="flex-row container__header">
+						<h2>Layout</h2>
+						<div class="container__meta flex-row">
+							<p class="bubble" id="selectedConsole">None</p>
+							<p class="bubble" id="selectedLayout">None</p>
+						</div>
+					</div>
+
+					<div id="layout-container">
+						<div id="layout-object" style="box-shadow: inset 0 0 0 2000px rgba(255, 255, 255, 0);">
+						</div>
+					</div>
+					<p id="screen-size-info"></p>
+    				<div id="display-manipulation">
+    					<label for="shadowOpacitySlider">Background Image Opacity</label>
+    					<input type="range" id="shadowOpacitySlider" min="0" max="100" value="0">
+    				</div>
+			</section>
+		</div>
+
+		<div id="focus">
+			<section class="container flex-column">
+				<div id="focus-title">
+					<h2>Focus</h2>
+					<h3 class="item-name"></h3>
+				</div>
+				<div id="focus-container" class="flex-column">
+					<div class="focus-item">
+						<div id="form-container"></div>
+					</div>
+					<div class="focus-actions">
+						<button id="delete-button" style="display:none;" class="delete-button">Delete Item</button>
+					</div>
+				</div>
+			</section>
+
+			<section class="container flex-column">
+				<h2>Add Items</h2>
+				<div id="buttons-container"></div>
+			</section>
+		</div>
+		
+
+		
+
+	</div>
+
+	<section class="container">
+		<div id="code-container" class="flex-column">
+			<div id="output-info">
+				<h2>Output</h2>
+				<button id="copy-json">Copy JSON</button>
+			</div>
+			<div id="code">
+				<p>code</p>
+			</div>
+		</div>
+	</section>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
+<script type="text/javascript" src="script.js"></script>
+
+</body>
+
+</html>
