@@ -3270,6 +3270,9 @@ function addButtons() {
 
     // Function to add the button configuration to the JSON array and layout-object
     function addButtonToJsonAndLayout(buttonName, consoleType) {
+
+        let layoutObjectWidth = document.getElementById('layout-object').clientWidth;
+        let layoutObjectHeight = document.getElementById('layout-object').clientHeight;
         let layoutParts = layoutSelection.split(" ");
         let device = layoutParts[0];
         let layout = layoutParts[1];
@@ -3287,8 +3290,8 @@ function addButtons() {
                     "right": "right"
                 },
                 "frame": {
-                    "x": 0,
-                    "y": 0,
+                    "x": layoutObjectWidth / 2 - 60,
+                    "y": layoutObjectHeight / 2 - 60,
                     "width": 120,
                     "height": 120
                 },
@@ -3313,8 +3316,8 @@ function addButtons() {
                     "right": "analogStickRight"
                 },
                 "frame": {
-                    "x": 0,
-                    "y": 0,
+                    "x": layoutObjectWidth / 2 - 25,
+                    "y": layoutObjectHeight / 2 - 25,
                     "width": 50,
                     "height": 50
                 },
@@ -3330,8 +3333,8 @@ function addButtons() {
             buttonFormat = {
                 "inputs": [buttonName],
                 "frame": {
-                    "x": 0,
-                    "y": 0,
+                    "x": layoutObjectWidth / 2 - 25,
+                    "y": layoutObjectHeight / 2 - 25,
                     "width": 50,
                     "height": 50
                 },
@@ -3509,14 +3512,13 @@ function populateImageLayoutSelect() {
 // Handle image or PDF upload
 document.getElementById('uploadImageButton').addEventListener('click', function() {
     let file = document.getElementById('imageUpload').files[0];
-    //console.log(file)
     let selectedLayout = document.getElementById('imageLayoutSelect').value;
-    layoutImages[selectedLayout] = file;
     if (file && selectedLayout) {
         if (file.type === 'application/pdf') {
-            //console.log(file);
-            fileName = file.name;
-            handlePdfUpload(file, fileName);
+            // Rename the file if it doesn't match the current layout
+            const newFileName = getFileNameForCurrentLayout();
+            const renamedFile = new File([file], newFileName, { type: file.type });
+            handlePdfUpload(renamedFile, newFileName);
             updateLayoutBackground();
             displayUploadedImages();
             updateJson();
@@ -3529,6 +3531,11 @@ document.getElementById('uploadImageButton').addEventListener('click', function(
         alert('Please select both a layout and an image file.');
     }
 });
+
+function getFileNameForCurrentLayout() {
+    const currentState = getCurrentState();
+    return `${currentState.device}_${currentState.layout}_${currentState.orientation}.pdf`;
+}
 
 // Display the uploaded image for the current state
 function displayUploadedImages() {
@@ -3636,26 +3643,17 @@ populateImageLayoutSelect();
 // Update the file input to accept PDFs as well
 document.getElementById('imageUpload').accept = "image/*,application/pdf";
 
-//here
-function updateDefaultJsonOutput(selectedLayout, filename) {
-    // Split the selected layout into device and layout type
-    const [device] = devices;
-    const [layoutType] = [
-        "standard",
-        "edgeToEdge",
-        "splitView"
-    ];
-    const orientation = getSelectedOrientation();
-
-    // Update the defaultJsonOutput
+function updateDefaultJsonOutput(layoutKey, fileName) {
+    const [device, layout, orientation] = layoutKey.split(/\s|-/).map(s => s.trim());
+    
     if (defaultJsonOutput.representations[device] &&
-        defaultJsonOutput.representations[device][layoutType] &&
-        defaultJsonOutput.representations[device][layoutType][orientation] &&
-        defaultJsonOutput.representations[device][layoutType][orientation].assets) {
-        defaultJsonOutput.representations[device][layoutType][orientation].assets.resizable = filename;
-        console.log(`Updated defaultJsonOutput for ${selectedLayout} (${orientation}) with filename: ${filename}`);
+        defaultJsonOutput.representations[device][layout] &&
+        defaultJsonOutput.representations[device][layout][orientation] &&
+        defaultJsonOutput.representations[device][layout][orientation].assets) {
+        defaultJsonOutput.representations[device][layout][orientation].assets.resizable = fileName;
+        console.log(`Updated defaultJsonOutput for ${layoutKey} with filename: ${fileName}`);
     } else {
-        console.error(`Could not update defaultJsonOutput for ${selectedLayout} (${orientation}). Path does not exist.`);
+        console.error(`Could not update defaultJsonOutput for ${layoutKey}. Path does not exist.`);
     }
 }
 
@@ -3668,13 +3666,13 @@ function getSelectedOrientation() {
 // Add a new button for uploading the .zip file
 const zipUploadButton = document.createElement('button');
 zipUploadButton.id = 'uploadZipButton';
-zipUploadButton.innerText = 'Upload .zip File';
+zipUploadButton.innerText = 'Upload .deltaskin';
 document.getElementById('file-actions').appendChild(zipUploadButton);
 
 const zipUploadInput = document.createElement('input');
 zipUploadInput.type = 'file';
 zipUploadInput.id = 'zipUpload';
-zipUploadInput.accept = '.zip';
+zipUploadInput.accept = '.zip,.deltaskin';
 zipUploadInput.style.display = 'none';
 document.body.appendChild(zipUploadInput);
 
@@ -3687,46 +3685,57 @@ zipUploadInput.addEventListener('change', handleZipUpload);
 async function handleZipUpload(event) {
     const file = event.target.files[0];
     if (file) {
-        const zip = new JSZip();
-        const zipContent = await zip.loadAsync(file);
-        const infoJsonFile = zipContent.file('info.json');
+        // Check if the file is either a .zip or .deltaskin file
+        if (file.name.endsWith('.zip') || file.name.endsWith('.deltaskin')) {
+            const zip = new JSZip();
+            try {
+                const zipContent = await zip.loadAsync(file);
+                const infoJsonFile = zipContent.file('info.json');
 
-        if (infoJsonFile) {
-            const infoJsonContent = await infoJsonFile.async('string');
-            let jsonContent = JSON.parse(infoJsonContent);
+                if (infoJsonFile) {
+                    // Process the file as before
+                    const infoJsonContent = await infoJsonFile.async('string');
+                    let jsonContent = JSON.parse(infoJsonContent);
 
-            // Ensure all items have the required extendedEdges parameters
-            jsonContent = ensureExtendedEdges(jsonContent);
+                    // Ensure all items have the required extendedEdges parameters
+                    jsonContent = ensureExtendedEdges(jsonContent);
 
-            // Replace defaultJsonOutput with the imported JSON
-            defaultJsonOutput = jsonContent;
+                    // Replace defaultJsonOutput with the imported JSON
+                    defaultJsonOutput = jsonContent;
 
-            // Fill in the text fields with values from info.json
-            document.getElementById('name').value = jsonContent.name || '';
-            document.getElementById('identifier').value = jsonContent.gameTypeIdentifier || '';
-            
-            // Automatically select the console and layout
-            selectConsoleBasedOnIdentifier(jsonContent);
-            automaticSelectLayout();
+                    // Fill in the text fields with values from info.json
+                    document.getElementById('name').value = jsonContent.name || '';
+                    document.getElementById('identifier').value = jsonContent.gameTypeIdentifier || '';
+                    
+                    // Automatically select the console and layout
+                    selectConsoleBasedOnIdentifier(jsonContent);
+                    automaticSelectLayout();
 
-            // Handle image/PDF files
-            for (const fileName in zipContent.files) {
-                if (fileName !== 'info.json') {
-                    //console.log(zipContent);
-                    const fileData = await zipContent.file(fileName).async('blob');
-                    if (fileName.endsWith('.pdf')) {
-                        handlePdfUpload(fileData, fileName);
-                    } else {
-                        handleImageUpload(fileData, fileName);
+                    // Handle image/PDF files
+                    for (const fileName in zipContent.files) {
+                        if (fileName !== 'info.json') {
+                            //console.log(zipContent);
+                            const fileData = await zipContent.file(fileName).async('blob');
+                            if (fileName.endsWith('.pdf')) {
+                                handlePdfUpload(fileData, fileName);
+                            } else {
+                                handleImageUpload(fileData, fileName);
+                            }
+                        }
                     }
-                }
-            }
 
-            // Update the layout
-            updateLayoutBackground();
-            updateJson();
+                    // Update the layout
+                    updateLayoutBackground();
+                    updateJson();
+                } else {
+                    alert('info.json file not found in the archive.');
+                }
+            } catch (error) {
+                console.error('Error processing the file:', error);
+                alert('Error processing the file. Please make sure it\'s a valid .zip or .deltaskin file.');
+            }
         } else {
-            alert('info.json file not found in the .zip archive.');
+            alert('Please upload a .zip or .deltaskin file.');
         }
     }
 }
@@ -3825,9 +3834,10 @@ async function handlePdfUpload(files, fileName) {
                     await page.render(renderContext).promise;
 
                     const imageUrl = canvas.toDataURL('image/png');
-                    const layoutKey = findLayoutKeyByFileName(currentFileName);
+                    const layoutKey = findLayoutKeyByFileName(currentFileName) || getCurrentLayoutKey();
                     if (layoutKey) {
                         layoutImages[layoutKey] = imageUrl;
+                        updateDefaultJsonOutput(layoutKey, currentFileName);
                     }
                 } catch (error) {
                     console.error(`Error processing PDF ${currentFileName}:`, error);
@@ -3843,6 +3853,11 @@ async function handlePdfUpload(files, fileName) {
     // After processing all files, update the display and background
     displayUploadedImages();
     updateLayoutBackground();
+}
+
+function getCurrentLayoutKey() {
+    const currentState = getCurrentState();
+    return `${currentState.device} ${currentState.layout} - ${currentState.orientation}`;
 }
 
 function findLayoutKeyByFileName(fileName) {
