@@ -170,7 +170,7 @@
 
 	.layout-item {
 		background-clip: content-box;
-		background-color:rgba(200,200,200,1);
+		background-color:rgba(200,200,200,.3);
         position: absolute;
         border: 1px solid black; /* Optional: for better visualization */
         font-size:var(--text-xs);
@@ -184,7 +184,7 @@
     .layout-item::after {
 	    content: "";
 	    position: absolute;
-	    background-color: rgba(0, 0, 255, .1);
+	    background-color: rgba(0, 0, 0, .3);
 	    top:0;
 	    left:0;
 	    right:0;
@@ -198,19 +198,23 @@
 	}
 
     .layout-item:hover {
-    	background-color:rgba(125,125,125,.2);
+    	background-color:rgba(125,125,125,1);
     }
 
     .layout-item-inner {
     	position:absolute;
     	width:100%;
     	height:100%;
-    	background-color:rgba(200,200,200,.5);
+    	background-color:rgba(200,200,200,.3);
     	z-index:1;
     	top:0;
     	left:0;
     	pointer-events:none;
     }
+
+	.layout-item-inner:hover {
+		background-color:rgba(200,200,200,.8);
+	}
 
     .screen-item {
     	position:absolute;
@@ -439,9 +443,9 @@
 
 	/* Add this to your existing styles */
 	#imageContainer {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 10px;
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1em;
 	}
 	.image-wrapper {
 		display: flex;
