@@ -3137,13 +3137,16 @@ document.getElementById('copy-json').addEventListener('click', function() {
     alert('JSON copied to clipboard!');
 });
 
-function handleImageUpload(file, selectedLayout) {
+function handleImageUpload(file, fileName) {
     const reader = new FileReader();
     reader.onload = function(e) {
-        const imageUrl = e.target.result;
-        layoutImages[selectedLayout] = imageUrl;
-        displayUploadedImages();
-        updateLayoutBackground();
+        const imageDataUrl = e.target.result;
+        const layoutKey = findLayoutKeyByFileName(fileName);
+        if (layoutKey) {
+            layoutImages[layoutKey] = imageDataUrl;
+            displayUploadedImages();
+            updateLayoutBackground();
+        }
     };
     reader.readAsDataURL(file);
 }
@@ -3644,16 +3647,33 @@ populateImageLayoutSelect();
 document.getElementById('imageUpload').accept = "image/*,application/pdf";
 
 function updateDefaultJsonOutput(layoutKey, fileName) {
-    const [device, layout, orientation] = layoutKey.split(/\s|-/).map(s => s.trim());
+    let [device, layout] = layoutKey.split(/\s|-/).map(s => s.trim());
     
+    // Extract orientation from filename
+    let orientation = fileName.toLowerCase().includes('landscape') ? 'landscape' : 
+                      fileName.toLowerCase().includes('portrait') ? 'portrait' : 
+                      null;
+
+    // If orientation wasn't found in filename, use the one from layoutKey
+    if (!orientation) {
+        orientation = layoutKey.toLowerCase().includes('landscape') ? 'landscape' : 
+                      layoutKey.toLowerCase().includes('portrait') ? 'portrait' : 
+                      null;
+    }
+
+    if (!orientation) {
+        console.error(`Could not determine orientation for ${layoutKey} with filename: ${fileName}`);
+        return;
+    }
+
     if (defaultJsonOutput.representations[device] &&
         defaultJsonOutput.representations[device][layout] &&
         defaultJsonOutput.representations[device][layout][orientation] &&
         defaultJsonOutput.representations[device][layout][orientation].assets) {
         defaultJsonOutput.representations[device][layout][orientation].assets.resizable = fileName;
-        console.log(`Updated defaultJsonOutput for ${layoutKey} with filename: ${fileName}`);
+        console.log(`Updated defaultJsonOutput for ${device} ${layout} ${orientation} with filename: ${fileName}`);
     } else {
-        console.error(`Could not update defaultJsonOutput for ${layoutKey}. Path does not exist.`);
+        console.error(`Could not update defaultJsonOutput for ${device} ${layout} ${orientation}. Path does not exist.`);
     }
 }
 
@@ -3872,4 +3892,57 @@ function findLayoutKeyByFileName(fileName) {
         }
     }
     return null;
+}
+
+//saving
+
+const saveProjectButton = document.createElement('button');
+saveProjectButton.id = 'saveProjectButton';
+saveProjectButton.innerText = 'Save Project as .zip';
+document.getElementById('output-actions').appendChild(saveProjectButton);
+
+saveProjectButton.addEventListener('click', saveProjectAsZip);
+
+async function saveProjectAsZip() {
+    const zip = new JSZip();
+
+    // Add info.json to the zip
+    zip.file("info.json", JSON.stringify(defaultJsonOutput, null, 2));
+
+    // Add images to the zip as PDFs
+    for (const [layoutKey, imageDataUrl] of Object.entries(layoutImages)) {
+        const img = new Image();
+        img.src = imageDataUrl;
+
+        await new Promise((resolve) => {
+            img.onload = () => {
+                const pdf = new jspdf.jsPDF({
+                    orientation: img.width > img.height ? 'l' : 'p',
+                    unit: 'px',
+                    format: [img.width, img.height]
+                });
+
+                pdf.addImage(img, 'PNG', 0, 0, img.width, img.height);
+
+                // Generate a filename for the PDF
+                const fileName = `${layoutKey.replace(/\s+/g, '_')}.pdf`;
+                
+                // Add the PDF to the zip
+                zip.file(fileName, pdf.output('arraybuffer'));
+
+                resolve();
+            };
+        });
+    }
+
+    // Generate the zip file
+    const content = await zip.generateAsync({type: "blob"});
+
+    // Create a download link and trigger the download
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(content);
+    link.download = "delta_skin_project.zip";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }

@@ -505,6 +505,12 @@
 		width:100%;
 	}
 
+	#output-actions {
+		display:flex;
+		flex-direction:row;
+		gap: 1em;
+	}
+
 </style>
 
 </head>
@@ -651,7 +657,9 @@
 		<div id="code-container" class="flex-column">
 			<div id="output-info">
 				<h2>Output</h2>
+				<div id="output-actions">
 				<button id="copy-json">Copy JSON</button>
+				</div>
 			</div>
 			<div id="code">
 				<p>code</p>
@@ -661,7 +669,8 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
-<script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.worker.min.js';</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+	<script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.worker.min.js';</script>
 	<script type="text/javascript" src="script.js"></script>
 
 </body>
