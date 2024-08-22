@@ -2624,7 +2624,8 @@ document.getElementById("submitButton").addEventListener("click", function() {
     // Get the value of the input field
 
     let nameValue = document.getElementById("name").value;
-    let consoleTypeValue = document.getElementById("selectedConsole").value;
+    let consoleTypeValue = document.getElementById("consoleSelect").value;
+    console.log(consoleTypeValue);
     let identifierValue = document.getElementById("identifier").value;
     // Get the checkbox element
     let debugCheckbox = document.getElementById('debug');
@@ -2633,7 +2634,7 @@ document.getElementById("submitButton").addEventListener("click", function() {
     let debugValue = debugCheckbox.checked;
     
     // Store it in a variable
-    name = nameValue; 
+    skinName = nameValue; 
     consoleType = consoleTypeValue;
     identifier = identifierValue;
     debug = debugValue;
@@ -2645,9 +2646,11 @@ document.getElementById("submitButton").addEventListener("click", function() {
     // }
     // debug = debugValue;
 
-    defaultJsonOutput.name = name;
-    defaultJsonOutput.identifier = "com.delta." + consoleSelection + ".standard";
-    defaultJsonOutput.gameTypeIdentifier = "com.rileytestut.delta.game." + consoleSelection;
+    let formattedName = nameValue.toLowerCase().replace(/\s+/g, '-');
+
+    defaultJsonOutput.name = skinName;
+    defaultJsonOutput.identifier = "com.delta." + consoleTypeValue + "." + formattedName;
+    defaultJsonOutput.gameTypeIdentifier = "com.rileytestut.delta.game." + consoleTypeValue;
     defaultJsonOutput.debug = debug;
 
     updateJson();
@@ -3686,7 +3689,7 @@ function getSelectedOrientation() {
 // Add a new button for uploading the .zip file
 const zipUploadButton = document.createElement('button');
 zipUploadButton.id = 'uploadZipButton';
-zipUploadButton.innerText = 'Upload .deltaskin';
+zipUploadButton.innerText = 'Import .deltaskin';
 document.getElementById('file-actions').appendChild(zipUploadButton);
 
 const zipUploadInput = document.createElement('input');
@@ -3898,7 +3901,7 @@ function findLayoutKeyByFileName(fileName) {
 
 const saveProjectButton = document.createElement('button');
 saveProjectButton.id = 'saveProjectButton';
-saveProjectButton.innerText = 'Save Project as .zip';
+saveProjectButton.innerText = 'Save Project as .deltaskin';
 document.getElementById('output-actions').appendChild(saveProjectButton);
 
 saveProjectButton.addEventListener('click', saveProjectAsZip);
@@ -3909,8 +3912,36 @@ async function saveProjectAsZip() {
     // Add info.json to the zip
     zip.file("info.json", JSON.stringify(defaultJsonOutput, null, 2));
 
+    // Function to get the correct filename from the JSON structure
+    function getCorrectFilename(device, layout, orientation) {
+        const representation = defaultJsonOutput.representations[device][layout][orientation];
+        if (representation && representation.assets && representation.assets.resizable) {
+            return representation.assets.resizable;
+        }
+        return null;
+    }
+
     // Add images to the zip as PDFs
     for (const [layoutKey, imageDataUrl] of Object.entries(layoutImages)) {
+        const [device, layout] = layoutKey.split(/\s|-/).map(s => s.trim());
+        
+        // Extract orientation from filename
+        let orientation = layoutKey.toLowerCase().includes('landscape') ? 'landscape' : 
+                          layoutKey.toLowerCase().includes('portrait') ? 'portrait' : 
+                          null;
+
+        if (!orientation) {
+            console.error(`Could not determine orientation for ${layoutKey}`);
+            continue;
+        }
+
+        const correctFilename = getCorrectFilename(device, layout, orientation);
+
+        if (!correctFilename) {
+            console.error(`Correct filename not found for ${layoutKey}`);
+            continue;
+        }
+
         const img = new Image();
         img.src = imageDataUrl;
 
@@ -3923,12 +3954,9 @@ async function saveProjectAsZip() {
                 });
 
                 pdf.addImage(img, 'PNG', 0, 0, img.width, img.height);
-
-                // Generate a filename for the PDF
-                const fileName = `${layoutKey.replace(/\s+/g, '_')}.pdf`;
                 
-                // Add the PDF to the zip
-                zip.file(fileName, pdf.output('arraybuffer'));
+                // Add the PDF to the zip with the correct filename
+                zip.file(correctFilename, pdf.output('arraybuffer'));
 
                 resolve();
             };
@@ -3938,10 +3966,14 @@ async function saveProjectAsZip() {
     // Generate the zip file
     const content = await zip.generateAsync({type: "blob"});
 
+    // Get the name from defaultJsonOutput and format it for filename use
+    let fileName = defaultJsonOutput.name || "delta_skin_project";
+    fileName = fileName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+
     // Create a download link and trigger the download
     const link = document.createElement("a");
     link.href = URL.createObjectURL(content);
-    link.download = "delta_skin_project.zip";
+    link.download = `${fileName}.deltaskin`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

@@ -155,8 +155,9 @@
 
 	#layout-container {
 		display:flex;
+		flex-direction:column;
 		justify-content:center;
-		align-items:top;
+		align-items:center;
 		padding:1em;
 	}
 
@@ -526,7 +527,7 @@
 
 		<div id="header-actions">
 				<label for="importJsonButton" class="custom-file-upload">
-			    Upload JSON
+			    Import JSON
 			</label>
 			<div id="file-actions">
 			<input type="file" id="importJsonButton" accept=".json">
@@ -617,12 +618,13 @@
 					<div id="layout-container">
 						<div id="layout-object" style="box-shadow: inset 0 0 0 2000px rgba(255, 255, 255, 0);">
 						</div>
+						<p id="screen-size-info"></p>
+						<div id="display-manipulation">
+							<label for="shadowOpacitySlider">Background Image Opacity</label>
+							<input type="range" id="shadowOpacitySlider" min="0" max="100" value="0">
+						</div>
 					</div>
-					<p id="screen-size-info"></p>
-    				<div id="display-manipulation">
-    					<label for="shadowOpacitySlider">Background Image Opacity</label>
-    					<input type="range" id="shadowOpacitySlider" min="0" max="100" value="0">
-    				</div>
+					
 			</section>
 		</div>
 
