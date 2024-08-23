@@ -2336,7 +2336,7 @@ let selectConsole = document.getElementById('consoleSelect');
 consoleTypes.forEach(function(consoleType) {
     let option = document.createElement('option'); // Create a new <option> element
     option.value = consoleType;                   // Set the value attribute
-    option.text = consoleType.toUpperCase();      // Set the text content (e.g., display as uppercase)
+    option.text = consoleType;      // Set the text content (e.g., display as uppercase)
     selectConsole.appendChild(option);            // Add the option to the select element
 });
 
@@ -2344,7 +2344,7 @@ consoleTypes.forEach(function(consoleType) {
  layoutTypes.forEach(function(layoutType) {
     let option = document.createElement('option');
     option.value = layoutType;
-    option.text = layoutType.toUpperCase(); // Optional: Display as uppercase
+    option.text = layoutType; // Optional: Display as uppercase
     selectLayout.appendChild(option);
 });
 
@@ -2998,7 +2998,7 @@ function selectItem(event) {
     event.stopPropagation(); // Prevent the click event from bubbling up to layout-object
 
     // Remove highlight from all .layout-item elements
-    document.querySelectorAll('.layout-item').forEach(item => {
+    document.querySelectorAll('.layout-item, .screen-item').forEach(item => {
         item.classList.remove('selected');
     });
 
@@ -3010,7 +3010,16 @@ function selectItem(event) {
 
     // Update the item name in the .item-name div
     document.querySelector('.item-name').innerText = itemId === 'touch-screen' ? 'Touch Screen' : itemId;
-    
+
+    // Show or hide the delete button based on whether the selected item is a game screen
+    const deleteButton = document.getElementById('delete-button');
+    if (deleteButton) {
+        if (event.currentTarget.classList.contains('screen-item')) {
+            deleteButton.style.display = 'none';
+        } else {
+            deleteButton.style.display = 'block';
+        }
+    }
 
     // Get the selected layout, device, and orientation
     let parts = layoutSelection.split(" ");
@@ -3067,6 +3076,11 @@ function selectScreen(event) {
     document.querySelectorAll('.layout-item').forEach(screen => {
         screen.classList.remove('selected');
     });
+
+    const deleteButton = document.getElementById('delete-button');
+    if (deleteButton) {
+        deleteButton.style.display = 'none';
+    }
 
     // Add the highlight to the clicked element
     event.currentTarget.classList.add('selected');
@@ -3196,9 +3210,9 @@ function displayMatchedItem(item) {
         // Create form fields for each relevant property
         if (item.frame) {
             let multiplier = device === "tv" ? layoutObject.clientWidth : 1;
-            createFormField('form-x', 'X', item.frame.x * multiplier, ['frame', 'x'], positionWrapper);
+            createFormField('form-x', 'X-Position', item.frame.x * multiplier, ['frame', 'x'], positionWrapper);
             multiplier = device === "tv" ? layoutObject.clientHeight : 1;
-            createFormField('form-y', 'Y', item.frame.y * multiplier, ['frame', 'y'], positionWrapper);
+            createFormField('form-y', 'Y-Position', item.frame.y * multiplier, ['frame', 'y'], positionWrapper);
             multiplier = device === "tv" ? layoutObject.clientWidth : 1;
             createFormField('form-width', 'Width', item.frame.width * multiplier, ['frame', 'width'], sizeWrapper);
             multiplier = device === "tv" ? layoutObject.clientHeight : 1;
@@ -3208,10 +3222,10 @@ function displayMatchedItem(item) {
 
         if (item.extendedEdges) {
             
-            createFormField('form-top', 'Top', item.extendedEdges.top, ['extendedEdges', 'top'], sizeWrapper);
-            createFormField('form-bottom', 'Bottom', item.extendedEdges.bottom, ['extendedEdges', 'bottom'], sizeWrapper);
-            createFormField('form-left', 'Left', item.extendedEdges.left, ['extendedEdges', 'left'], sizeWrapper);
-            createFormField('form-right', 'Right', item.extendedEdges.right, ['extendedEdges', 'right'], sizeWrapper);
+            createFormField('form-top', '', item.extendedEdges.top, ['extendedEdges', 'top'], sizeWrapper);
+            createFormField('form-bottom', '', item.extendedEdges.bottom, ['extendedEdges', 'bottom'], sizeWrapper);
+            createFormField('form-left', '', item.extendedEdges.left, ['extendedEdges', 'left'], sizeWrapper);
+            createFormField('form-right', '', item.extendedEdges.right, ['extendedEdges', 'right'], sizeWrapper);
         
         }
 
@@ -3296,8 +3310,8 @@ function displayMatchedScreen(screen) {
 
         // Create form fields for each relevant property
         if (screen.outputFrame) {
-            createFormField('form-x', 'X', screen.outputFrame.x, ['outputFrame', 'x'], positionWrapper);
-            createFormField('form-y', 'Y', screen.outputFrame.y, ['outputFrame', 'y'], positionWrapper);
+            createFormField('form-x', 'X-Position', screen.outputFrame.x, ['outputFrame', 'x'], positionWrapper);
+            createFormField('form-y', 'Y-Position', screen.outputFrame.y, ['outputFrame', 'y'], positionWrapper);
             createFormField('form-width', 'Width', screen.outputFrame.width, ['outputFrame', 'width'], sizeWrapper);
             createFormField('form-height', 'Height', screen.outputFrame.height, ['outputFrame', 'height'], sizeWrapper);
         }

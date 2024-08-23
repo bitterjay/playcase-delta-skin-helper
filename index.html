@@ -20,7 +20,7 @@
 		--primary-color-hover: #CC365D;
 		--meta-color: #bbbbbb;
 		--secondary-color: #bbbbbb;
-		--secondary-color-hover: #000000;
+		--secondary-color-hover: #808080;
 	}
 
 	.container:empty {
@@ -53,15 +53,72 @@
 		grid-column: auto;
 	}
 
-	input, select {
+	select, input {
 		padding:var(--padding-m);
+		border-radius:var(--border-radius);
+		border:1px solid rgba(100, 100, 100, 1);;
+		font-size:16px;
+	}
+
+	input[type="text"]:disabled{background-color:rgb(61, 61, 61);
+	color:rgb(180, 180, 180);}
+
+	select:disabled {
+		background-color:rgb(226, 226, 226);
+		color:rgb(210, 210, 210);
+	}
+
+
+	/* Chrome, Safari, Edge, Opera */
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+	}
+
+	/* Firefox */
+	input[type=number] {
+	-moz-appearance: textfield;
+	}
+
+	ul {
+		line-height:.3;
+	}
+
+	li {
+		line-height:1.5em;
+	}
+
+	legend {
+		font-weight:800;
+	}
+
+	.form-group input {
+		border:0;
+		font-size:16px;
+		padding:0;
+		background-color:rgba(0,0,0,0);
+		padding-top:5px;
+		padding-bottom:5px;
+		border-radius:var(--border-radius);
+		/* outline: 1px solid rgb(100, 100, 100) !important; */
+		/* border:1px solid var(--primary-color); */
+
+	}
+
+	input:focus, select:focus {
+		outline: none !important;
+		border:1px solid var(--primary-color);
+		border-radius:var(--border-radius);
+	
+		
 	}
 
 	button, .button {
 		padding:var(--padding-m);
 		border-radius:var(--border-radius);
 		border:0px;
-		font-size:13px;
+		font-size:12px;
 		color:white;
 		text-transform: uppercase;
 		font-weight:700;
@@ -72,7 +129,7 @@
 		background-color:var(--primary-color);
 	}
 
-	.button-primary:hover {
+	.button--primary:hover {
 		background-color:var(--primary-color-hover);
 	}
 
@@ -80,7 +137,7 @@
 		background-color:var(--secondary-color);
 	}
 
-	.button-secondary:hover {
+	.button--secondary:hover {
 		background-color:var(--secondary-color-hover);
 	}
 
@@ -91,16 +148,11 @@
 
 	.custom-file-upload {
 	    padding:var(--padding-m);
-		border-radius:var(--border-radius);
 		border:0px;
 		color:white;
-		font-size:13px;
 	}
 
-	.custom-file-upload:hover {
-	   background-color:#3F3F3F;
-	}
-
+	ul {margin:none;}
 
 	h1, h2, h3, h4, h5, h6 {
 		line-height: 1.2;
@@ -114,6 +166,7 @@
 	body {
 		background-color:var(--bg-color);
 		font-family: arial;
+		color:#3F3F3F;
 	}
 
 	header {
@@ -143,6 +196,7 @@
 	#setup {
 		display:grid;
 		gap: 1em;
+		width:280px;
 	}
 
 	#metadata {
@@ -206,8 +260,9 @@
 	}
 
 	label:hover {
-		background-color: var(--button-secondary-color);
+		background-color: var(--secondary-color-hover);
 	}
+
 
 	#layout-container {
 		display:flex;
@@ -296,24 +351,65 @@
     #code {
         white-space: pre-wrap; /* Preserves formatting and new lines 
         font-family: monospace; /* Uses a monospace font for better readability */
+        background-color: #1b1b1b;
+		color:white; /* Light background color */
+        padding: 10px;
+        border: 1px solid #ccc;
+        overflow-x: hidden;
+		display: flex;
+   	 	flex-direction: column;
+   	 	align-items: baseline;
+    }
+
+	#readme-content {
+        white-space: pre-wrap; /* Preserves formatting and new lines 
+        font-family: monospace; /* Uses a monospace font for better readability */
         background-color: #f0f0f0; /* Light background color */
         padding: 10px;
         border: 1px solid #ccc;
         overflow-x: hidden;
+		display: flex;
+   	 	flex-direction: column;
+   	 	align-items: baseline;
     }
+
+	#readme-content p {
+		margin-top:0px;
+		line-height:1.5em;
+	}
 
     #code-container {
     	height: 500px;
     }
 
+	#readme-container {
+		display:flex;
+		flex-direction:column;
+	}
+
+	#readme-info {
+		display:flex;
+		flex-direction:column;
+		gap:1em;
+	}
+
     .focus-item  {
     	display:flex;
     	flex-direction:column;
     	gap: 1em;
+		align-items:center;
     }
 
 	.focus-item:empty, #focus-container:empty {
 		display:none;
+	}
+
+	.position-wrapper .form-group, .screen-position-wrapper .form-group {
+		display:flex;
+		flex-direction:row;
+		flex-wrap:wrap;
+		justify-content:center;
+		align-items:center;
 	}
 
     .position-wrapper {
@@ -332,7 +428,7 @@
     	width:80px;
     }
 
-
+	
 	
     .form-group {
     	display:flex;
@@ -340,7 +436,7 @@
     	gap: .5em;
     	justify-content:center;
     	align-items:center;
-    	font-size: 16px;
+    	font-size: 13px;
     	padding:var(--padding-xs);
     	width: -webkit-fill-available;
     }
@@ -356,10 +452,11 @@
 
     .size-wrapper {
     	display:grid;
-    	grid-template-columns: 1fr 1fr 1fr 1fr;
+    	grid-template-columns: 20% 30% 30% 20%;
+		grid-template-rows: 20% 60% 20%;
     	border:1px solid black;
-    	margin:20px;
-		height:270px;
+		aspect-ratio: 1/1;
+		width:250px;
     }
 
     .screen-size-wrapper {
@@ -410,7 +507,7 @@
     }
 
 	#focus {
-		width:450px;
+		width:280px;
 		display:flex;
 		flex-direction:column;
 		gap: 1em;
@@ -459,7 +556,7 @@
 		display:flex;
 		flex-direction:row;
 		justify-content:space-between;
-		align-items:center;
+		align-items:baseline;
 	}
 
 	.focus-actions {
@@ -486,7 +583,7 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: center;
-		gap: 1em;n
+		gap: 1em;
 		padding: var(--padding-m);
 	}
 
@@ -578,12 +675,52 @@
 		}
 
 		#content {
-			grid-template-columns: 1fr;
+			display: flex;
+			flex-direction: column;
+		}
+
+		#setup, #design, #focus {
+			width:100%;
+		}
+
+		#focus {
+			display:flex !important;
+			flex-direction:column !important;
+			width:100% !important;
+		}
+
+		#layout-object {
+			transform:scale(.8) !important;
+			transform-origin: center center !important;
 		}
 
 		#layout-container {
             padding: 2em;
         }
+
+		.form-group {
+			padding:0px;
+			font-size:10px;
+		}
+
+		.form-group input {
+			width:20px !important;
+			padding:5px;
+		}
+
+		.size-wrapper {
+			margin:0 !important;;
+		}
+
+		.size-wrapper .form-group input {
+			width:45px !important; 
+			padding:5px;
+		}
+
+		.position-wrapper .form-group input {
+			width:60px !important;
+			padding:5px;
+		}
 
         #layout-object {
             transform: scale(1);
@@ -655,70 +792,6 @@
 		width:4em;
 	}
 
-	input:focus {
-		outline: none !important;
-		border:1px solid red;
-		box-shadow: 0 0 10px #719ECE;
-	}
-
-	/* Add these general transition rules */
-	.container, #setup > *, #design > *, #focus > *, #content > * {
-		transition: opacity 0.3s ease, max-height 0.3s ease;
-		overflow: hidden;
-	}
-
-	/* Modify the existing rules for hiding empty elements */
-	.container:empty,
-	#setup > *:empty,
-	#design > *:empty,
-	#focus > *:empty,
-	#content > *:empty {
-		opacity: 0;
-		max-height: 0;
-		margin: 0;
-		padding: 0;
-	}
-
-	/* Add new rules for visible elements */
-	.container:not(:empty),
-	#setup > *:not(:empty),
-	#design > *:not(:empty),
-	#focus > *:not(:empty),
-	#content > *:not(:empty) {
-		opacity: 1;
-		max-height: 1000px; /* Adjust this value based on your content */
-	}
-
-	/* Add transition for the focus area */
-	#focus {
-		transition: width 0.3s ease, opacity 0.3s ease;
-	}
-
-	#focus:empty {
-		width: 0;
-		opacity: 0;
-	}
-
-	#focus:not(:empty) {
-		width: 450px;
-		opacity: 1;
-	}
-
-	/* Add transition for the layout container */
-	#layout-container {
-		transition: opacity 0.3s ease, max-height 0.3s ease;
-	}
-
-	#layout-container[style*="display: none"] {
-		opacity: 0;
-		max-height: 0;
-		overflow: hidden;
-	}
-
-	#layout-container:not([style*="display: none"]) {
-		opacity: 1;
-		max-height: 1000px; /* Adjust this value based on your content */
-	}
 
 	.slider-container {
 	display: flex;
@@ -737,6 +810,13 @@
 
 	#toggleFastForward {
 		grid-column: span 2;
+	}
+
+	#other {
+		display:grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1em;
+		align-items:baseline;
 	}
 
 </style>
@@ -771,7 +851,7 @@
 				<h2>Metadata</h2>
 
 				<div class="block">
-					<label  for="name">Name</label>
+					<label  for="name">Skin Name</label>
 					<input type="text" id="nameInput" name="name" autocomplete="off">
 				</div>
 
@@ -781,7 +861,7 @@
 					
 				</div>
 
-				<div class="block">
+				<div class="block" style="display:none;">
 					<label for="identifier">Skin Name (Game Type Identifier)</label>
 					<input type="text" disabled id="identifierInput" name="identifier">
 				</div>
@@ -814,17 +894,7 @@
 
 			</section>
 
-			<section id="files" class="container flex-column">
-				<h2>Layout Images</h2>
-				<div class="flex-column" id="image-layout-options">
-					<select id="imageLayoutSelect"></select>
-					<input type="file" id="imageUpload" accept="image/*,application/pdf">
-					<button id="uploadImageButton" class="button button--primary">Upload Image</button>
-					
-				</div>
-				<div id="imageContainer"></div>
-				<div id="image-list"></div>
-			</section>
+			
 		</div>
 
 		<div id="design">
@@ -866,7 +936,7 @@
 						<div id="form-container"></div>
 					</div>
 					<div class="focus-actions">
-						<button id="delete-button" style="display:none;" class="delete-button">Delete Item</button>
+						<button id="delete-button" style="display:none;" class="delete-button button button--primary">Delete Item</button>
 					</div>
 				</div>
 			</section>
@@ -875,6 +945,18 @@
 				<h2>Add Buttons</h2>
 				<div id="buttons-container"></div>
 			</section>
+
+			<section id="files" class="container flex-column">
+				<h2>Layout Images</h2>
+				<div class="flex-column" id="image-layout-options">
+					<select id="imageLayoutSelect"></select>
+					<input type="file" id="imageUpload" accept="image/*,application/pdf">
+					<button id="uploadImageButton" class="button button--primary">Upload Image</button>
+					
+				</div>
+				<div id="imageContainer"></div>
+				<div id="image-list"></div>
+			</section>
 		</div>
 		
 
@@ -882,19 +964,50 @@
 
 	</div>
 
-	<section class="container">
-		<div id="code-container" class="flex-column">
-			<div id="output-info">
-				<h2>Output</h2>
-				<div id="output-actions">
-				<button id="copy-json" class="button button--secondary">Copy JSON</button>
+	<div id="other">
+		<section class="container">
+			<div id="code-container" class="flex-column">
+				<div id="output-info">
+					<h2>Output</h2>
+					<div id="output-actions">
+					<button id="copy-json" class="button button--secondary">Copy JSON</button>
+					</div>
+				</div>
+				<div id="code">
+					<p>code</p>
 				</div>
 			</div>
-			<div id="code">
-				<p>code</p>
+		</section>
+		<section class="container">
+			<div id="readme-container" class="flex-column">
+				<div id="readme-info">
+					<h2>Readme</h2>
+				</div>
+				<div id="readme-content">
+					<p>Welcome to the PlayCase Delta Skin Editor! I built this editor so I could have a way to create skins for the PlayCase efficiently, but I want to make sure it was a product good enough for the entire community.</p>
+					<p>Please give it a try and let me know what you think - what features it might be missing - and what I can to make it better.
+					<h3>Features</h3>
+					<ul>
+						<li>Upload .deltaskin files right into the editor.</li>
+						<li>Supports all consoles available for the App Store version of Delta.</li>
+						<li>Drag and drop buttons around the canvas</li>
+						<li>Background opacity controls</li>
+						<li>Scale controls to support users designing on their phone</li>
+						<li>Supports multiple screens for DS skins!</li>
+						<li>Export .deltaskin files</li>
+						<li>More to come!</li>
+					</ul>
+					<h3>Caviats</h3>
+					<ul>
+						<li>To avoid heavy server stress with file uploads and downloads, this editor uses blobs to convert, display and export images. To maintain transparency in your designs, please refrain from using #FFFFF white. I plan to look into using a server technology to upload files in a future version.</li>
+						<li>To try to maintain aspect ratios for screens without requiring the user to constantly whip out a calculator, I've locked gamescreen aspect ratios from changing from the UI. You can change the aspect ratio through the "Focus" interface.</li>
+					</ul>
+					</p>
+				</div>
 			</div>
-		</div>
-	</section>
+		</section>
+	</div>
+	
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
