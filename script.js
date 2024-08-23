@@ -2620,45 +2620,6 @@ function makeResizable(resizableElement) {
 
 //once console is selected, load layouts into array
 
-//submit metadata
-
-// Add an event listener to the button
-// document.getElementById("submitButton").addEventListener("click", function() {
-//     // Get the value of the input field
-
-//     let nameValue = document.getElementById("name").value;
-//     let consoleTypeValue = document.getElementById("consoleSelect").value;
-//     console.log(consoleTypeValue);
-//     let identifierValue = document.getElementById("identifier").value;
-//     // Get the checkbox element
-//     let debugCheckbox = document.getElementById('debug');
-
-//     // Convert the checkbox state to true or false
-//     let debugValue = debugCheckbox.checked;
-    
-//     // Store it in a variable
-//     skinName = nameValue; 
-//     consoleType = consoleTypeValue;
-//     identifier = identifierValue;
-//     debug = debugValue;
-
-//     // if (document.getElementById("debug").checked) {
-//     //     debugValue == "true" 
-//     // } else {
-//     //     debugValue == "false"
-//     // }
-//     // debug = debugValue;
-
-//     let formattedName = nameValue.toLowerCase().replace(/\s+/g, '-');
-
-//     defaultJsonOutput.name = skinName;
-//     defaultJsonOutput.identifier = "com.delta." + consoleTypeValue + "." + formattedName;
-//     defaultJsonOutput.gameTypeIdentifier = "com.rileytestut.delta.game." + consoleTypeValue;
-//     defaultJsonOutput.debug = debug;
-
-//     updateJson();
-
-// });
 
 function getCurrentElement(itemId) {
     // Split the selected layout into an array of individual words
@@ -3852,12 +3813,27 @@ async function handlePdfUpload(files, fileName) {
                     canvas.height = viewport.height;
                     canvas.width = viewport.width;
 
+                    // Set a transparent background
+                    context.fillStyle = 'rgba(0, 0, 0, 0)';
+                    context.fillRect(0, 0, canvas.width, canvas.height);
+
                     const renderContext = {
                         canvasContext: context,
-                        viewport: viewport
+                        viewport: viewport,
+                        background: 'rgba(0, 0, 0, 0)' // Set transparent background for rendering
                     };
 
                     await page.render(renderContext).promise;
+
+                    // Convert white pixels to transparent
+                    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                    const data = imageData.data;
+                    for (let i = 0; i < data.length; i += 4) {
+                        if (data[i] === 255 && data[i + 1] === 255 && data[i + 2] === 255) {
+                            data[i + 3] = 0; // Set alpha to 0 for white pixels
+                        }
+                    }
+                    context.putImageData(imageData, 0, 0);
 
                     const imageUrl = canvas.toDataURL('image/png');
                     const layoutKey = findLayoutKeyByFileName(currentFileName) || getCurrentLayoutKey();
@@ -4029,6 +4005,21 @@ function updateJsonDisplay() {
 document.getElementById('nameInput').addEventListener('input', updateMetadata);
 document.getElementById('debugCheckbox').addEventListener('change', updateMetadata);
 document.getElementById('consoleSelect').addEventListener('change', updateMetadata);
+// Add event listener for consoleSelect
+document.getElementById('consoleSelect').addEventListener('change', function() {
+    const selectedConsole = this.value;
+    if (selectedConsole) {
+        // Update the gameTypeIdentifier in defaultJsonOutput
+        defaultJsonOutput.gameTypeIdentifier = `com.rileytestut.delta.game.${selectedConsole}`;
+        
+        // Update the identifier input field to show the new gameTypeIdentifier
+        document.getElementById('identifierInput').value = defaultJsonOutput.gameTypeIdentifier;
+        
+        // Call updateMetadata to ensure all changes are reflected
+        updateMetadata();
+    }
+});
+
 
 // Add event listeners for orientation radio buttons
 document.querySelectorAll('input[name="orientation"]').forEach(radio => {

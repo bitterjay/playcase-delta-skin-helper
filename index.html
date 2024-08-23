@@ -469,6 +469,12 @@
 	}
 
 	@media (max-width: 480px) {
+
+		header {
+			flex-direction:column;
+			gap: 1em;
+		}
+
 		#content {
 			grid-template-columns: 1fr;
 		}
@@ -481,6 +487,14 @@
             transform: scale(1);
             transform-origin: top left;
         }
+
+		#output-info {
+			flex-direction:column;
+			text-align:left;
+			gap:1em;
+			align-items:baseline;
+
+		}
 	}
 
 	#image-layout-options {
@@ -557,7 +571,7 @@
 				</div>
 
 				<div class="block">
-					<label for="consoleSelect">Device Selection</label>
+					<label for="consoleSelect">Console Selection</label>
 					<select id="consoleSelect"></select>
 					
 				</div>
