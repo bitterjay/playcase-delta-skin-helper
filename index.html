@@ -3,7 +3,7 @@
 <head>
 
 	<meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>PlayCase - Delta Skin Helper</title>
 
 <style>
@@ -16,31 +16,74 @@
 		--padding-m: .8em 1.2em;
 		--text-xs: 12px;
 		--box-shadow: 0px 2px 5px rgba(0,0,0,.1);
-		--button-color: #EF4166;
-		--button-color-hover: #CC365D;
+		--primary-color: #EF4166;
+		--primary-color-hover: #CC365D;
 		--meta-color: #bbbbbb;
+		--secondary-color: #bbbbbb;
+		--secondary-color-hover: #000000;
+	}
 
-		--after-top: 0;
-		--after-left:0;
+	.container:empty {
+		display: none;
+	}
+
+	#setup > *:empty,
+	#design > *:empty,
+	#focus > *:empty {
+		display: none;
+	}
+
+	#content {
+		display: grid;
+		grid-template-columns: 1fr 3fr 1fr;
+		gap: 1em;
+		align-items: flex-start;
+		margin-bottom: 1em;
+	}
+
+	#content > *:empty {
+		display: none;
+	}
+
+	#imageContainer:empty {
+		display:none;
+	}
+
+	#content > *:not(:empty) {
+		grid-column: auto;
 	}
 
 	input, select {
-		padding:var(--padding-xs);
+		padding:var(--padding-m);
 	}
 
 	button, .button {
 		padding:var(--padding-m);
 		border-radius:var(--border-radius);
 		border:0px;
-		background-color:var(--button-color);
+		font-size:13px;
 		color:white;
 		text-transform: uppercase;
 		font-weight:700;
+		text-decoration: none;
 	}
 
-	button:hover {
-		background-color:var(--button-color-hover);
+	.button--primary {
+		background-color:var(--primary-color);
 	}
+
+	.button-primary:hover {
+		background-color:var(--primary-color-hover);
+	}
+
+	.button--secondary {
+		background-color:var(--secondary-color);
+	}
+
+	.button-secondary:hover {
+		background-color:var(--secondary-color-hover);
+	}
+
 
 	#importJsonButton {
 	    display: none; /* Hide the file input */
@@ -50,7 +93,6 @@
 	    padding:var(--padding-m);
 		border-radius:var(--border-radius);
 		border:0px;
-		background-color:var(--button-color);
 		color:white;
 		font-size:13px;
 	}
@@ -63,6 +105,10 @@
 	h1, h2, h3, h4, h5, h6 {
 		line-height: 1.2;
 		margin:0;
+	}
+
+	h1 {
+		font-size:1.6em;
 	}
 
 	body {
@@ -78,6 +124,7 @@
 		box-shadow:var(--box-shadow);
 		padding:var(--padding-m);
 		background-color:white;
+		border-radius:var(--border-radius);
 	}
 
 	header .flex-row {
@@ -156,6 +203,10 @@
 
 	#layout {
 		text-align:center;
+	}
+
+	label:hover {
+		background-color: var(--button-secondary-color);
 	}
 
 	#layout-container {
@@ -255,11 +306,15 @@
     	height: 500px;
     }
 
-    .focus-item {
+    .focus-item  {
     	display:flex;
     	flex-direction:column;
     	gap: 1em;
     }
+
+	.focus-item:empty, #focus-container:empty {
+		display:none;
+	}
 
     .position-wrapper {
     	grid-column: span 4;
@@ -299,8 +354,7 @@
     	grid-template-columns: 1fr 1fr 1fr 1fr;
     	border:1px solid black;
     	margin:20px;
-    	aspect-ratio:1/1;
-
+		height:270px;
     }
 
     .screen-size-wrapper {
@@ -308,7 +362,6 @@
     	grid-template-columns: 1fr 1fr;
     	border: 1px solid black;
     	margin:20px; 
-    	aspect-ratio: 1/1;
     }
 
 
@@ -328,29 +381,22 @@
 
     .size-wrapper #form-width {
     	order:3;
-    	height:100px;
     	border-top: 1px solid black;
     	border-left: 1px solid black;
     	border-bottom: 1px solid black;
-    	height:100%;
-    	aspect-ratio:1/2;
 		background-color:rgba(200,200,200,.3);
     }
 
     .size-wrapper #form-height {
     	order:4;
-    	height:100px;
     	border-top: 1px solid black;
     	border-right: 1px solid black;
     	border-bottom: 1px solid black;
-    	height:100%;
-    	aspect-ratio: 1 / 2;
 		background-color:rgba(200,200,200,.3);
     }
 
     .size-wrapper #form-right {
     	order:5;
-    	height:100%;
     }
 
     .size-wrapper #form-bottom {
@@ -418,7 +464,7 @@
 
 	#buttons-container {
 		display:grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));;
+		grid-template-columns: repeat(2, minmax(0, 1fr));;
 		gap: 1em;
 	}
 
@@ -435,7 +481,7 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: center;
-		gap: 1em;
+		gap: 1em;n
 		padding: var(--padding-m);
 	}
 
@@ -447,6 +493,7 @@
 
 	#header-actions {
 		display:flex;
+		flex-wrap:wrap;
 		flex-direction:row;
 		gap:1em;
 		justify-content:center;
@@ -472,7 +519,40 @@
 		text-align: center;
 	}
 
-	@media (max-width: 480px) {
+	@media (max-width: 852px) {
+
+		header {
+			flex-direction:column;
+			gap: 1em;
+		}
+
+		#content {
+			grid-template-columns: 280px 1fr;
+		}
+
+		#layout-container {
+			padding: 2em;
+		}
+
+		#layout-object {
+			transform: scale(1);
+			transform-origin: center center;
+		}
+		
+		#focus {
+
+		}
+
+		#output-info {
+			flex-direction:column;
+			text-align:left;
+			gap:1em;
+			align-items:baseline;
+
+		}
+	}
+
+	@media (max-width: 420px) {
 
 		header {
 			flex-direction:column;
@@ -484,7 +564,7 @@
 		}
 
 		#layout-container {
-            padding: 0.5em;
+            padding: 2em;
         }
 
         #layout-object {
@@ -555,6 +635,90 @@
     border: 1px solid #000;
 }
 
+#logo {
+	width:4em;
+}
+
+input:focus {
+	outline: none !important;
+    border:1px solid red;
+    box-shadow: 0 0 10px #719ECE;
+}
+
+/* Add these general transition rules */
+.container, #setup > *, #design > *, #focus > *, #content > * {
+    transition: opacity 0.3s ease, max-height 0.3s ease;
+    overflow: hidden;
+}
+
+/* Modify the existing rules for hiding empty elements */
+.container:empty,
+#setup > *:empty,
+#design > *:empty,
+#focus > *:empty,
+#content > *:empty {
+    opacity: 0;
+    max-height: 0;
+    margin: 0;
+    padding: 0;
+}
+
+/* Add new rules for visible elements */
+.container:not(:empty),
+#setup > *:not(:empty),
+#design > *:not(:empty),
+#focus > *:not(:empty),
+#content > *:not(:empty) {
+    opacity: 1;
+    max-height: 1000px; /* Adjust this value based on your content */
+}
+
+/* Add transition for the focus area */
+#focus {
+    transition: width 0.3s ease, opacity 0.3s ease;
+}
+
+#focus:empty {
+    width: 0;
+    opacity: 0;
+}
+
+#focus:not(:empty) {
+    width: 450px;
+    opacity: 1;
+}
+
+/* Add transition for the layout container */
+#layout-container {
+    transition: opacity 0.3s ease, max-height 0.3s ease;
+}
+
+#layout-container[style*="display: none"] {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+}
+
+#layout-container:not([style*="display: none"]) {
+    opacity: 1;
+    max-height: 1000px; /* Adjust this value based on your content */
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+#scaleSlider {
+  width: 200px;
+  margin: 0 10px;
+}
+
+#scaleValue {
+  min-width: 40px;
+}
+
 </style>
 
 </head>
@@ -564,12 +728,13 @@
 	<header>
 
 		<div class="flex-row">
-			<h1>PlayCase - Delta Skin Helper</h1>
-			<div id="version">0.01</div>
+			<a href="https://playcase.gg"><img id="logo" src="playcase-icon.svg"></a>
+			<h1>Delta Skin Editor</h1>
 		</div>
 
 		<div id="header-actions">
-				<label for="importJsonButton" class="custom-file-upload button">
+				<a class="button button--secondary" href="https://noah978.gitbook.io/delta-docs/skins" target="_blank">Documentation</a>
+				<label for="importJsonButton" class="custom-file-upload button button--secondary">
 			    Import JSON</label>
 			<div id="file-actions">
 			<input type="file" id="importJsonButton" accept=".json">
@@ -647,8 +812,8 @@
 					<div class="flex-row container__header">
 						<h2>Layout</h2>
 						<div class="container__meta flex-row">
-							<p class="bubble" id="selectedConsole">None</p>
-							<p class="bubble" id="selectedLayout">None</p>
+							<p class="bubble" id="selectedConsole">Console</p>
+							<p class="bubble" id="selectedLayout">Layout</p>
 						</div>
 					</div>
 
@@ -660,6 +825,11 @@
 							<label for="shadowOpacitySlider">Background Image Opacity</label>
 							<input type="range" id="shadowOpacitySlider" min="0" max="100" value="0">
 						</div>
+						<div class="slider-container">
+							<label for="scaleSlider">Scale: </label>
+							<input type="range" id="scaleSlider" min="50" max="100" value="100">
+							<span id="scaleValue">100%</span>
+						  </div>
 					</div>
 					
 			</section>
@@ -697,7 +867,7 @@
 			<div id="output-info">
 				<h2>Output</h2>
 				<div id="output-actions">
-				<button id="copy-json">Copy JSON</button>
+				<button id="copy-json" class="button button--secondary">Copy JSON</button>
 				</div>
 			</div>
 			<div id="code">

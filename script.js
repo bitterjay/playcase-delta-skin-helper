@@ -2796,75 +2796,113 @@ function getCurrentElement(itemId) {
     return item;
 }
 
+
 function makeDraggable(draggableElement) {
-
-
     let offsetX = 0, offsetY = 0, initialX = 0, initialY = 0, isDragging = false;
-    let isResizing = false; // Add a flag for resizing
+    let isResizing = false;
+    let startTime, startX, startY;
+    const tapThreshold = 10; // pixels
+    const tapDuration = 200; // milliseconds
 
-    draggableElement.addEventListener('mousedown', function(e) {
+    // Touch event handlers
+    draggableElement.addEventListener('touchstart', dragStart, { passive: false });
+    document.addEventListener('touchmove', drag, { passive: false });
+    document.addEventListener('touchend', dragEnd);
+
+    // Mouse event handlers
+    draggableElement.addEventListener('mousedown', dragStart);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', dragEnd);
+
+    function dragStart(e) {
         if (e.target.classList.contains('resize-handle')) {
-            isResizing = true; // Set the resizing flag to true
-            return; // Exit the function if resizing
+            isResizing = true;
+            return;
         }
 
+        e.preventDefault();
+        
+        startTime = new Date().getTime();
+        
+        if (e.type === 'touchstart') {
+            initialX = startX = e.touches[0].clientX;
+            initialY = startY = e.touches[0].clientY;
+        } else {
+            initialX = startX = e.clientX;
+            initialY = startY = e.clientY;
+        }
 
-        initialX = e.clientX;
-        initialY = e.clientY;
         offsetX = draggableElement.offsetLeft;
         offsetY = draggableElement.offsetTop;
 
         isDragging = true;
         draggableElement.style.cursor = 'grabbing';
-
-        document.addEventListener('mousemove', drag);
-        document.addEventListener('mouseup', dragEnd);
-    });
+    }
 
     function drag(e) {
-        if (isDragging && !isResizing) { // Prevent dragging when resizing
-            const dx = e.clientX - initialX;
-            const dy = e.clientY - initialY;
+        if (isDragging && !isResizing) {
+            e.preventDefault();
+            
+            let currentX, currentY;
+            if (e.type === 'touchmove') {
+                currentX = e.touches[0].clientX;
+                currentY = e.touches[0].clientY;
+            } else {
+                currentX = e.clientX;
+                currentY = e.clientY;
+            }
 
-            let item = getCurrentElement(draggableElement.id);
-            //console.log(item);
-       
+            const dx = currentX - initialX;
+            const dy = currentY - initialY;
+
             let newLeft = offsetX + dx;
             let newTop = offsetY + dy;
 
-            //get element parameters
-
             draggableElement.style.left = newLeft + 'px';
             draggableElement.style.top = newTop + 'px';
-
         }
     }
 
-    function dragEnd() {
+    function dragEnd(e) {
         if (isDragging) {
             isDragging = false;
             draggableElement.style.cursor = 'grab';
-    
-            let item = getCurrentElement(draggableElement.id);
-    
-            document.removeEventListener('mousemove', drag);
-            document.removeEventListener('mouseup', dragEnd);
-    
-            if (!isResizing) {
-                const newLeft = parseInt(draggableElement.style.left, 10);
-                const newTop = parseInt(draggableElement.style.top, 10);
-                if (draggableElement.classList.contains("screen-item")) {
-                    updateScreenPosition(draggableElement.id, newLeft, newTop);
-                } else {
-                    // Check if item and extendedEdges exist before accessing them
-                    const extendedLeft = item && item.extendedEdges ? item.extendedEdges.left : 0;
-                    const extendedTop = item && item.extendedEdges ? item.extendedEdges.top : 0;
-                    updateItemPosition(draggableElement.id, newLeft + extendedLeft, newTop + extendedTop);
-                }
-                updateJson();
+
+            let endX, endY;
+            if (e.type === 'touchend') {
+                endX = e.changedTouches[0].clientX;
+                endY = e.changedTouches[0].clientY;
+            } else {
+                endX = e.clientX;
+                endY = e.clientY;
             }
-    
-            isResizing = false; // Reset the resizing flag
+
+            const endTime = new Date().getTime();
+            const dragDistance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+            const dragDuration = endTime - startTime;
+
+            if (dragDistance < tapThreshold && dragDuration < tapDuration) {
+                // This was a tap/click, not a drag
+                draggableElement.click();
+            } else {
+                // This was a drag, update position
+                let item = getCurrentElement(draggableElement.id);
+
+                if (!isResizing) {
+                    const newLeft = parseInt(draggableElement.style.left, 10);
+                    const newTop = parseInt(draggableElement.style.top, 10);
+                    if (draggableElement.classList.contains("screen-item")) {
+                        updateScreenPosition(draggableElement.id, newLeft, newTop);
+                    } else {
+                        const extendedLeft = item && item.extendedEdges ? item.extendedEdges.left : 0;
+                        const extendedTop = item && item.extendedEdges ? item.extendedEdges.top : 0;
+                        updateItemPosition(draggableElement.id, newLeft + extendedLeft, newTop + extendedTop);
+                    }
+                    updateJson();
+                }
+            }
+
+            isResizing = false;
         }
     }
 
@@ -3646,7 +3684,7 @@ function addButtons() {
     function createButton(buttonName, consoleType) {
         let button = document.createElement('button');
         button.innerText = buttonName;
-        button.className = 'console-button';
+        button.className = 'console-button button button--primary';
         button.addEventListener('click', function() {
             addButtonToJsonAndLayout(buttonName, consoleType);
             button.remove(); // Remove the button from the button container after it's added
@@ -3992,6 +4030,8 @@ function getSelectedOrientation() {
 const zipUploadButton = document.createElement('button');
 zipUploadButton.id = 'uploadZipButton';
 zipUploadButton.innerText = 'Import .deltaskin';
+zipUploadButton.classList = 'button button--primary';
+
 document.getElementById('file-actions').appendChild(zipUploadButton);
 
 const zipUploadInput = document.createElement('input');
@@ -4101,6 +4141,7 @@ function updateLayoutBackground() {
 
 const saveProjectButton = document.createElement('button');
 saveProjectButton.id = 'saveProjectButton';
+saveProjectButton.classList = 'button button--primary';
 saveProjectButton.innerText = 'Save Project as .deltaskin';
 document.getElementById('output-actions').appendChild(saveProjectButton);
 
@@ -4208,4 +4249,31 @@ document.querySelectorAll('input[name="orientation"]').forEach(radio => {
 });
 
 updateMetadata();
+
+//transform slider
+
+// Add this to your existing JavaScript code
+
+const scaleSlider = document.getElementById('scaleSlider');
+const scaleValue = document.getElementById('scaleValue');
+const layoutObject = document.getElementById('layout-object');
+
+scaleSlider.addEventListener('input', function() {
+    const scale = this.value / 100;
+    scaleValue.textContent = `${this.value}%`;
+    layoutObject.style.transform = `scale(${scale})`;
+    layoutObject.style.transformOrigin = 'center center';
+});
+
+// Function to update layout object size
+function updateLayoutObjectSize() {
+    const scale = scaleSlider.value / 100;
+    const width = layoutObject.offsetWidth;
+    const height = layoutObject.offsetHeight;
+    layoutObject.style.width = `${width / scale}px`;
+    layoutObject.style.height = `${height / scale}px`;
+}
+
+// Add this to your window resize event listener if you have one, or create one:
+window.addEventListener('resize', updateLayoutObjectSize);
 
