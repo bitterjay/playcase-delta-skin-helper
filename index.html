@@ -201,6 +201,7 @@
 
 	.item-text {
 		z-index:10;
+		pointer-events: none; 
 	}
 
     .layout-item:hover {
@@ -224,6 +225,9 @@
 
     .screen-item {
     	position:absolute;
+		display:flex;
+		justify-content: center;
+		align-items: center;
     	border: 1px solid black; /* Optional: for better visualization */
     	background-color:rgba(255,0,0, 1);
     	z-index:0;
@@ -534,6 +538,22 @@
 	.console-button {
 		font-size: 9px;
 	}
+
+
+
+	.screen-text {
+    color: white;
+    background-color:rgba(0,0,0,.3);
+	padding:4px 8px;
+	border-radius:5px;
+    pointer-events: none; /* This ensures the text doesn't interfere with clicking/dragging */
+}
+
+.ds-screen {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.1);
+    border: 1px solid #000;
+}
 
 </style>
 

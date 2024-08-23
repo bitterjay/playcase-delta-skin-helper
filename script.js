@@ -744,6 +744,24 @@ let defaultJsonOutput = {
                                 "left": 0,
                                 "right": 0
                             }
+                        },
+                        {
+                            "inputs": {
+                                "x": "touchScreenX",
+                                "y": "touchScreenY"
+                            },
+                            "frame": {
+                                "x": 100,
+                                "y": 200,
+                                "width": 200,
+                                "height": 150
+                            },
+                            "extendedEdges": {
+                                "top": 0,
+                                "bottom": 0,
+                                "left": 0,
+                                "right": 0
+                            }
                         }
                     ],
                     "mappingSize": {
@@ -1003,6 +1021,24 @@ let defaultJsonOutput = {
                                 "y": 283,
                                 "width": 40,
                                 "height": 40
+                            },
+                            "extendedEdges": {
+                                "top": 0,
+                                "bottom": 0,
+                                "left": 0,
+                                "right": 0
+                            }
+                        },
+                        {
+                            "inputs": {
+                                "x": "touchScreenX",
+                                "y": "touchScreenY"
+                            },
+                            "frame": {
+                                "x": 100,
+                                "y": 200,
+                                "width": 200,
+                                "height": 150
                             },
                             "extendedEdges": {
                                 "top": 0,
@@ -1280,6 +1316,24 @@ let defaultJsonOutput = {
                                 "left": 0,
                                 "right": 0
                             }
+                        },
+                        {
+                            "inputs": {
+                                "x": "touchScreenX",
+                                "y": "touchScreenY"
+                            },
+                            "frame": {
+                                "x": 100,
+                                "y": 200,
+                                "width": 200,
+                                "height": 150
+                            },
+                            "extendedEdges": {
+                                "top": 0,
+                                "bottom": 0,
+                                "left": 0,
+                                "right": 0
+                            }
                         }
                     ],
                     "mappingSize": {
@@ -1538,6 +1592,24 @@ let defaultJsonOutput = {
                                 "y": 658,
                                 "width": 47,
                                 "height": 47
+                            },
+                            "extendedEdges": {
+                                "top": 0,
+                                "bottom": 0,
+                                "left": 0,
+                                "right": 0
+                            }
+                        },
+                        {
+                            "inputs": {
+                                "x": "touchScreenX",
+                                "y": "touchScreenY"
+                            },
+                            "frame": {
+                                "x": 100,
+                                "y": 200,
+                                "width": 200,
+                                "height": 150
                             },
                             "extendedEdges": {
                                 "top": 0,
@@ -1813,6 +1885,24 @@ let defaultJsonOutput = {
                                 "left": 5,
                                 "right": 5
                             }
+                        },
+                        {
+                            "inputs": {
+                                "x": "touchScreenX",
+                                "y": "touchScreenY"
+                            },
+                            "frame": {
+                                "x": 100,
+                                "y": 200,
+                                "width": 200,
+                                "height": 150
+                            },
+                            "extendedEdges": {
+                                "top": 0,
+                                "bottom": 0,
+                                "left": 0,
+                                "right": 0
+                            }
                         }
                     ],
                     "mappingSize": {
@@ -2078,6 +2168,24 @@ let defaultJsonOutput = {
                                 "left": 5,
                                 "right": 5
                             }
+                        },
+                        {
+                            "inputs": {
+                                "x": "touchScreenX",
+                                "y": "touchScreenY"
+                            },
+                            "frame": {
+                                "x": 100,
+                                "y": 200,
+                                "width": 200,
+                                "height": 150
+                            },
+                            "extendedEdges": {
+                                "top": 0,
+                                "bottom": 0,
+                                "left": 0,
+                                "right": 0
+                            }
                         }
                     ],
                     "mappingSize": {
@@ -2114,7 +2222,7 @@ let defaultJsonOutput = {
 };
 
 
-let consoleTypes = ["", "nes", "snes", "n64", "gbc", "gba", "nds"];
+let consoleTypes = ["", "nes", "snes", "n64", "gbc", "gba", "ds"];
 
 //metadata select element
 
@@ -2139,7 +2247,7 @@ let consoleScreenSizes = {
         "inputFrame": { "x": 0, "y": 0, "width": 240, "height": 160
         }
     },
-    "nds" : {
+    "ds" : {
         "inputFrame": { "x": 0, "y": 0, "width": 240, "height": 160
         }
     }
@@ -2147,7 +2255,8 @@ let consoleScreenSizes = {
 
 let devices = [
     "iphone",
-    "ipad"
+    "ipad",
+    "tv"
 ]
 
 let layoutTypes = [
@@ -2305,16 +2414,6 @@ selectLayout.addEventListener('change', function() {
     checkSelectionsAndAddButtons();
 });
 
-// Function to check which orientation is selected
-function getSelectedOrientation() {
-    // Select the checked radio button by name
-    const selectedOption = document.querySelector('input[name="orientation"]:checked');
-
-    // Get the id of the selected radio button
-    return selectedOption.id;
-    console.log(`Selected Orientation: ${orientation}`); // Outputs "portrait" or "landscape"
-}
-
 // Example usage
 const orientation = getSelectedOrientation();
 console.log(`Selected Orientation: ${orientation}`); // Outputs "portrait" or "landscape"
@@ -2366,8 +2465,8 @@ function loadLayout() {
     let orientation = document.querySelector('input[name="orientation"]:checked').id;
 
     // Get width and height of selected layout
-    let width = defaultJsonOutput["representations"][device][layout][orientation]["mappingSize"]["width"];
-    let height = defaultJsonOutput["representations"][device][layout][orientation]["mappingSize"]["height"];
+    let width = defaultJsonOutput["representations"][device][layout][orientation]["mappingSize"]?.width || 1920; // Default TV width
+    let height = defaultJsonOutput["representations"][device][layout][orientation]["mappingSize"]?.height || 1080; // Default TV height
 
     document.getElementById("screen-size-info").innerHTML = "Size: " + width + " x " + height;
 
@@ -2381,89 +2480,133 @@ function loadLayout() {
     // Clear any existing layout items
     layoutObject.innerHTML = '';
 
-    // Get the item array from the JSON
-    let itemArray = defaultJsonOutput["representations"][device][layout][orientation]["items"];
-
-    // Add each item to the layout
-    itemArray.forEach(item => {
-        const div = document.createElement('div');
-        const innerDiv = document.createElement('div');
-        div.className = 'layout-item';
-        innerDiv.className = 'layout-item-inner';
-
-        div.style.width = item.frame.width + 'px';
-        div.style.height = item.frame.height + 'px';
-
-        div.style.top = item.frame.y-item.extendedEdges.top + 'px';
-        div.style.left = item.frame.x-item.extendedEdges.left + 'px';
-
-        div.style.paddingTop = item.extendedEdges.top + 'px';
-        div.style.paddingBottom = item.extendedEdges.bottom + 'px';
-        div.style.paddingLeft = item.extendedEdges.left + 'px';
-        div.style.paddingRight = item.extendedEdges.right + 'px';
-        
-        // Check for special cases
-        if (item.thumbstick) {
-            div.innerHTML = "<p class='item-text'>Thumbstick</p>";
-            div.id = "thumbstick";
-        } else if (item.inputs && item.inputs.up === "up" && item.inputs.down === "down" && item.inputs.left === "left" && item.inputs.right === "right") {
-            div.innerHTML = "<p class='item-text'>D-Pad</p>";
-            div.id = "d-pad";
-        } else if (Array.isArray(item.inputs)) {
-            div.innerHTML = "<p class='item-text'>" + item.inputs[0] + "</p>";  // Display the input name (e.g., "a")
-            div.id = item.inputs[0];
-        }
-
-        // Create and append the resize handle
-        const resizeHandle = document.createElement('div');
-        resizeHandle.className = 'resize-handle';
-        div.appendChild(resizeHandle);
-
-        layoutObject.appendChild(div);
-        div.appendChild(innerDiv);
-
-        // Make the item draggable
-        makeDraggable(div);
-
-        makeResizable(div, resizeHandle);
-
-        div.addEventListener('click', selectItem);
-    });
-
-    // Safely get the screen array from the JSON if it exists
-    let screenArray = defaultJsonOutput?.representations?.[device]?.[layout]?.[orientation]?.screens || null;
-
-
-    if (screenArray) {
-    // Proceed with operations on screenArray
-    //console.log("Screen array exists:", screenArray);
-    // Add each screen to the layout
-    screenArray.forEach(screen => {
-        let screenDiv = document.createElement('div');
-        screenDiv.className = 'screen-item';
-        screenDiv.style.width = screen.outputFrame.width + 'px';
-        screenDiv.style.height = screen.outputFrame.height + 'px';
-        screenDiv.style.top = screen.outputFrame.y + 'px';
-        screenDiv.style.left = screen.outputFrame.x + 'px';
-        screenDiv.id = "game-screen";
-
-        // Create and append the resize handle
-        const resizeHandle = document.createElement('div');
-        resizeHandle.className = 'resize-handle';
-        screenDiv.appendChild(resizeHandle);
-
-        layoutObject.appendChild(screenDiv);
-
-        // Make the item draggable
-        makeDraggable(screenDiv);
-
-        makeResizable(screenDiv, resizeHandle); // Add this line to make the item resizable
-
-        screenDiv.addEventListener('click', selectScreen);
-    });
+    // Add DS screens if the console is DS
+    if (device === "ds") {
+        createDSScreens(layoutObject, width, height);
     } else {
-        // Handle the case where the screenArray doesn't exist
-        //console.log("Screen array does not exist.");
+        // Get the item array from the JSON
+        let itemArray = defaultJsonOutput["representations"][device][layout][orientation]["items"];
+
+        // Add each item to the layout
+        itemArray.forEach(item => {
+            const div = document.createElement('div');
+            const innerDiv = document.createElement('div');
+            div.className = 'layout-item';
+            innerDiv.className = 'layout-item-inner';
+
+            // Handle relative positioning for TV
+            if (device === "tv") {
+                div.style.width = (item.frame.width * width) + 'px';
+                div.style.height = (item.frame.height * height) + 'px';
+                div.style.top = (item.frame.y * height) + 'px';
+                div.style.left = (item.frame.x * width) + 'px';
+            } else {
+                div.style.width = item.frame.width + 'px';
+                div.style.height = item.frame.height + 'px';
+                div.style.top = (item.frame.y - (item.extendedEdges?.top || 0)) + 'px';
+                div.style.left = (item.frame.x - (item.extendedEdges?.left || 0)) + 'px';
+            }
+
+            if (item.extendedEdges) {
+                div.style.paddingTop = item.extendedEdges.top + 'px';
+                div.style.paddingBottom = item.extendedEdges.bottom + 'px';
+                div.style.paddingLeft = item.extendedEdges.left + 'px';
+                div.style.paddingRight = item.extendedEdges.right + 'px';
+            }
+            
+            // Check for special cases
+            if (item.thumbstick) {
+                div.innerHTML = "<p class='item-text'>Thumbstick</p>";
+                div.id = "thumbstick";
+            } else if (item.inputs && item.inputs.up === "up" && item.inputs.down === "down" && item.inputs.left === "left" && item.inputs.right === "right") {
+                div.innerHTML = "<p class='item-text'>D-Pad</p>";
+                div.id = "d-pad";
+            } else if (item.inputs && item.inputs.x === "touchScreenX" && item.inputs.y === "touchScreenY") {
+                div.innerHTML = "<p class='item-text'>Touch Screen</p>";
+                div.id = "touch-screen";
+            } else if (Array.isArray(item.inputs)) {
+                div.innerHTML = "<p class='item-text'>" + item.inputs[0] + "</p>";
+                div.id = item.inputs[0];
+            } else if (typeof item.inputs === 'object') {
+                // Handle other object-type inputs
+                const inputName = Object.values(item.inputs)[0];
+                div.innerHTML = "<p class='item-text'>" + inputName + "</p>";
+                div.id = inputName;
+            }
+
+            if (item.placement) {
+                div.dataset.placement = item.placement;
+            }
+
+            // Create and append the resize handle
+            const resizeHandle = document.createElement('div');
+            resizeHandle.className = 'resize-handle';
+            div.appendChild(resizeHandle);
+
+            layoutObject.appendChild(div);
+            div.appendChild(innerDiv);
+
+            // Make the item draggable
+            makeDraggable(div);
+
+            makeResizable(div, resizeHandle);
+
+            div.addEventListener('click', selectItem);
+        });
+
+        // Safely get the screen array from the JSON if it exists
+        let screenArray = defaultJsonOutput?.representations?.[device]?.[layout]?.[orientation]?.screens || null;
+
+        if (screenArray) {
+            // Proceed with operations on screenArray
+            //console.log("Screen array exists:", screenArray);
+            // Add each screen to the layout
+            screenArray.forEach((screen, index) => {
+                let screenDiv = document.createElement('div');
+                screenDiv.className = 'screen-item';
+                
+                if (device === "tv") {
+                    screenDiv.style.width = (screen.outputFrame.width * width) + 'px';
+                    screenDiv.style.height = (screen.outputFrame.height * height) + 'px';
+                    screenDiv.style.top = (screen.outputFrame.y * height) + 'px';
+                    screenDiv.style.left = (screen.outputFrame.x * width) + 'px';
+                } else {
+                    screenDiv.style.width = screen.outputFrame.width + 'px';
+                    screenDiv.style.height = screen.outputFrame.height + 'px';
+                    screenDiv.style.top = screen.outputFrame.y + 'px';
+                    screenDiv.style.left = screen.outputFrame.x + 'px';
+                }
+                
+                screenDiv.id = `game-screen-${index}`;
+
+                // Add text to the screen
+                let screenText = document.createElement('p');
+                screenText.textContent = `Game Screen ${index + 1}`;
+                screenText.className = 'screen-text';
+                screenDiv.appendChild(screenText);
+
+                if (screen.placement) {
+                    screenDiv.dataset.placement = screen.placement;
+                }
+
+                // Create and append the resize handle
+                const resizeHandle = document.createElement('div');
+                resizeHandle.className = 'resize-handle';
+                screenDiv.appendChild(resizeHandle);
+
+                layoutObject.appendChild(screenDiv);
+
+                // Make the item draggable
+                makeDraggable(screenDiv);
+
+                makeResizable(screenDiv, resizeHandle); // Add this line to make the item resizable
+
+                screenDiv.addEventListener('click', selectScreen);
+            });
+        } else {
+            // Handle the case where the screenArray doesn't exist
+            //console.log("Screen array does not exist.");
+        }
     }
     
 
@@ -2566,6 +2709,8 @@ function makeResizable(resizableElement) {
                 return item.inputs && typeof item.inputs === "object" && dPadInputs.every(direction => direction in item.inputs) && !item.thumbstick;
             } else if (itemId === "thumbstick") {
                 return item.thumbstick !== undefined;
+            } else if (itemId === "touch-screen") {
+                return item.inputs && item.inputs.x === "touchScreenX" && item.inputs.y === "touchScreenY";
             } else if (Array.isArray(item.inputs)) {
                 return item.inputs.includes(itemId);
             } else if (typeof item.inputs === 'object') {
@@ -2632,19 +2777,21 @@ function getCurrentElement(itemId) {
     let currentItemArray = defaultJsonOutput["representations"][device][layout][orientation]["items"];
     
     // Find the matching item in the array
-        let item = currentItemArray.find(item => {
-            if (itemId === "d-pad") {
-                const dPadInputs = ["up", "down", "left", "right"];
-                return item.inputs && typeof item.inputs === "object" && dPadInputs.every(direction => direction in item.inputs) && !item.thumbstick;
-            } else if (itemId === "thumbstick") {
-                return item.thumbstick !== undefined;
-            } else if (Array.isArray(item.inputs)) {
-                return item.inputs.includes(itemId);
-            } else if (typeof item.inputs === 'object') {
-                return Object.values(item).includes(itemId);
-            }
-            return false;
-        });
+    let item = currentItemArray.find(item => {
+        if (itemId === "d-pad") {
+            const dPadInputs = ["up", "down", "left", "right"];
+            return item.inputs && typeof item.inputs === "object" && dPadInputs.every(direction => direction in item.inputs) && !item.thumbstick;
+        } else if (itemId === "thumbstick") {
+            return item.thumbstick !== undefined;
+        } else if (itemId === "touch-screen") {
+            return item.inputs && item.inputs.x === "touchScreenX" && item.inputs.y === "touchScreenY";
+        } else if (Array.isArray(item.inputs)) {
+            return item.inputs.includes(itemId);
+        } else if (typeof item.inputs === 'object') {
+            return Object.values(item.inputs).includes(itemId);
+        }
+        return false;
+    });
 
     return item;
 }
@@ -2697,23 +2844,26 @@ function makeDraggable(draggableElement) {
         if (isDragging) {
             isDragging = false;
             draggableElement.style.cursor = 'grab';
-
+    
             let item = getCurrentElement(draggableElement.id);
-
+    
             document.removeEventListener('mousemove', drag);
             document.removeEventListener('mouseup', dragEnd);
-
+    
             if (!isResizing) {
                 const newLeft = parseInt(draggableElement.style.left, 10);
                 const newTop = parseInt(draggableElement.style.top, 10);
-                if (draggableElement.id == "game-screen") {
-                     updateScreenPosition(draggableElement.id, newLeft, newTop);
+                if (draggableElement.classList.contains("screen-item")) {
+                    updateScreenPosition(draggableElement.id, newLeft, newTop);
                 } else {
-                    updateItemPosition(draggableElement.id, newLeft+item.extendedEdges.left, newTop+item.extendedEdges.top);
+                    // Check if item and extendedEdges exist before accessing them
+                    const extendedLeft = item && item.extendedEdges ? item.extendedEdges.left : 0;
+                    const extendedTop = item && item.extendedEdges ? item.extendedEdges.top : 0;
+                    updateItemPosition(draggableElement.id, newLeft + extendedLeft, newTop + extendedTop);
                 }
                 updateJson();
             }
-
+    
             isResizing = false; // Reset the resizing flag
         }
     }
@@ -2735,6 +2885,8 @@ function makeDraggable(draggableElement) {
                 return item.inputs && typeof item.inputs === "object" && dPadInputs.every(direction => direction in item.inputs) && !item.thumbstick;
             } else if (itemId === "thumbstick") {
                 return item.thumbstick !== undefined;
+            } else if (itemId === "touch-screen") {
+                return item.inputs && item.inputs.x === "touchScreenX" && item.inputs.y === "touchScreenY";
             } else if (Array.isArray(item.inputs)) {
                 return item.inputs.includes(itemId);
             } else if (typeof item.inputs === 'object') {
@@ -2744,8 +2896,13 @@ function makeDraggable(draggableElement) {
         });
 
         if (item && item.frame) {
-            item.frame.x = newX;
-            item.frame.y = newY;
+            if (device === "tv") {
+                item.frame.x = newX / layoutObject.clientWidth;
+                item.frame.y = newY / layoutObject.clientHeight;
+            } else {
+                item.frame.x = newX;
+                item.frame.y = newY;
+            }
             //console.log(`Updated ${itemId}: x=${newX}, y=${newY}`);
         }
     }
@@ -2761,8 +2918,13 @@ function makeDraggable(draggableElement) {
         let currentItemArray = defaultJsonOutput["representations"][device][layout][orientation]["screens"];
         console.log(currentItemArray[0]["outputFrame"]);
 
-        currentItemArray[0]["outputFrame"]["x"] = newScreenX;
-        currentItemArray[0]["outputFrame"]["y"] = newScreenY;
+        if (device === "tv") {
+            currentItemArray[0]["outputFrame"]["x"] = newScreenX / layoutObject.clientWidth;
+            currentItemArray[0]["outputFrame"]["y"] = newScreenY / layoutObject.clientHeight;
+        } else {
+            currentItemArray[0]["outputFrame"]["x"] = newScreenX;
+            currentItemArray[0]["outputFrame"]["y"] = newScreenY;
+        }
 
         // let screen = currentItemArray.find(screen => {
         //     if (typeof screen.outputFrame === 'object') {
@@ -2793,6 +2955,8 @@ function updateJson() {
 };
     
 function selectItem(event) {
+    event.stopPropagation(); // Prevent the click event from bubbling up to layout-object
+
     // Remove highlight from all .layout-item elements
     document.querySelectorAll('.layout-item').forEach(item => {
         item.classList.remove('selected');
@@ -2805,7 +2969,8 @@ function selectItem(event) {
     const itemId = event.currentTarget.id;
 
     // Update the item name in the .item-name div
-    document.querySelector('.item-name').innerText = itemId;
+    document.querySelector('.item-name').innerText = itemId === 'touch-screen' ? 'Touch Screen' : itemId;
+    
 
     // Get the selected layout, device, and orientation
     let parts = layoutSelection.split(" ");
@@ -2824,6 +2989,8 @@ function selectItem(event) {
             return item.inputs && typeof item.inputs === "object" && dPadInputs.every(direction => direction in item.inputs) && !item.thumbstick;
         } else if (currentItemId === "thumbstick") {
             return item.thumbstick !== undefined;
+        } else if (currentItemId === "touch-screen") {
+            return item.inputs && item.inputs.x === "touchScreenX" && item.inputs.y === "touchScreenY";
         } else if (Array.isArray(item.inputs)) {
             return item.inputs.includes(currentItemId);
         } else if (typeof item.inputs === 'object') {
@@ -2836,7 +3003,26 @@ function selectItem(event) {
     displayMatchedItem(selectedItem);
 }
 
+// Add this function to your existing code
+function deselectAllItems() {
+    document.querySelectorAll('.layout-item').forEach(item => {
+        item.classList.remove('selected');
+    });
+    document.querySelector('.item-name').innerText = '';
+    document.querySelector('.focus-item').innerHTML = '';
+    document.getElementById("delete-button").style.display = "none";
+}
+
+// Add this event listener to your existing code
+document.getElementById('layout-object').addEventListener('click', function(event) {
+    if (event.target === this) {
+        deselectAllItems();
+    }
+});
+
 function selectScreen(event) {
+    event.stopPropagation(); // Prevent the click event from bubbling up to layout-object
+
     // Remove highlight from all .layout-item elements
     document.querySelectorAll('.layout-item').forEach(screen => {
         screen.classList.remove('selected');
@@ -2849,7 +3035,7 @@ function selectScreen(event) {
     const screenId = event.currentTarget.id;
 
     // Update the item name in the .item-name div
-    document.querySelector('.item-name').innerText = "Item " + screenId.toUpperCase();
+    document.querySelector('.item-name').innerText = screenId === 'game-screen-0' ? 'Game Screen 1' : 'Game Screen 2';
 
     // Get the selected layout, device, and orientation
     let parts = layoutSelection.split(" ");
@@ -2891,6 +3077,10 @@ function displayMatchedItem(item) {
     focusItemDiv.innerHTML = ''; // Clear previous content
     document.getElementById("delete-button").style.display = "block";
 
+    // Get the current device from the layout selection
+    const currentState = getCurrentState();
+    const device = currentState.device;
+
     if (item) {
         // Function to create form fields and append them to the container
         function createFormField(id, label, value, path, container) {
@@ -2907,7 +3097,10 @@ function displayMatchedItem(item) {
             formInput.type = 'number';
             formInput.value = value;
             formInput.addEventListener('input', (e) => {
-                const newValue = parseInt(e.target.value, 10);
+                let newValue = parseFloat(e.target.value);
+                if (device === "tv" && (label === "X" || label === "Y" || label === "Width" || label === "Height")) {
+                    newValue /= (label === "X" || label === "Width") ? layoutObject.clientWidth : layoutObject.clientHeight;
+                }
                 updateNestedProperty(item, path, newValue);
                 updateDivStyle(item, currentItemId); // Update the corresponding div's CSS
                 updateJson(); // Update the displayed JSON
@@ -2962,11 +3155,14 @@ function displayMatchedItem(item) {
 
         // Create form fields for each relevant property
         if (item.frame) {
-
-            createFormField('form-x', 'X', item.frame.x, ['frame', 'x'], positionWrapper);
-            createFormField('form-y', 'Y', item.frame.y, ['frame', 'y'], positionWrapper);
-            createFormField('form-width', 'Width', item.frame.width, ['frame', 'width'], sizeWrapper);
-            createFormField('form-height', 'Height', item.frame.height, ['frame', 'height'], sizeWrapper);
+            let multiplier = device === "tv" ? layoutObject.clientWidth : 1;
+            createFormField('form-x', 'X', item.frame.x * multiplier, ['frame', 'x'], positionWrapper);
+            multiplier = device === "tv" ? layoutObject.clientHeight : 1;
+            createFormField('form-y', 'Y', item.frame.y * multiplier, ['frame', 'y'], positionWrapper);
+            multiplier = device === "tv" ? layoutObject.clientWidth : 1;
+            createFormField('form-width', 'Width', item.frame.width * multiplier, ['frame', 'width'], sizeWrapper);
+            multiplier = device === "tv" ? layoutObject.clientHeight : 1;
+            createFormField('form-height', 'Height', item.frame.height * multiplier, ['frame', 'height'], sizeWrapper);
         
         }
 
@@ -3104,18 +3300,235 @@ document.getElementById('copy-json').addEventListener('click', function() {
     alert('JSON copied to clipboard!');
 });
 
-function handleImageUpload(file, fileName) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const imageDataUrl = e.target.result;
-        const layoutKey = findLayoutKeyByFileName(fileName);
-        if (layoutKey) {
-            layoutImages[layoutKey] = imageDataUrl;
-            displayUploadedImages();
-            updateLayoutBackground();
+// This function should be called after parsing the info.json file
+function createFilenameMappings(jsonContent) {
+    const filenameMappings = new Map();
+
+    for (const [device, deviceLayouts] of Object.entries(jsonContent.representations)) {
+        for (const [layout, orientations] of Object.entries(deviceLayouts)) {
+            for (const [orientation, data] of Object.entries(orientations)) {
+                if (data.assets) {
+                    let filename;
+                    if (data.assets.resizable) {
+                        filename = data.assets.resizable;
+                    } else if (data.assets.small) {
+                        filename = data.assets.small;
+                    } else if (data.assets.medium) {
+                        filename = data.assets.medium;
+                    } else if (data.assets.large) {
+                        filename = data.assets.large;
+                    }
+                    
+                    if (filename) {
+                        const layoutKey = `${device} ${layout} - ${orientation}`;
+                        filenameMappings.set(filename, layoutKey);
+                    }
+                }
+            }
         }
+    }
+
+    return filenameMappings;
+}
+
+// Update handleZipUpload to create the filename mappings
+async function handleZipUpload(event) {
+    const file = event.target.files[0];
+    if (file && (file.name.endsWith('.zip') || file.name.endsWith('.deltaskin'))) {
+        const zip = new JSZip();
+        try {
+            const zipContent = await zip.loadAsync(file);
+            const infoJsonFile = zipContent.file('info.json');
+
+            if (infoJsonFile) {
+                const infoJsonContent = await infoJsonFile.async('string');
+                let jsonContent = JSON.parse(infoJsonContent);
+
+                jsonContent = ensureExtendedEdges(jsonContent);
+                defaultJsonOutput = jsonContent;
+
+                document.getElementById('nameInput').value = jsonContent.name || '';
+                document.getElementById('identifierInput').value = jsonContent.gameTypeIdentifier || '';
+                
+                selectConsoleBasedOnIdentifier(jsonContent);
+                automaticSelectLayout();
+
+                // Create filename mappings
+                const filenameMappings = createFilenameMappings(jsonContent);
+
+                for (const fileName in zipContent.files) {
+                    if (fileName !== 'info.json') {
+                        const fileData = await zipContent.file(fileName).async('blob');
+                        await handleMultiFileUpload(fileData, fileName, filenameMappings);
+                    }
+                }
+
+                updateLayoutBackground();
+                displayUploadedImages();
+                updateJson();
+                
+            } else {
+                alert('info.json file not found in the archive.');
+            }
+        } catch (error) {
+            console.error('Error processing the file:', error);
+            alert('Error processing the file. Please make sure it\'s a valid .zip or .deltaskin file.');
+        }
+    } else {
+        alert('Please upload a .zip or .deltaskin file.');
+    }
+}
+
+function convertImageLayoutSelectionToJsonKeys() {
+    const currentLayoutSelection = document.getElementById('imageLayoutSelect').value;
+    // Split the currentLayoutSelection into an array of words
+    const layoutParts = currentLayoutSelection.split(/\s+|-/).filter(part => part.trim() !== '');
+
+    // Create a layout object with device, layout, and orientation properties
+    const layoutObject = {
+        device: layoutParts[0],
+        layout: layoutParts[1],
+        orientation: layoutParts[2]
     };
-    reader.readAsDataURL(file);
+    console.log(layoutObject);
+    return layoutObject;
+}
+
+// Handle image or PDF upload
+document.getElementById('uploadImageButton').addEventListener('click', function() {
+    let file = document.getElementById('imageUpload').files[0];
+    let selectedLayout = document.getElementById('imageLayoutSelect').value;
+    let fileName = file.name;
+    let fileType = getFileType(fileName);
+    if (file && selectedLayout) {
+        handleSingleFileUpload(file, fileType, fileName, selectedLayout)
+            .then(() => {
+                updateLayoutBackground();
+                displayUploadedImages();
+                updateJson();
+            })
+            .catch(error => {
+                console.error('Error handling file upload:', error);
+                alert('Error handling file upload. Please check the console for details.');
+            });
+    } else {
+        alert('Please select a layout and an image.');
+    }
+});
+
+// Update handleFileUpload to use the filename mappings
+async function handleSingleFileUpload(file, fileType, fileName, selectedLayout) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            const layoutKey = document.getElementById('imageLayoutSelect').value;
+
+            if (fileType === 'pdf') {
+                try {
+                    const pdfData = new Uint8Array(e.target.result);
+                    await processPdf(pdfData, layoutKey, fileName);
+                    resolve();
+                } catch (error) {
+                    reject(error);
+                }
+            } else if (['png', 'jpg', 'jpeg', 'gif'].includes(fileType)) {
+                layoutImages[layoutKey] = e.target.result;
+                resolve();
+            } else {
+                console.warn(`Unsupported file type: ${fileType} for file ${fileName}. Skipping this file.`);
+                resolve();
+            }
+        };
+        reader.onerror = reject;
+
+        if (getFileType(fileName) === 'pdf') {
+            reader.readAsArrayBuffer(file);
+        } else {
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+// Update handleFileUpload to use the filename mappings
+async function handleMultiFileUpload(file, fileName, filenameMappings) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            const fileType = getFileType(fileName);
+            const layoutKey = filenameMappings.get(fileName);
+
+            if (!layoutKey) {
+                console.warn(`Layout key not found for ${fileName}. Skipping this file.`);
+                resolve();
+                return;
+            }
+
+            if (fileType === 'pdf') {
+                try {
+                    const pdfData = new Uint8Array(e.target.result);
+                    await processPdf(pdfData, layoutKey, fileName);
+                    resolve();
+                } catch (error) {
+                    reject(error);
+                }
+            } else if (['png', 'jpg', 'jpeg', 'gif'].includes(fileType)) {
+                layoutImages[layoutKey] = e.target.result;
+                resolve();
+            } else {
+                console.warn(`Unsupported file type: ${fileType} for file ${fileName}. Skipping this file.`);
+                resolve();
+            }
+        };
+        reader.onerror = reject;
+
+        if (getFileType(fileName) === 'pdf') {
+            reader.readAsArrayBuffer(file);
+        } else {
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+function getFileType(fileName) {
+    const extension = fileName.split('.').pop().toLowerCase();
+    return extension;
+}
+
+async function processPdf(pdfData, layoutKey, fileName) {
+    const pdf = await pdfjsLib.getDocument(pdfData).promise;
+    const page = await pdf.getPage(1);
+    
+    const scale = 1.5;
+    const viewport = page.getViewport({ scale: scale });
+
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    context.fillStyle = 'rgba(0, 0, 0, 0)';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    const renderContext = {
+        canvasContext: context,
+        viewport: viewport,
+        background: 'rgba(0, 0, 0, 0)'
+    };
+
+    await page.render(renderContext).promise;
+
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+        if (data[i] === 255 && data[i + 1] === 255 && data[i + 2] === 255) {
+            data[i + 3] = 0;
+        }
+    }
+    context.putImageData(imageData, 0, 0);
+
+    const imageUrl = canvas.toDataURL('image/png');
+    layoutImages[layoutKey] = imageUrl;
+    updateDefaultJsonOutput(layoutKey, fileName);
 }
 
 document.getElementById('delete-button').addEventListener('click', function() {
@@ -3171,12 +3584,12 @@ document.getElementById('delete-button').addEventListener('click', function() {
 });
 
 function addButtons() {
-    let consoleTypes = ["", "nes", "snes", "n64", "gbc", "gba", "nds"];
+    let consoleTypes = ["", "nes", "snes", "n64", "gbc", "gba", "ds"];
 
     const buttonConfigs = {
         gbc: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'select', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
         gba: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'select', 'l', 'r', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
-        nds: ['menu', 'd-pad', 'thumbstick', 'xy', 'a', 'b', 'x', 'y', 'start', 'select', 'l', 'r', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
+        ds: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'x', 'y', 'start', 'select', 'l', 'r', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'screenInput'],
         nes: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'select', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
         snes: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'x', 'y', 'start', 'select', 'l', 'r', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
         n64: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'l', 'r', 'cUp', 'cDown', 'cLeft', 'cRight', 'z', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward']
@@ -3219,6 +3632,9 @@ function addButtons() {
                 // Check if the item represents a thumbstick
                 return item.inputs && item.inputs.up === 'analogStickUp' && item.inputs.down === 'analogStickDown' && 
                        item.inputs.left === 'analogStickLeft' && item.inputs.right === 'analogStickRight';
+            } else if (buttonName === 'screenInput') {
+                // Check if the item represents a touch screen input
+                return item.inputs && item.inputs.x === 'touchScreenX' && item.inputs.y === 'touchScreenY';
             } else {
                 // Default check for other buttons
                 return Array.isArray(item.inputs) && item.inputs.includes(buttonName);
@@ -3250,7 +3666,7 @@ function addButtons() {
 
         let buttonFormat;
 
-        // Handle special cases for d-pad and thumbstick
+        // Handle special cases for d-pad, thumbstick, and screen input
         if (buttonName === 'd-pad') {
             buttonFormat = {
                 "inputs": {
@@ -3296,6 +3712,25 @@ function addButtons() {
                     "bottom": 5,
                     "left": 5,
                     "right": 5
+                }
+            };
+        } else if (buttonName === 'screenInput') {
+            buttonFormat = {
+                "inputs": {
+                    "x": "touchScreenX",
+                    "y": "touchScreenY"
+                },
+                "frame": {
+                    "x": layoutObjectWidth / 2 - 100,
+                    "y": layoutObjectHeight / 2 - 75,
+                    "width": 200,
+                    "height": 150
+                },
+                "extendedEdges": {
+                    "top": 0,
+                    "bottom": 0,
+                    "left": 0,
+                    "right": 0
                 }
             };
         } else {
@@ -3418,11 +3853,13 @@ function ensureExtendedEdges(jsonContent) {
     }
 
     for (let device in jsonContent.representations) {
-        for (let layout in jsonContent.representations[device]) {
-            for (let orientation in jsonContent.representations[device][layout]) {
-                jsonContent.representations[device][layout][orientation].items.forEach(item => {
-                    addDefaultEdges(item);
-                });
+        if (device !== 'tv') {
+            for (let layout in jsonContent.representations[device]) {
+                for (let orientation in jsonContent.representations[device][layout]) {
+                    jsonContent.representations[device][layout][orientation].items.forEach(item => {
+                        addDefaultEdges(item);
+                    });
+                }
             }
         }
     }
@@ -3437,7 +3874,7 @@ function selectConsoleBasedOnIdentifier(jsonContent) {
         "com.delta.gbc.standard": "gbc",
         "com.delta.nes.standard": "nes",
         "com.delta.snes.standard": "snes",
-        "com.delta.nds.standard": "nds"
+        "com.delta.ds.standard": "ds"
     };
 
     // Check the identifier at the top level of the JSON
@@ -3479,81 +3916,11 @@ function populateImageLayoutSelect() {
     });
 }
 
-// Handle image or PDF upload
-document.getElementById('uploadImageButton').addEventListener('click', function() {
-    let file = document.getElementById('imageUpload').files[0];
-    let selectedLayout = document.getElementById('imageLayoutSelect').value;
-    if (file && selectedLayout) {
-        if (file.type === 'application/pdf') {
-            // Rename the file if it doesn't match the current layout
-            const newFileName = getFileNameForCurrentLayout();
-            const renamedFile = new File([file], newFileName, { type: file.type });
-            handlePdfUpload(renamedFile, newFileName);
-            updateLayoutBackground();
-            displayUploadedImages();
-            updateJson();
-        } else if (file.type.startsWith('image/')) {
-            handleImageUpload(file, selectedLayout);
-        } else {
-            alert('Please upload a PDF or image file.');
-        }
-    } else {
-        alert('Please select both a layout and an image file.');
-    }
-});
+
 
 function getFileNameForCurrentLayout() {
     const currentState = getCurrentState();
     return `${currentState.device}_${currentState.layout}_${currentState.orientation}.pdf`;
-}
-
-// Display the uploaded image for the current state
-function displayUploadedImages() {
-    const imageContainer = document.getElementById('imageContainer');
-    imageContainer.innerHTML = '';
-
-    const selectedLayout = document.getElementById('imageLayoutSelect').value;
-    const imageList = document.getElementById('image-list');
-    imageList.innerHTML = '<h3>Uploaded Images:</h3>';
-
-    const ul = document.createElement('ul');
-    imageList.appendChild(ul);
-
-    for (const [layoutKey, imageUrl] of Object.entries(layoutImages)) {
-        const imgWrapper = document.createElement('div');
-        imgWrapper.className = 'image-wrapper';
-        imgWrapper.id = `image-${layoutKey.replace(/\s+/g, '-')}`;
-        imgWrapper.style.display = layoutKey === selectedLayout ? 'flex' : 'none';
-
-        const img = document.createElement('img');
-        img.src = imageUrl;
-        img.alt = layoutKey;
-        img.style.height = 'auto';
-
-        const label = document.createElement('p');
-        label.textContent = layoutKey;
-
-        const removeButton = document.createElement('button');
-        removeButton.className = 'remove-button'
-        removeButton.textContent = 'Remove';
-        removeButton.onclick = function() {
-            document.getElementById('layout-object').style.backgroundImage = 'unset';
-            URL.revokeObjectURL(layoutImages[layoutKey]);
-            delete layoutImages[layoutKey];
-        };
-
-        imgWrapper.appendChild(img);
-        imgWrapper.appendChild(label);
-        imgWrapper.appendChild(removeButton);
-        imageContainer.appendChild(imgWrapper);
-
-        // Add to image list
-        const listItem = document.createElement('li');
-        listItem.textContent = layoutKey;
-        ul.appendChild(listItem);
-    } 
-
-    updateLayoutBackground();
 }
 
 // Add event listener to imageLayoutSelect
@@ -3564,28 +3931,11 @@ document.getElementById('imageLayoutSelect').addEventListener('change', function
     });
 });
 
-// Update layout background based on selected layout
-function updateLayoutBackground() {
-    let currentState = getCurrentState();
-    let currentDevice = currentState.device;
-    let currentLayout = currentState.layout;
-    let currentOrientation = currentState.orientation;
-
-    const layoutObject = document.getElementById('layout-object');
-    const layoutKey = `${currentDevice} ${currentLayout} - ${currentOrientation}`;
-    //console.log("layoutKey: " + layoutKey);
-    if (selectedLayout && layoutImages[layoutKey]) {
-        layoutObject.style.backgroundImage = `url(${layoutImages[layoutKey]})`;
-        layoutObject.style.backgroundSize = 'contain';
-        layoutObject.style.backgroundPosition = 'center';
-        layoutObject.style.backgroundRepeat = 'no-repeat';
-    }
-}
-
 // Add event listener to layout select
 selectLayout.addEventListener('change', function() {
     layoutSelection = selectLayout.value; // Update the layoutSelection value
     document.getElementById('layout-object').style.backgroundImage = 'unset';
+    document.getElementById('image-layout-options').style.display = 'flex';
     updateLayoutBackground();
 });
 
@@ -3599,16 +3949,6 @@ document.querySelectorAll('input[name="orientation"]').forEach((radio) => {
 
 // Call these functions to initialize
 populateImageLayoutSelect();
-
-// Add event listener to layout select
-selectLayout.addEventListener('change', function() {
-    layoutSelection = selectLayout.value; // Update the layoutSelection value
-    document.getElementById('image-layout-options').style.display = 'flex';
-});
-
-// Call these functions to initialize
-populateImageLayoutSelect();
-
 
 // Update the file input to accept PDFs as well
 document.getElementById('imageUpload').accept = "image/*,application/pdf";
@@ -3648,8 +3988,6 @@ function getSelectedOrientation() {
     return document.querySelector('input[name="orientation"]:checked').id;
 }
 
-// ... existing code ...
-
 // Add a new button for uploading the .zip file
 const zipUploadButton = document.createElement('button');
 zipUploadButton.id = 'uploadZipButton';
@@ -3669,214 +4007,97 @@ zipUploadButton.addEventListener('click', () => {
 
 zipUploadInput.addEventListener('change', handleZipUpload);
 
-async function handleZipUpload(event) {
-    const file = event.target.files[0];
-    if (file) {
-        // Check if the file is either a .zip or .deltaskin file
-        if (file.name.endsWith('.zip') || file.name.endsWith('.deltaskin')) {
-            const zip = new JSZip();
-            try {
-                const zipContent = await zip.loadAsync(file);
-                const infoJsonFile = zipContent.file('info.json');
+function getFileType(fileName) {
+    const extension = fileName.split('.').pop().toLowerCase();
+    return extension;
+}
 
-                if (infoJsonFile) {
-                    // Process the file as before
-                    const infoJsonContent = await infoJsonFile.async('string');
-                    let jsonContent = JSON.parse(infoJsonContent);
+function displayUploadedImages() {
+    const imageContainer = document.getElementById('imageContainer');
+    imageContainer.innerHTML = '';
 
-                    // Ensure all items have the required extendedEdges parameters
-                    jsonContent = ensureExtendedEdges(jsonContent);
+    const selectedLayout = document.getElementById('imageLayoutSelect').value;
+    const imageList = document.getElementById('image-list');
+    imageList.innerHTML = '<h3>Uploaded Images:</h3>';
 
-                    // Replace defaultJsonOutput with the imported JSON
-                    defaultJsonOutput = jsonContent;
+    const ul = document.createElement('ul');
+    imageList.appendChild(ul);
 
-                    // Fill in the text fields with values from info.json
-                    document.getElementById('nameInput').value = jsonContent.name || '';
-                    document.getElementById('identifierInput').value = jsonContent.gameTypeIdentifier || '';
-                    
-                    // Automatically select the console and layout
-                    selectConsoleBasedOnIdentifier(jsonContent);
-                    automaticSelectLayout();
+    for (const [layoutKey, imageUrl] of Object.entries(layoutImages)) {
+        const imgWrapper = document.createElement('div');
+        imgWrapper.className = 'image-wrapper';
+        imgWrapper.id = `image-${layoutKey.replace(/\s+/g, '-')}`;
+        imgWrapper.style.display = layoutKey === selectedLayout ? 'flex' : 'none';
 
-                    // Handle image/PDF files
-                    for (const fileName in zipContent.files) {
-                        if (fileName !== 'info.json') {
-                            //console.log(zipContent);
-                            const fileData = await zipContent.file(fileName).async('blob');
-                            if (fileName.endsWith('.pdf')) {
-                                handlePdfUpload(fileData, fileName);
-                            } else {
-                                handleImageUpload(fileData, fileName);
-                            }
-                        }
-                    }
+        const img = document.createElement('img');
+        img.src = imageUrl;
+        img.alt = layoutKey;
+        img.style.height = 'auto';
 
-                    // Update the layout
-                    updateLayoutBackground();
-                    updateJson();
-                } else {
-                    alert('info.json file not found in the archive.');
+        const label = document.createElement('p');
+        label.textContent = layoutKey;
+
+        const removeButton = document.createElement('button');
+        removeButton.className = 'remove-button'
+        removeButton.textContent = 'Remove';
+        removeButton.onclick = function() {
+            document.getElementById('layout-object').style.backgroundImage = 'unset';
+            URL.revokeObjectURL(layoutImages[layoutKey]);
+            // Remove the image wrapper from the DOM
+            imgWrapper.remove();
+            const currentImageSelection = convertImageLayoutSelectionToJsonKeys();
+            defaultJsonOutput.representations[currentImageSelection.device][currentImageSelection.layout][currentImageSelection.orientation].assets.resizable = "";
+            
+            // Remove the corresponding list item from the image list
+            const listItems = ul.getElementsByTagName('li');
+            for (let i = 0; i < listItems.length; i++) {
+                if (listItems[i].textContent === layoutKey) {
+                    listItems[i].remove();
+                    break;
                 }
-            } catch (error) {
-                console.error('Error processing the file:', error);
-                alert('Error processing the file. Please make sure it\'s a valid .zip or .deltaskin file.');
             }
-        } else {
-            alert('Please upload a .zip or .deltaskin file.');
-        }
-    }
-}
-
-function ensureExtendedEdges(jsonContent) {
-    function addDefaultEdges(item) {
-        if (!item.extendedEdges) {
-            item.extendedEdges = {};
-        }
-        item.extendedEdges.top = item.extendedEdges.top || 0;
-        item.extendedEdges.bottom = item.extendedEdges.bottom || 0;
-        item.extendedEdges.left = item.extendedEdges.left || 0;
-        item.extendedEdges.right = item.extendedEdges.right || 0;
-    }
-
-    for (let device in jsonContent.representations) {
-        for (let layout in jsonContent.representations[device]) {
-            for (let orientation in jsonContent.representations[device][layout]) {
-                jsonContent.representations[device][layout][orientation].items.forEach(item => {
-                    addDefaultEdges(item);
-                });
+            
+            // Update the JSON output
+            const [device, layout, orientation] = layoutKey.split(' - ');
+            if (defaultJsonOutput.representations[device] &&
+                defaultJsonOutput.representations[device][layout] &&
+                defaultJsonOutput.representations[device][layout][orientation]) {
+                delete defaultJsonOutput.representations[device][layout][orientation].assets;
             }
-        }
-    }
+            
+            // Update the displayed JSON
+            updateJson();
+            delete layoutImages[layoutKey];
+        };
 
-    return jsonContent;
-}
+        imgWrapper.appendChild(img);
+        imgWrapper.appendChild(label);
+        imgWrapper.appendChild(removeButton);
+        imageContainer.appendChild(imgWrapper);
 
-function selectConsoleBasedOnIdentifier(jsonContent) {
-    const identifierMapping = {
-        "com.delta.n64.standard": "n64",
-        "com.delta.gba.standard": "gba",
-        "com.delta.gbc.standard": "gbc",
-        "com.delta.nes.standard": "nes",
-        "com.delta.snes.standard": "snes",
-        "com.delta.nds.standard": "nds"
-    };
+        const listItem = document.createElement('li');
+        listItem.textContent = layoutKey;
+        ul.appendChild(listItem);
+    } 
 
-    // Check the identifier at the top level of the JSON
-    let identifier = jsonContent.identifier;
-    if (identifier && identifierMapping[identifier]) {
-        document.getElementById('consoleSelect').value = identifierMapping[identifier];
-        //console.log(`Console selected: ${identifierMapping[identifier]}`);
-        document.getElementById('selectedConsole').innerText = identifierMapping[identifier];
-    } else {
-        console.log("No matching identifier found or identifier is missing.");
-    }
-}
-
-function handleImageUpload(file, fileName) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const imageUrl = e.target.result;
-        const layoutKey = findLayoutKeyByFileName(fileName);
-        if (layoutKey) {
-            layoutImages[layoutKey] = imageUrl;
-            displayUploadedImages();
-            updateLayoutBackground();
-        }
-    };
-    reader.readAsDataURL(file);
-}
-
-async function handlePdfUpload(files, fileName) {
-    // Convert single file to array if necessary
-    const fileArray = Array.isArray(files) ? files : [files];
-    const fileNameArray = Array.isArray(fileName) ? fileName : [fileName];
-
-    for (let i = 0; i < fileArray.length; i++) {
-        const file = fileArray[i];
-        const currentFileName = fileNameArray[i];
-
-        const fileReader = new FileReader();
-        
-        await new Promise((resolve) => {
-            fileReader.onload = async function() {
-                const typedarray = new Uint8Array(this.result);
-
-                try {
-                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                    const page = await pdf.getPage(1);
-                    
-                    const scale = 1.5;
-                    const viewport = page.getViewport({ scale: scale });
-
-                    const canvas = document.createElement('canvas');
-                    const context = canvas.getContext('2d', { willReadFrequently: true });
-                    canvas.height = viewport.height;
-                    canvas.width = viewport.width;
-
-                    // Set a transparent background
-                    context.fillStyle = 'rgba(0, 0, 0, 0)';
-                    context.fillRect(0, 0, canvas.width, canvas.height);
-
-                    const renderContext = {
-                        canvasContext: context,
-                        viewport: viewport,
-                        background: 'rgba(0, 0, 0, 0)' // Set transparent background for rendering
-                    };
-
-                    await page.render(renderContext).promise;
-
-                    // Convert white pixels to transparent
-                    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-                    const data = imageData.data;
-                    for (let i = 0; i < data.length; i += 4) {
-                        if (data[i] === 255 && data[i + 1] === 255 && data[i + 2] === 255) {
-                            data[i + 3] = 0; // Set alpha to 0 for white pixels
-                        }
-                    }
-                    context.putImageData(imageData, 0, 0);
-
-                    const imageUrl = canvas.toDataURL('image/png');
-                    const layoutKey = findLayoutKeyByFileName(currentFileName) || getCurrentLayoutKey();
-                    if (layoutKey) {
-                        layoutImages[layoutKey] = imageUrl;
-                        updateDefaultJsonOutput(layoutKey, currentFileName);
-                    }
-                } catch (error) {
-                    console.error(`Error processing PDF ${currentFileName}:`, error);
-                }
-
-                resolve();
-            };
-
-            fileReader.readAsArrayBuffer(file);
-        });
-    }
-
-    // After processing all files, update the display and background
-    displayUploadedImages();
     updateLayoutBackground();
 }
 
-function getCurrentLayoutKey() {
-    const currentState = getCurrentState();
-    return `${currentState.device} ${currentState.layout} - ${currentState.orientation}`;
-}
+function updateLayoutBackground() {
+    let currentState = getCurrentState();
+    let currentDevice = currentState.device;
+    let currentLayout = currentState.layout;
+    let currentOrientation = currentState.orientation;
 
-function findLayoutKeyByFileName(fileName) {
-    for (const device in defaultJsonOutput.representations) {
-        for (const layout in defaultJsonOutput.representations[device]) {
-            for (const orientation in defaultJsonOutput.representations[device][layout]) {
-                const assets = defaultJsonOutput.representations[device][layout][orientation].assets;
-                if (assets && assets.resizable === fileName) {
-                    return `${device} ${layout} - ${orientation}`;
-                }
-            }
-        }
+    const layoutObject = document.getElementById('layout-object');
+    const layoutKey = `${currentDevice} ${currentLayout} - ${currentOrientation}`;
+    if (selectedLayout && layoutImages[layoutKey]) {
+        layoutObject.style.backgroundImage = `url(${layoutImages[layoutKey]})`;
+        layoutObject.style.backgroundSize = 'contain';
+        layoutObject.style.backgroundPosition = 'center';
+        layoutObject.style.backgroundRepeat = 'no-repeat';
     }
-    return null;
 }
-
-//saving
 
 const saveProjectButton = document.createElement('button');
 saveProjectButton.id = 'saveProjectButton';
@@ -3888,10 +4109,8 @@ saveProjectButton.addEventListener('click', saveProjectAsZip);
 async function saveProjectAsZip() {
     const zip = new JSZip();
 
-    // Add info.json to the zip
     zip.file("info.json", JSON.stringify(defaultJsonOutput, null, 2));
 
-    // Function to get the correct filename from the JSON structure
     function getCorrectFilename(device, layout, orientation) {
         const representation = defaultJsonOutput.representations[device][layout][orientation];
         if (representation && representation.assets && representation.assets.resizable) {
@@ -3900,11 +4119,9 @@ async function saveProjectAsZip() {
         return null;
     }
 
-    // Add images to the zip as PDFs
     for (const [layoutKey, imageDataUrl] of Object.entries(layoutImages)) {
         const [device, layout] = layoutKey.split(/\s|-/).map(s => s.trim());
         
-        // Extract orientation from filename
         let orientation = layoutKey.toLowerCase().includes('landscape') ? 'landscape' : 
                           layoutKey.toLowerCase().includes('portrait') ? 'portrait' : 
                           null;
@@ -3934,7 +4151,6 @@ async function saveProjectAsZip() {
 
                 pdf.addImage(img, 'PNG', 0, 0, img.width, img.height);
                 
-                // Add the PDF to the zip with the correct filename
                 zip.file(correctFilename, pdf.output('arraybuffer'));
 
                 resolve();
@@ -3942,14 +4158,11 @@ async function saveProjectAsZip() {
         });
     }
 
-    // Generate the zip file
     const content = await zip.generateAsync({type: "blob"});
 
-    // Get the name from defaultJsonOutput and format it for filename use
     let fileName = defaultJsonOutput.name || "delta_skin_project";
     fileName = fileName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
 
-    // Create a download link and trigger the download
     const link = document.createElement("a");
     link.href = URL.createObjectURL(content);
     link.download = `${fileName}.deltaskin`;
@@ -3958,73 +4171,41 @@ async function saveProjectAsZip() {
     document.body.removeChild(link);
 }
 
-//metadata update
-
 function updateMetadata() {
     const nameInput = document.getElementById('nameInput').value;
     defaultJsonOutput.name = nameInput;
 
-    // Format the identifier
     const formattedName = nameInput.toLowerCase().replace(/\s+/g, '-');
     defaultJsonOutput.identifier = `com.rileytestut.delta.game.${formattedName}`;
 
-    // Update the identifier input field to show the formatted identifier
     document.getElementById('identifierInput').value = defaultJsonOutput.identifier;
 
     defaultJsonOutput.debug = document.getElementById('debugCheckbox').checked;
 
-    const selectedConsole = document.getElementById('consoleSelect').value;
-    if (selectedConsole && !defaultJsonOutput.representations[selectedConsole]) {
-        defaultJsonOutput.representations[selectedConsole] = {};
-    }
-
-    const orientation = document.querySelector('input[name="orientation"]:checked').id;
-    const selectedLayout = document.getElementById('layoutSelect').value;
-
-    if (selectedConsole && selectedLayout) {
-        if (!defaultJsonOutput.representations[selectedConsole][selectedLayout]) {
-            defaultJsonOutput.representations[selectedConsole][selectedLayout] = {};
-        }
-        if (!defaultJsonOutput.representations[selectedConsole][selectedLayout][orientation]) {
-            defaultJsonOutput.representations[selectedConsole][selectedLayout][orientation] = {
-                assets: {}
-            };
-        }
-    }
-
-    // Update the displayed JSON
-    updateJsonDisplay();
+    updateJson();
 }
 
-// Function to update the displayed JSON
-function updateJsonDisplay() {
-    document.getElementById('code').textContent = JSON.stringify(defaultJsonOutput, null, 2);
-}
 
-// Add event listeners to input fields
 document.getElementById('nameInput').addEventListener('input', updateMetadata);
 document.getElementById('debugCheckbox').addEventListener('change', updateMetadata);
 document.getElementById('consoleSelect').addEventListener('change', updateMetadata);
-// Add event listener for consoleSelect
+
 document.getElementById('consoleSelect').addEventListener('change', function() {
     const selectedConsole = this.value;
     if (selectedConsole) {
-        // Update the gameTypeIdentifier in defaultJsonOutput
         defaultJsonOutput.gameTypeIdentifier = `com.rileytestut.delta.game.${selectedConsole}`;
         
-        // Update the identifier input field to show the new gameTypeIdentifier
         document.getElementById('identifierInput').value = defaultJsonOutput.gameTypeIdentifier;
         
-        // Call updateMetadata to ensure all changes are reflected
         updateMetadata();
+
+        loadLayout();
     }
 });
 
-
-// Add event listeners for orientation radio buttons
 document.querySelectorAll('input[name="orientation"]').forEach(radio => {
     radio.addEventListener('change', updateMetadata);
 });
 
-// Initial update
 updateMetadata();
+
