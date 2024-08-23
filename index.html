@@ -180,7 +180,7 @@
 	.flex-column {
 		display:flex;
 		flex-direction:column;
-		justify-content:center;
+		justify-content:baseline;
 		gap: 1em;
 	}
 
@@ -333,16 +333,21 @@
     }
 
 
+	
     .form-group {
     	display:flex;
     	flex-direction:column;
     	gap: .5em;
     	justify-content:center;
     	align-items:center;
-    	font-size: var(--text-xs);
+    	font-size: 16px;
     	padding:var(--padding-xs);
     	width: -webkit-fill-available;
     }
+
+	#buttons-container {
+		grid-template-columns: 1fr;
+	}
 
     .form-group input {
     	width:35px;
@@ -539,15 +544,28 @@
 			transform-origin: center center;
 		}
 		
-		#focus {
-
-		}
+		
 
 		#output-info {
 			flex-direction:column;
 			text-align:left;
 			gap:1em;
 			align-items:baseline;
+
+		}
+
+		#focus:not(:empty) {
+			width: unset;
+			opacity: 1;
+			grid-column: 3fr !important;
+			
+		}
+
+		#focus {
+			display:grid !important;
+			width:unset !important;
+			grid-column: span 3 !important;
+			grid-template-columns: 3fr 2fr;
 
 		}
 	}
@@ -619,105 +637,107 @@
 		font-size: 9px;
 	}
 
-
-
 	.screen-text {
     color: white;
     background-color:rgba(0,0,0,.3);
 	padding:4px 8px;
 	border-radius:5px;
     pointer-events: none; /* This ensures the text doesn't interfere with clicking/dragging */
-}
+	}
 
-.ds-screen {
-    position: absolute;
-    background-color: rgba(0, 0, 0, 0.1);
-    border: 1px solid #000;
-}
+	.ds-screen {
+		position: absolute;
+		background-color: rgba(0, 0, 0, 0.1);
+		border: 1px solid #000;
+	}
 
-#logo {
-	width:4em;
-}
+	#logo {
+		width:4em;
+	}
 
-input:focus {
-	outline: none !important;
-    border:1px solid red;
-    box-shadow: 0 0 10px #719ECE;
-}
+	input:focus {
+		outline: none !important;
+		border:1px solid red;
+		box-shadow: 0 0 10px #719ECE;
+	}
 
-/* Add these general transition rules */
-.container, #setup > *, #design > *, #focus > *, #content > * {
-    transition: opacity 0.3s ease, max-height 0.3s ease;
-    overflow: hidden;
-}
+	/* Add these general transition rules */
+	.container, #setup > *, #design > *, #focus > *, #content > * {
+		transition: opacity 0.3s ease, max-height 0.3s ease;
+		overflow: hidden;
+	}
 
-/* Modify the existing rules for hiding empty elements */
-.container:empty,
-#setup > *:empty,
-#design > *:empty,
-#focus > *:empty,
-#content > *:empty {
-    opacity: 0;
-    max-height: 0;
-    margin: 0;
-    padding: 0;
-}
+	/* Modify the existing rules for hiding empty elements */
+	.container:empty,
+	#setup > *:empty,
+	#design > *:empty,
+	#focus > *:empty,
+	#content > *:empty {
+		opacity: 0;
+		max-height: 0;
+		margin: 0;
+		padding: 0;
+	}
 
-/* Add new rules for visible elements */
-.container:not(:empty),
-#setup > *:not(:empty),
-#design > *:not(:empty),
-#focus > *:not(:empty),
-#content > *:not(:empty) {
-    opacity: 1;
-    max-height: 1000px; /* Adjust this value based on your content */
-}
+	/* Add new rules for visible elements */
+	.container:not(:empty),
+	#setup > *:not(:empty),
+	#design > *:not(:empty),
+	#focus > *:not(:empty),
+	#content > *:not(:empty) {
+		opacity: 1;
+		max-height: 1000px; /* Adjust this value based on your content */
+	}
 
-/* Add transition for the focus area */
-#focus {
-    transition: width 0.3s ease, opacity 0.3s ease;
-}
+	/* Add transition for the focus area */
+	#focus {
+		transition: width 0.3s ease, opacity 0.3s ease;
+	}
 
-#focus:empty {
-    width: 0;
-    opacity: 0;
-}
+	#focus:empty {
+		width: 0;
+		opacity: 0;
+	}
 
-#focus:not(:empty) {
-    width: 450px;
-    opacity: 1;
-}
+	#focus:not(:empty) {
+		width: 450px;
+		opacity: 1;
+	}
 
-/* Add transition for the layout container */
-#layout-container {
-    transition: opacity 0.3s ease, max-height 0.3s ease;
-}
+	/* Add transition for the layout container */
+	#layout-container {
+		transition: opacity 0.3s ease, max-height 0.3s ease;
+	}
 
-#layout-container[style*="display: none"] {
-    opacity: 0;
-    max-height: 0;
-    overflow: hidden;
-}
+	#layout-container[style*="display: none"] {
+		opacity: 0;
+		max-height: 0;
+		overflow: hidden;
+	}
 
-#layout-container:not([style*="display: none"]) {
-    opacity: 1;
-    max-height: 1000px; /* Adjust this value based on your content */
-}
+	#layout-container:not([style*="display: none"]) {
+		opacity: 1;
+		max-height: 1000px; /* Adjust this value based on your content */
+	}
 
-.slider-container {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
+	.slider-container {
+	display: flex;
+	align-items: center;
+	margin-bottom: 10px;
+	}
 
-#scaleSlider {
-  width: 200px;
-  margin: 0 10px;
-}
+	#scaleSlider {
+	width: 200px;
+	margin: 0 10px;
+	}
 
-#scaleValue {
-  min-width: 40px;
-}
+	#scaleValue {
+	min-width: 40px;
+	}
+
+	#toggleFastForward {
+		grid-column: span 2;
+	}
 
 </style>
 
@@ -799,7 +819,7 @@ input:focus {
 				<div class="flex-column" id="image-layout-options">
 					<select id="imageLayoutSelect"></select>
 					<input type="file" id="imageUpload" accept="image/*,application/pdf">
-					<button id="uploadImageButton">Upload Image</button>
+					<button id="uploadImageButton" class="button button--primary">Upload Image</button>
 					
 				</div>
 				<div id="imageContainer"></div>

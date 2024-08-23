@@ -2797,6 +2797,8 @@ function getCurrentElement(itemId) {
 }
 
 
+
+
 function makeDraggable(draggableElement) {
     let offsetX = 0, offsetY = 0, initialX = 0, initialY = 0, isDragging = false;
     let isResizing = false;
@@ -3684,6 +3686,7 @@ function addButtons() {
     function createButton(buttonName, consoleType) {
         let button = document.createElement('button');
         button.innerText = buttonName;
+        button.id = buttonName;
         button.className = 'console-button button button--primary';
         button.addEventListener('click', function() {
             addButtonToJsonAndLayout(buttonName, consoleType);
