@@ -567,7 +567,7 @@
 	#buttons-container {
 		display:grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));;
-		gap: 1em;
+		gap: .5em;
 	}
 
 	#buttons-container button {
@@ -833,6 +833,12 @@
 		gap: 1em
 	}
 
+	#image-layout-buttons {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: .5em;
+	}
+
 </style>
 
 </head>
@@ -844,6 +850,7 @@
 		<div class="flex-row">
 			<a href="https://playcase.gg"><img id="logo" src="playcase-icon.svg"></a>
 			<h1>Delta Skin Editor</h1>
+			<div id="version">v0.0.1</div>
 		</div>
 
 		<div id="header-actions">
@@ -963,12 +970,11 @@
 			<section id="files" class="container flex-column">
 				<h2>Layout Images</h2>
 				<div class="flex-column" id="image-layout-options">
-					<select id="imageLayoutSelect"></select>
-					<!-- TODO: make into buttons instead -->
-					<button id="imageLayoutButtons"></div>
+					<select style="display:none;" disabled id="imageLayoutSelect"></select>
+					<h3 id="imageLayoutSelectLabel">Selected Image: </h3>
 					<input type="file" id="imageUpload" accept="image/*,application/pdf">
 					<button id="uploadImageButton" class="button button--primary">Upload Image</button>
-					
+					 <div id="image-layout-buttons"></div>
 				</div>
 				<div id="imageContainer"></div>
 				<div id="image-list"></div>

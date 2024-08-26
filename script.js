@@ -2203,6 +2203,19 @@ let defaultJsonOutput = {
     }
 };
 
+let defaultJsonNES = {};
+
+let defaultJsonSNES = {};
+
+let defaultJsonN64 = {};
+
+let defaultJsonGBC = {};
+
+let defaultJsonGBA = {};
+
+let defaultJsonDS = {};
+
+
 
 let consoleTypes = ["", "nes", "snes", "n64", "gbc", "gba", "ds"];
 
@@ -3941,6 +3954,9 @@ const layoutOptions = layoutTypes.flatMap(layout => {
 // Update the populateImageLayoutSelect function
 function populateImageLayoutSelect() {
     const imageLayoutSelect = document.getElementById('imageLayoutSelect');
+    
+    const imageLayoutButtons = document.getElementById('image-layout-buttons');
+
     imageLayoutSelect.innerHTML = '';
 
     // Populate the select element using the global layoutOptions
@@ -3949,6 +3965,17 @@ function populateImageLayoutSelect() {
         optionElement.value = option;
         optionElement.text = option.toUpperCase();
         imageLayoutSelect.appendChild(optionElement);
+    });
+
+    // Populate the select element using the global layoutOptions
+    layoutOptions.forEach(option => {
+        let optionElement = document.createElement('button');
+        optionElement.value = option;
+        optionElement.text = option.toUpperCase();
+        optionElement.innerHTML = option.toUpperCase();
+        optionElement.id = option.replace(/\s+/g, '-');
+        optionElement.classList.add('button', 'button--secondary');
+        imageLayoutButtons.appendChild(optionElement);
     });
 }
 
@@ -3982,6 +4009,40 @@ document.querySelectorAll('input[name="orientation"]').forEach((radio) => {
         updateLayoutBackground();
     })}
 );
+
+// Add click event listeners to each button in #image-layout-buttons
+document.getElementById('image-layout-buttons').addEventListener('click', function(event) {
+    if (event.target.tagName === 'BUTTON') {
+        console.log("button clicked: ", event.target.value);
+        const selectedLayout = event.target.value;
+        document.getElementById('imageLayoutSelectLabel').textContent = `Selected Image: ${selectedLayout}`;
+        // Update the image-wrapper display
+        document.querySelectorAll('#imageContainer .image-wrapper').forEach(wrapper => {
+            wrapper.style.display = wrapper.id === `image-${selectedLayout.replace(/\s+/g, '-')}` ? 'flex' : 'none';
+        });
+
+        // Remove 'button--primary' and add 'button--secondary' for all buttons
+        document.querySelectorAll('#image-layout-buttons button').forEach(button => {
+            button.classList.remove('button--primary');
+            button.classList.add('button--secondary');
+        });
+
+        // Add 'button--primary' and remove 'button--secondary' for the clicked button
+        event.target.classList.remove('button--secondary');
+        event.target.classList.add('button--primary');
+        
+        // Update the #imageLayoutSelect dropdown
+        const imageLayoutSelect = document.getElementById('imageLayoutSelect');
+        imageLayoutSelect.value = selectedLayout;
+        
+        // Trigger the change event on the select element to ensure any attached listeners are notified
+        const changeEvent = new Event('change');
+        imageLayoutSelect.dispatchEvent(changeEvent);
+    }
+});
+
+
+
 
 // Call these functions to initialize
 populateImageLayoutSelect();
