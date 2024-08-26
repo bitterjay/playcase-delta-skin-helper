@@ -2424,7 +2424,6 @@ function checkSelections() {
         //clear item name
         // Update the item name in the .item-name div
          document.querySelector('.item-name').innerText = "";
-
        //load layout
         loadLayout();
     }
@@ -3053,6 +3052,8 @@ function selectItem(event) {
 
     // Update the item name in the .item-name div
     document.querySelector('.item-name').innerText = itemId === 'touch-screen' ? 'Touch Screen' : itemId;
+    
+    document.querySelector('.item-name').style.display = "block";
 
     // Show or hide the delete button based on whether the selected item is a game screen
     const deleteButton = document.getElementById('delete-button');
@@ -3152,7 +3153,8 @@ function selectScreen(event) {
 
     // Update the item name in the .item-name div
     document.querySelector('.item-name').innerText = screenId === 'game-screen-0' ? 'Game Screen 1' : 'Game Screen 2';
-
+    document.querySelector('#focus > .container:first-child').style.gap = "1em";
+    document.querySelector('.item-name').style.display = "block";
     // Get the selected layout, device, and orientation
     let parts = layoutSelection.split(" ");
     let device = parts[0].toString();
@@ -3666,7 +3668,8 @@ async function processPdf(pdfData, layoutKey, fileName) {
 
 document.getElementById('delete-button').addEventListener('click', function() {
     let currentItemName = document.querySelector(".item-name").innerHTML;
-
+    document.querySelector('.item-name').style.display = "none";
+    document.getElementById('lock-button').style.display = "none";
     document.querySelector('#focus > .container:first-child').style.gap = "0"
 
     document.getElementById("delete-button").style.display = "none";
@@ -3784,7 +3787,19 @@ function addButtons() {
     // Function to create a button and add it to the container
     function createButton(buttonName, consoleType) {
         let button = document.createElement('button');
-        button.innerText = buttonName === "screenInput" ? "Touch Screen" : buttonName;
+        if (buttonName === "screenInput") {
+            button.innerText = "Touch Screen";
+        } else if (buttonName === "toggleFastForward") {
+            button.innerText = "Toggle Fast Forward";
+        } else if (buttonName === "fastForward") {
+            button.innerText = "Fast Forward";
+        } else if (buttonName === "quickSave") {
+            button.innerText = "Quick Save";
+        } else if (buttonName === "quickLoad") {
+            button.innerText = "Quick Load";
+        } else {
+            button.innerText = buttonName;
+        }
         button.id = buttonName;
         button.className = 'console-button button button--primary';
         button.addEventListener('click', function() {
@@ -4160,7 +4175,7 @@ function getSelectedOrientation() {
 // Add a new button for uploading the .zip file
 const zipUploadButton = document.createElement('button');
 zipUploadButton.id = 'uploadZipButton';
-zipUploadButton.innerText = 'Import .deltaskin';
+zipUploadButton.innerHTML = '<i class="fa-solid fa-file-import"></i>&nbsp;&nbsp;Import';
 zipUploadButton.classList = 'button button--primary';
 
 document.getElementById('file-actions').appendChild(zipUploadButton);
@@ -4314,8 +4329,8 @@ function updateLayoutBackground() {
 const saveProjectButton = document.createElement('button');
 saveProjectButton.id = 'saveProjectButton';
 saveProjectButton.classList = 'button button--primary';
-saveProjectButton.innerText = 'Save Project as .deltaskin';
-document.getElementById('output-actions').appendChild(saveProjectButton);
+saveProjectButton.innerHTML = '<i class="fa-solid fa-floppy-disk"></i>&nbsp;&nbsp;Save';
+document.getElementById('header-actions').appendChild(saveProjectButton);
 
 saveProjectButton.addEventListener('click', saveProjectAsZip);
 
@@ -4502,3 +4517,14 @@ function showLoadingModal() {
   function hideLoadingModal() {
     document.getElementById('loadingModal').style.display = 'none';
   }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const accordions = document.querySelectorAll('.accordion');
+
+    accordions.forEach(accordion => {
+        const header = accordion.querySelector('.accordion-header');
+        header.addEventListener('click', () => {
+            accordion.classList.toggle('active');
+        });
+    });
+});

@@ -451,7 +451,7 @@
     .form-group {
     	display:flex;
     	flex-direction:column;
-    	gap: .5em;
+    	/* gap: .5em; */
     	justify-content:center;
     	align-items:center;
     	font-size: 13px;
@@ -470,8 +470,8 @@
 
     .size-wrapper {
     	display:grid;
-    	grid-template-columns: 20% 30% 30% 20%;
-		grid-template-rows: 20% 60% 20%;
+    	grid-template-columns: 12% 38% 38% 12%;
+		grid-template-rows: 12% 76% 12%;
     	border:1px solid black;
 		aspect-ratio: 1/1;
 		width:250px;
@@ -588,8 +588,8 @@
 	}
 
 	#buttons-container {
-		display:grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));;
+		display:flex;
+		flex-wrap:wrap;
 		gap: .5em;
 	}
 
@@ -620,7 +620,7 @@
 		display:flex;
 		flex-wrap:wrap;
 		flex-direction:row;
-		gap:1em;
+		gap:.5em;
 		justify-content:center;
 		align-items:center;
 	}
@@ -805,12 +805,12 @@
 	#output-actions {
 		display:flex;
 		flex-direction:row;
-		gap: 1em;
+		gap: 1em; 
 	}
 
-	.console-button {
-		font-size: 9px;
-	}
+	/* .console-button {
+		aspect-ratio: 16/9;
+	} */
 
 	.screen-text {
     color: white;
@@ -846,9 +846,9 @@
 	min-width: 40px;
 	}
 
-	#toggleFastForward {
+	/* #toggleFastForward {
 		grid-column: span 2;
-	}
+	} */
 
 	#other {
 		display:grid;
@@ -889,7 +889,7 @@
 		flex-direction:row;
 		justify-content:space-between;
 		align-items:center;
-		gap: 1em;
+		gap: .5em;
 	}
 
 	#image-upload-container {
@@ -971,6 +971,57 @@
 		100% { transform: rotate(360deg); }
 	}
 
+	.accordion {
+    /* border: 1px solid #ddd; */
+    border-radius: var(--border-radius);
+    overflow: hidden;
+	}
+
+	.accordion-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		/* padding: var(--padding-m); */
+		background-color: var(--container-color);
+		cursor: pointer;
+	}
+
+	.accordion-header h2 {
+		margin: 0;
+	}
+
+	.accordion-toggle {
+		background: none;
+		border: none;
+		font-size: 1.2em;
+		cursor: pointer;
+		transition: transform 0.3s ease;
+	}
+
+	.accordion-content {
+		max-height: 0;
+		overflow: hidden;
+		transition: max-height 0.3s ease;
+	}
+
+	.accordion.active .accordion-content {
+		max-height: 1000px; /* Adjust this value based on your content */
+	}
+
+	.accordion.active .accordion-toggle {
+		transform: rotate(180deg);
+	}
+
+	.accordion-btn {
+		color:black;
+	}
+
+	.item-name {
+		display:none;
+		background-color:black;
+		border-radius:var(--border-radius);
+	}
+
 </style>
 
 </head>
@@ -986,7 +1037,7 @@
 		</div>
 
 		<div id="header-actions">
-				<a class="button button--secondary" href="https://noah978.gitbook.io/delta-docs/skins" target="_blank">Documentation</a>
+				<a class="button button--secondary" style="background-color:#8825F2" href="https://noah978.gitbook.io/delta-docs/skins" target="_blank"><i class="fa-solid fa-newspaper"></i></a>
 				<label for="importJsonButton" class="custom-file-upload button button--secondary">
 			    Import JSON</label>
 			<div id="file-actions">
@@ -1084,7 +1135,7 @@
 				<div id="focus-title">
 					<h2>Focus</h2>
 					<div class="item-info-container">
-						<h3 class="item-name"></h3>
+						<h3 class="item-name bubble"></h3>
 						<div class="focus-actions">
 							<button id="delete-button" style="display:none;" class="delete-button button button--primary"><i class="fa-solid fa-trash"></i></button>
 							<button id="lock-button" class="button button--primary"><i class="fa-solid fa-unlock"></i></button>
@@ -1125,53 +1176,58 @@
 	</div>
 
 	<div id="other">
-		<section class="container">
-			<div id="code-container" class="flex-column">
-				<div id="output-info">
-					<h2>info.json</h2>
-					<div id="output-actions">
-						<div class="checkbox-wrapper">
-							<input type="checkbox" id="enableEditing" name="enableEditing">
-							<label for="enableEditing">Enable JSON Editing</label>
+		<section class="container accordion">
+			<div class="accordion-header">
+				<h2>info.json</h2>
+				<button class="accordion-toggle"><i class="accordion-btn fa-solid fa-chevron-down"></i></button>
+			</div>
+			<div class="accordion-content">
+				<div id="code-container" class="flex-column">
+					<div id="output-info">
+						<div id="output-actions">
+							<div class="checkbox-wrapper">
+								<input type="checkbox" id="enableEditing" name="enableEditing">
+								<label for="enableEditing">Enable JSON Editing</label>
+							</div>
+							<button id="copy-json" class="button button--secondary">Copy JSON</button>
+							<button id="save-json" class="button button--primary">Save JSON</button>
+
 						</div>
-						<button id="copy-json" class="button button--secondary">Copy JSON</button>
-					
 					</div>
-				</div>
-				<div id="code" contenteditable="true">
-					<p>code</p>
-				</div>
-				<div id="code-actions">
-					<button id="save-json" class="button button--primary">Save JSON</button>
-					
+					<div id="code" contenteditable="true">
+						<p>code</p>
+					</div>
 				</div>
 			</div>
 		</section>
-		<section class="container">
-			<div id="readme-container" class="flex-column">
-				<div id="readme-info">
-					<h2>Readme</h2>
-				</div>
-				<div id="readme-content">
-					<p>Welcome to the PlayCase Delta Skin Editor! I built this editor so I could have a way to create skins for the PlayCase efficiently, but I want to make sure it was a product good enough for the entire community.</p>
-					<p>Please give it a try and let me know what you think - what features it might be missing - and what I can to make it better.
-					<h3>Features</h3>
-					<ul>
-						<li>Upload .deltaskin files right into the editor.</li>
-						<li>Supports all consoles available for the App Store version of Delta.</li>
-						<li>Drag and drop buttons around the canvas</li>
-						<li>Background opacity controls</li>
-						<li>Scale controls to support users designing on their phone</li>
-						<li>Supports multiple screens for DS skins!</li>
-						<li>Export .deltaskin files</li>
-						<li>More to come!</li>
-					</ul>
-					<h3>Caviats</h3>
-					<ul>
-						<li>To avoid heavy server stress with file uploads and downloads, this editor uses blobs to convert, display and export images. To maintain transparency in your designs, please refrain from using #FFFFF white. I plan to look into using a server technology to upload files in a future version.</li>
-						<li>To try to maintain aspect ratios for screens without requiring the user to constantly whip out a calculator, I've locked gamescreen aspect ratios from changing from the UI. You can change the aspect ratio through the "Focus" interface.</li>
-					</ul>
-					<p span style="font-weight:700; color:var(--primary-color)">More to come! Let me know what you think and what ideas you have at info@playcase.gg</p>
+		<section class="container accordion">
+			<div class="accordion-header">
+				<h2>Readme</h2>
+				<button class="accordion-toggle"><i class="accordion-btn fa-solid fa-chevron-down"></i></button>
+			</div>
+			<div class="accordion-content">
+				<div id="readme-container" class="flex-column">
+					<div id="readme-content">
+						<p>Welcome to the PlayCase Delta Skin Editor! I built this editor so I could have a way to create skins for the PlayCase efficiently, but I want to make sure it was a product good enough for the entire community.</p>
+						<p>Please give it a try and let me know what you think - what features it might be missing - and what I can to make it better.
+						<h3>Features</h3>
+						<ul>
+							<li>Upload .deltaskin files right into the editor.</li>
+							<li>Supports all consoles available for the App Store version of Delta.</li>
+							<li>Drag and drop buttons around the canvas</li>
+							<li>Background opacity controls</li>
+							<li>Scale controls to support users designing on their phone</li>
+							<li>Supports multiple screens for DS skins!</li>
+							<li>Export .deltaskin files</li>
+							<li>More to come!</li>
+						</ul>
+						<h3>Caviats</h3>
+						<ul>
+							<li>To avoid heavy server stress with file uploads and downloads, this editor uses blobs to convert, display and export images. To maintain transparency in your designs, please refrain from using #FFFFF white. I plan to look into using a server technology to upload files in a future version.</li>
+							<li>To try to maintain aspect ratios for screens without requiring the user to constantly whip out a calculator, I've locked gamescreen aspect ratios from changing from the UI. You can change the aspect ratio through the "Focus" interface.</li>
+						</ul>
+						<p span style="font-weight:700; color:var(--primary-color)">More to come! Let me know what you think and what ideas you have at info@playcase.gg</p>
+					</div>
 				</div>
 			</div>
 		</section>
