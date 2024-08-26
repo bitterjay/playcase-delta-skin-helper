@@ -2593,6 +2593,8 @@ function loadLayout() {
                 // Make the item draggable
                 makeDraggable(screenDiv);
 
+                
+
                 makeResizable(screenDiv, resizeHandle); // Add this line to make the item resizable
 
                 screenDiv.addEventListener('click', selectScreen);
@@ -3001,16 +3003,21 @@ function updateJson() {
 // Add this to your existing global variables
 let isItemLocked = false;
 
-// Add this function to handle the lock button click
 function toggleLockItem() {
     const lockButton = document.getElementById('lock-button');
-    const selectedItem = document.querySelector('.layout-item.selected');
+    const selectedItem = document.querySelector('.layout-item.selected, .screen-item.selected');
     
     if (selectedItem) {
         isItemLocked = !isItemLocked;
         selectedItem.classList.toggle('locked', isItemLocked);
         lockButton.textContent = isItemLocked ? 'Unlock Item' : 'Lock Item';
         lockButton.classList.toggle('locked', isItemLocked);
+        
+        // Hide or show the resize handle based on the lock state
+        const resizeHandle = selectedItem.querySelector('.resize-handle');
+        if (resizeHandle) {
+            resizeHandle.style.display = isItemLocked ? 'none' : 'block';
+        }
         
         // Re-initialize draggable functionality
         makeDraggable(selectedItem);
@@ -3118,6 +3125,12 @@ function selectScreen(event) {
 
     // Get the selected item ID
     const screenId = event.currentTarget.id;
+
+    // Update lock button state
+    const lockButton = document.getElementById('lock-button');
+    isItemLocked = event.currentTarget.classList.contains('locked');
+    lockButton.textContent = isItemLocked ? 'Unlock Item' : 'Lock Item';
+    lockButton.classList.toggle('locked', isItemLocked);
 
     // Update the item name in the .item-name div
     document.querySelector('.item-name').innerText = screenId === 'game-screen-0' ? 'Game Screen 1' : 'Game Screen 2';
