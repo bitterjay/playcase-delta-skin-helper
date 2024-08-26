@@ -2811,6 +2811,19 @@ function makeDraggable(draggableElement) {
     document.addEventListener('mouseup', dragEnd);
 
     function dragStart(e) {
+        if (draggableElement.classList.contains('locked')) {
+            // If the item is locked, only allow click/tap events
+            startTime = new Date().getTime();
+            if (e.type === 'touchstart') {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            } else {
+                startX = e.clientX;
+                startY = e.clientY;
+            }
+            return;
+        }
+
         if (e.target.classList.contains('resize-handle')) {
             isResizing = true;
             return;
@@ -2836,7 +2849,7 @@ function makeDraggable(draggableElement) {
     }
 
     function drag(e) {
-        if (isDragging && !isResizing) {
+        if (isDragging && !isResizing && !draggableElement.classList.contains('locked')) {
             e.preventDefault();
             
             let currentX, currentY;
@@ -2860,46 +2873,43 @@ function makeDraggable(draggableElement) {
     }
 
     function dragEnd(e) {
-        if (isDragging) {
-            isDragging = false;
-            draggableElement.style.cursor = 'grab';
-
-            let endX, endY;
-            if (e.type === 'touchend') {
-                endX = e.changedTouches[0].clientX;
-                endY = e.changedTouches[0].clientY;
-            } else {
-                endX = e.clientX;
-                endY = e.clientY;
-            }
-
-            const endTime = new Date().getTime();
-            const dragDistance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
-            const dragDuration = endTime - startTime;
-
-            if (dragDistance < tapThreshold && dragDuration < tapDuration) {
-                // This was a tap/click, not a drag
-                draggableElement.click();
-            } else {
-                // This was a drag, update position
-                let item = getCurrentElement(draggableElement.id);
-
-                if (!isResizing) {
-                    const newLeft = parseInt(draggableElement.style.left, 10);
-                    const newTop = parseInt(draggableElement.style.top, 10);
-                    if (draggableElement.classList.contains("screen-item")) {
-                        updateScreenPosition(draggableElement.id, newLeft, newTop);
-                    } else {
-                        const extendedLeft = item && item.extendedEdges ? item.extendedEdges.left : 0;
-                        const extendedTop = item && item.extendedEdges ? item.extendedEdges.top : 0;
-                        updateItemPosition(draggableElement.id, newLeft + extendedLeft, newTop + extendedTop);
-                    }
-                    updateJson();
-                }
-            }
-
-            isResizing = false;
+        let endX, endY;
+        if (e.type === 'touchend') {
+            endX = e.changedTouches[0].clientX;
+            endY = e.changedTouches[0].clientY;
+        } else {
+            endX = e.clientX;
+            endY = e.clientY;
         }
+
+        const endTime = new Date().getTime();
+        const dragDistance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+        const dragDuration = endTime - startTime;
+
+        if (dragDistance < tapThreshold && dragDuration < tapDuration) {
+            // This was a tap/click, not a drag
+            draggableElement.click();
+        } else if (isDragging && !draggableElement.classList.contains('locked')) {
+            // This was a drag, update position
+            let item = getCurrentElement(draggableElement.id);
+
+            if (!isResizing) {
+                const newLeft = parseInt(draggableElement.style.left, 10);
+                const newTop = parseInt(draggableElement.style.top, 10);
+                if (draggableElement.classList.contains("screen-item")) {
+                    updateScreenPosition(draggableElement.id, newLeft, newTop);
+                } else {
+                    const extendedLeft = item && item.extendedEdges ? item.extendedEdges.left : 0;
+                    const extendedTop = item && item.extendedEdges ? item.extendedEdges.top : 0;
+                    updateItemPosition(draggableElement.id, newLeft + extendedLeft, newTop + extendedTop);
+                }
+                updateJson();
+            }
+        }
+
+        isDragging = false;
+        isResizing = false;
+        draggableElement.style.cursor = 'grab';
     }
 
     function updateItemPosition(itemId, newX, newY) {
@@ -2987,6 +2997,28 @@ function updateJson() {
     // Print the JSON string into the div with id "code" preserving the formatting
     document.getElementById('code').textContent = jsonString;
 };
+
+// Add this to your existing global variables
+let isItemLocked = false;
+
+// Add this function to handle the lock button click
+function toggleLockItem() {
+    const lockButton = document.getElementById('lock-button');
+    const selectedItem = document.querySelector('.layout-item.selected');
+    
+    if (selectedItem) {
+        isItemLocked = !isItemLocked;
+        selectedItem.classList.toggle('locked', isItemLocked);
+        lockButton.textContent = isItemLocked ? 'Unlock Item' : 'Lock Item';
+        lockButton.classList.toggle('locked', isItemLocked);
+        
+        // Re-initialize draggable functionality
+        makeDraggable(selectedItem);
+    }
+}
+
+// Add this to your existing event listeners
+document.getElementById('lock-button').addEventListener('click', toggleLockItem);
     
 function selectItem(event) {
     event.stopPropagation(); // Prevent the click event from bubbling up to layout-object
@@ -3041,6 +3073,11 @@ function selectItem(event) {
         }
         return false;
     });
+
+    const lockButton = document.getElementById('lock-button');
+    isItemLocked = event.currentTarget.classList.contains('locked');
+    lockButton.textContent = isItemLocked ? 'Unlock Item' : 'Lock Item';
+    lockButton.classList.toggle('locked', isItemLocked);
 
     // Display the matched item in the .focus-item div
     displayMatchedItem(selectedItem);
@@ -3815,6 +3852,7 @@ function addButtons() {
         buttonDiv.style.border = '1px solid black';
         buttonDiv.style.backgroundColor = 'rgba(220,220,220,.8)';
         buttonDiv.innerText = buttonName;
+        newItem.classList.add('unlocked');
 
         // Append the button div to the layout-object
         layoutObject.appendChild(buttonDiv);

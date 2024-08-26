@@ -560,8 +560,9 @@
 	}
 
 	.focus-actions {
-		display:flex;
-		flex-direction:column;
+		display:grid;
+		grid-template-columns: 1fr 1fr;
+		gap: .5em;
 	}
 
 	#buttons-container {
@@ -839,6 +840,19 @@
 		gap: .5em;
 	}
 
+	#lock-button {
+        margin-bottom: 0.5em;
+    }
+
+    #lock-button.locked {
+        background-color: var(--primary-color);
+    }
+
+    .layout-item.locked {
+        /* pointer-events: none; */
+        opacity: 0.7;
+    }
+
 </style>
 
 </head>
@@ -958,6 +972,8 @@
 					</div>
 					<div class="focus-actions">
 						<button id="delete-button" style="display:none;" class="delete-button button button--primary">Delete Item</button>
+						<button id="lock-button" class="button button--secondary">Lock Item</button>
+        <button id="delete-button" style="display:none;" class="delete-button button button--primary">Delete Item</button>
 					</div>
 				</div>
 			</section>
