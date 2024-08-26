@@ -2607,7 +2607,6 @@ function loadLayout() {
 
 function makeResizable(resizableElement) {
     const handle = resizableElement.querySelector('.resize-handle');
-    //const container = document.getElementById('layout-object'); // The container element
     let initialX = 0, initialY = 0, initialWidth = 0, initialHeight = 0;
     let isResizing = false;
 
@@ -2649,25 +2648,19 @@ function makeResizable(resizableElement) {
                 newHeight = initialHeight + dy;
             }
 
-            // // Get container dimensions and resizable element's position
-            // const containerRect = container.getBoundingClientRect();
-            // const elementRect = resizableElement.getBoundingClientRect();
-
-            // // Calculate the maximum allowable width and height
-            // const maxWidth = containerRect.right - elementRect.left;
-            // const maxHeight = containerRect.bottom - elementRect.top;
-
-            // // Clamp the width and height to prevent resizing outside the container
-            // newWidth = Math.min(newWidth, maxWidth);
-            // newHeight = Math.min(newHeight, maxHeight);
-
             // Apply the new width and height
             if (newWidth > 0 && newHeight > 0) {
                 resizableElement.style.width = newWidth + 'px';
                 resizableElement.style.height = newHeight + 'px';
             }
 
-            updateItemSize(resizableElement.id, newWidth, newHeight);
+            // Get the current position and extended edges
+            const currentTop = parseInt(resizableElement.style.top, 10);
+            const currentLeft = parseInt(resizableElement.style.left, 10);
+            const extendedTop = parseInt(resizableElement.style.paddingTop, 10) || 0;
+            const extendedLeft = parseInt(resizableElement.style.paddingLeft, 10) || 0;
+
+            updateItemSize(resizableElement.id, newWidth, newHeight, currentTop, currentLeft, extendedTop, extendedLeft);
             updateScreenSize(resizableElement.id, newWidth, newHeight);
             updateJson();
         }
@@ -2685,7 +2678,7 @@ function makeResizable(resizableElement) {
         }
     }
 
-    function updateItemSize(itemId, newWidth, newHeight, newExtendedTop, newExtendedBottom, newExtendedLeft, newExtendedRight) {
+    function updateItemSize(itemId, newWidth, newHeight, currentTop, currentLeft, extendedTop, extendedLeft) {
         // Split the selected layout into an array of individual words
         let parts = layoutSelection.split(" ");
         let device = parts[0].toString();
@@ -2715,12 +2708,12 @@ function makeResizable(resizableElement) {
         if (item && item.frame) {
             item.frame.width = newWidth;
             item.frame.height = newHeight;
-            //console.log(`Updated ${itemId} size: width=${newWidth}, height=${newHeight}`);
+            item.frame.y = currentTop + extendedTop; // Preserve y-position
+            item.frame.x = currentLeft + extendedLeft; // Preserve x-position
         }
 
         if (item && item.extendedEdges) {
-            item.extendedEdges.top = newExtendedTop;
-            //console.log(`Updated ${itemId} size: width=${newWidth}, height=${newHeight}`);
+            item.extendedEdges.top = extendedTop; // Preserve extendedEdges top value
         }
     }
 
@@ -2736,7 +2729,7 @@ function makeResizable(resizableElement) {
 
         if (screenArray) {
             // Proceed with operations on screenArray
-            console.log("Screen array exists:", screenArray);
+            //console.log("Screen array exists:", screenArray);
             // Get the screens array from the selected layout
             let currentScreenArray = defaultJsonOutput["representations"][device][layout][orientation]["screens"];
 
@@ -3735,7 +3728,7 @@ function addButtons() {
     const buttonConfigs = {
         gbc: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'select', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
         gba: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'select', 'l', 'r', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
-        ds: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'x', 'y', 'start', 'select', 'l', 'r', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'touch-screen'],
+        ds: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'x', 'y', 'start', 'select', 'l', 'r', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'screenInput'],
         nes: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'select', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
         snes: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'x', 'y', 'start', 'select', 'l', 'r', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
         n64: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'l', 'r', 'cUp', 'cDown', 'cLeft', 'cRight', 'z', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward']
@@ -3778,7 +3771,7 @@ function addButtons() {
                 // Check if the item represents a thumbstick
                 return item.inputs && item.inputs.up === 'analogStickUp' && item.inputs.down === 'analogStickDown' && 
                        item.inputs.left === 'analogStickLeft' && item.inputs.right === 'analogStickRight';
-            } else if (buttonName === 'touch-screen') {
+            } else if (buttonName === 'screenInput') {
                 // Check if the item represents a touch screen input
                 return item.inputs && item.inputs.x === 'touchScreenX' && item.inputs.y === 'touchScreenY';
             } else {
@@ -3791,15 +3784,32 @@ function addButtons() {
     // Function to create a button and add it to the container
     function createButton(buttonName, consoleType) {
         let button = document.createElement('button');
-        button.innerText = buttonName === "touch-screen" ? "Touch Screen" : buttonName;
+        button.innerText = buttonName === "screenInput" ? "Touch Screen" : buttonName;
         button.id = buttonName;
         button.className = 'console-button button button--primary';
         button.addEventListener('click', function() {
-            addButtonToJsonAndLayout(buttonName === "touch-screen" ? "Touch Screen" : buttonName, consoleType);
+            addButtonToJsonAndLayout(buttonName, consoleType);
             button.remove(); // Remove the button from the button container after it's added
         });
         buttonContainer.appendChild(button);
     }
+
+    // Function to update the JSON view in #code
+    function updateJsonView() {
+        const jsonString = JSON.stringify(defaultJsonOutput, null, 4);
+        document.getElementById('code').textContent = jsonString;
+    }
+
+    // Add event listener to all console buttons
+    const consoleButtons = document.querySelectorAll('.console-button');
+    consoleButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Wait for the JSON to be updated before refreshing the view
+            setTimeout(() => {
+                updateJsonView();
+            }, 0);
+        });
+    });
 
     // Function to add the button configuration to the JSON array and layout-object
     function addButtonToJsonAndLayout(buttonName, consoleType) {
@@ -3861,7 +3871,7 @@ function addButtons() {
                     "right": 5
                 }
             };
-        } else if (buttonName === 'touch-screen') {
+        } else if (buttonName === 'screenInput') {
             buttonFormat = {
                 "inputs": {
                     "x": "touchScreenX",
