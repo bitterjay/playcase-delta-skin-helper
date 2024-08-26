@@ -2306,8 +2306,6 @@ let layoutImages = {};
 
 //functions
 
-//get current layout state
-
 function getCurrentState() {
    // Split the selected layout into an array of individual words
    let parts = layoutSelection.split(" ");
@@ -2342,8 +2340,6 @@ consoleTypes.forEach(function(consoleType) {
     option.text = layoutType; // Optional: Display as uppercase
     selectLayout.appendChild(option);
 });
-
-
 
 // Add event listener to capture the selected value from consoleTypes
 selectConsole.addEventListener('change', function() {
@@ -2399,6 +2395,7 @@ selectLayout.addEventListener('change', function() {
 layoutSelect.addEventListener('change', function() {
     layoutSelection = selectLayout.value; // Store the selected value
     document.getElementById('selectedLayout').innerText = layoutSelection;
+    document.getElementById('selectedOrientation').innerText = getSelectedOrientation();
     console.log("Selected layout:", layoutSelection); // Optional: Log the selection
 });
 
@@ -2410,7 +2407,7 @@ selectLayout.addEventListener('change', function() {
 });
 
 // Example usage
-const orientation = getSelectedOrientation();
+let orientation = getSelectedOrientation();
 console.log(`Selected Orientation: ${orientation}`); // Outputs "portrait" or "landscape"
 
 // Function to check if layout selection has been made and load layout based on selection
@@ -2419,7 +2416,7 @@ function checkSelections() {
         //remove layout
         document.querySelectorAll('.layout-item').forEach(element => element.remove());
         document.getElementById("focus").style.display = "flex"
-
+        document.getElementById('selectedOrientation').innerText = getSelectedOrientation();
         //clear focus
         const focusItemDiv = document.querySelector('.focus-item');
         focusItemDiv.innerHTML = ''; // Clear previous content
@@ -2438,7 +2435,7 @@ document.querySelectorAll('input[name="orientation"]').forEach((radio) => {
     radio.addEventListener('change', () => {
         const orientation = getSelectedOrientation();
         console.log(`Selected Orientation: ${orientation}`);
-
+        document.getElementById('selectedOrientation').innerText = getSelectedOrientation();
          //remove layout
         document.querySelectorAll('.layout-item').forEach(element => element.remove());
        //load layout
@@ -2779,7 +2776,7 @@ function getCurrentElement(itemId) {
             return item.inputs && typeof item.inputs === "object" && dPadInputs.every(direction => direction in item.inputs) && !item.thumbstick;
         } else if (itemId === "thumbstick") {
             return item.thumbstick !== undefined;
-        } else if (itemId === "touch-screen") {
+        } else if (itemId === "Touch Screen") {
             return item.inputs && item.inputs.x === "touchScreenX" && item.inputs.y === "touchScreenY";
         } else if (Array.isArray(item.inputs)) {
             return item.inputs.includes(itemId);
@@ -2791,9 +2788,6 @@ function getCurrentElement(itemId) {
 
     return item;
 }
-
-
-
 
 function makeDraggable(draggableElement) {
     let offsetX = 0, offsetY = 0, initialX = 0, initialY = 0, isDragging = false;
@@ -2985,7 +2979,6 @@ function makeDraggable(draggableElement) {
     }
 }
 
-
 // Convert the JSON object to a formatted string
 const jsonString = JSON.stringify(defaultJsonOutput, null, 4);
 
@@ -3120,7 +3113,6 @@ function selectItem(event) {
     displayMatchedItem(selectedItem);
 }
 
-// Add this function to your existing code
 function deselectAllItems() {
     document.querySelectorAll('.layout-item').forEach(item => {
         item.classList.remove('selected');
@@ -3132,7 +3124,6 @@ function deselectAllItems() {
     document.getElementById('lock-button').style.display = 'none';
 }
 
-// Add this event listener to your existing code
 document.getElementById('layout-object').addEventListener('click', function(event) {
     if (event.target === this) {
         deselectAllItems();
@@ -3465,10 +3456,10 @@ function createFilenameMappings(jsonContent) {
     return filenameMappings;
 }
 
-// Update handleZipUpload to create the filename mappings
 async function handleZipUpload(event) {
     const file = event.target.files[0];
     if (file && (file.name.endsWith('.zip') || file.name.endsWith('.deltaskin'))) {
+        showLoadingModal(); // Show the loading modal
         const zip = new JSZip();
         try {
             const zipContent = await zip.loadAsync(file);
@@ -3487,7 +3478,6 @@ async function handleZipUpload(event) {
                 selectConsoleBasedOnIdentifier(jsonContent);
                 automaticSelectLayout();
 
-                // Create filename mappings
                 const filenameMappings = createFilenameMappings(jsonContent);
 
                 for (const fileName in zipContent.files) {
@@ -3507,6 +3497,8 @@ async function handleZipUpload(event) {
         } catch (error) {
             console.error('Error processing the file:', error);
             alert('Error processing the file. Please make sure it\'s a valid .zip or .deltaskin file.');
+        } finally {
+            hideLoadingModal(); // Hide the loading modal when done
         }
     } else {
         alert('Please upload a .zip or .deltaskin file.');
@@ -3530,23 +3522,37 @@ function convertImageLayoutSelectionToJsonKeys() {
 
 // Handle image or PDF upload
 document.getElementById('uploadImageButton').addEventListener('click', function() {
-    let file = document.getElementById('imageUpload').files[0];
+    let fileInput = document.getElementById('imageUpload');
+    let file = fileInput.files[0];
     let selectedLayout = document.getElementById('imageLayoutSelect').value;
+    
+    if (!file) {
+        alert('Please select an image or pdf');
+        return;
+    }
+    
     let fileName = file.name;
     let fileType = getFileType(fileName);
-    if (file && selectedLayout) {
+    
+    if (selectedLayout) {
         handleSingleFileUpload(file, fileType, fileName, selectedLayout)
             .then(() => {
                 updateLayoutBackground();
                 displayUploadedImages();
                 updateJson();
+                // Clear the file input after successful upload
+                fileInput.value = '';
             })
             .catch(error => {
                 console.error('Error handling file upload:', error);
                 alert('Error handling file upload. Please check the console for details.');
+                // Clear the file input even if there's an error
+                fileInput.value = '';
             });
     } else {
-        alert('Please select a layout and an image.');
+        alert('Please select a layout.');
+        // Clear the file input if no layout is selected
+        fileInput.value = '';
     }
 });
 
@@ -3668,6 +3674,8 @@ async function processPdf(pdfData, layoutKey, fileName) {
 document.getElementById('delete-button').addEventListener('click', function() {
     let currentItemName = document.querySelector(".item-name").innerHTML;
 
+    document.querySelector('#focus > .container:first-child').style.gap = "0"
+
     document.getElementById("delete-button").style.display = "none";
 
     //console.log(currentItemName);
@@ -3691,6 +3699,10 @@ document.getElementById('delete-button').addEventListener('click', function() {
             itemsArray.splice(index, 1);
         }
 
+        // Check if the current item is "Touch Screen" and change it to "touch-screen"
+        if (currentItemName === "Touch Screen") {
+            currentItemName = "touch-screen";
+        }
         // Remove the item from the DOM
         document.querySelector('#' + currentItemName).remove();
 
@@ -3723,7 +3735,7 @@ function addButtons() {
     const buttonConfigs = {
         gbc: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'select', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
         gba: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'select', 'l', 'r', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
-        ds: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'x', 'y', 'start', 'select', 'l', 'r', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'screenInput'],
+        ds: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'x', 'y', 'start', 'select', 'l', 'r', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'touch-screen'],
         nes: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'select', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
         snes: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'x', 'y', 'start', 'select', 'l', 'r', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
         n64: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'l', 'r', 'cUp', 'cDown', 'cLeft', 'cRight', 'z', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward']
@@ -3766,7 +3778,7 @@ function addButtons() {
                 // Check if the item represents a thumbstick
                 return item.inputs && item.inputs.up === 'analogStickUp' && item.inputs.down === 'analogStickDown' && 
                        item.inputs.left === 'analogStickLeft' && item.inputs.right === 'analogStickRight';
-            } else if (buttonName === 'screenInput') {
+            } else if (buttonName === 'touch-screen') {
                 // Check if the item represents a touch screen input
                 return item.inputs && item.inputs.x === 'touchScreenX' && item.inputs.y === 'touchScreenY';
             } else {
@@ -3779,11 +3791,11 @@ function addButtons() {
     // Function to create a button and add it to the container
     function createButton(buttonName, consoleType) {
         let button = document.createElement('button');
-        button.innerText = buttonName;
+        button.innerText = buttonName === "touch-screen" ? "Touch Screen" : buttonName;
         button.id = buttonName;
         button.className = 'console-button button button--primary';
         button.addEventListener('click', function() {
-            addButtonToJsonAndLayout(buttonName, consoleType);
+            addButtonToJsonAndLayout(buttonName === "touch-screen" ? "Touch Screen" : buttonName, consoleType);
             button.remove(); // Remove the button from the button container after it's added
         });
         buttonContainer.appendChild(button);
@@ -3849,7 +3861,7 @@ function addButtons() {
                     "right": 5
                 }
             };
-        } else if (buttonName === 'screenInput') {
+        } else if (buttonName === 'touch-screen') {
             buttonFormat = {
                 "inputs": {
                     "x": "touchScreenX",
@@ -4042,7 +4054,7 @@ const layoutOptions = layoutTypes.flatMap(layout => {
 function populateImageLayoutSelect() {
     const imageLayoutSelect = document.getElementById('imageLayoutSelect');
     
-    const imageLayoutButtons = document.getElementById('image-layout-buttons');
+    //const imageLayoutButtons = document.getElementById('image-layout-buttons');
 
     imageLayoutSelect.innerHTML = '';
 
@@ -4054,19 +4066,17 @@ function populateImageLayoutSelect() {
         imageLayoutSelect.appendChild(optionElement);
     });
 
-    // Populate the select element using the global layoutOptions
-    layoutOptions.forEach(option => {
-        let optionElement = document.createElement('button');
-        optionElement.value = option;
-        optionElement.text = option.toUpperCase();
-        optionElement.innerHTML = option.toUpperCase();
-        optionElement.id = option.replace(/\s+/g, '-');
-        optionElement.classList.add('button', 'button--secondary');
-        imageLayoutButtons.appendChild(optionElement);
-    });
+    // // Populate the select element using the global layoutOptions
+    // layoutOptions.forEach(option => {
+    //     let optionElement = document.createElement('button');
+    //     optionElement.value = option;
+    //     optionElement.text = option.toUpperCase();
+    //     optionElement.innerHTML = option.toUpperCase();
+    //     optionElement.id = option.replace(/\s+/g, '-');
+    //     optionElement.classList.add('button', 'button--secondary');
+    //     imageLayoutButtons.appendChild(optionElement);
+    // });
 }
-
-
 
 function getFileNameForCurrentLayout() {
     const currentState = getCurrentState();
@@ -4085,7 +4095,6 @@ document.getElementById('imageLayoutSelect').addEventListener('change', function
 selectLayout.addEventListener('change', function() {
     layoutSelection = selectLayout.value; // Update the layoutSelection value
     document.getElementById('layout-object').style.backgroundImage = 'unset';
-    document.getElementById('image-layout-options').style.display = 'flex';
     updateLayoutBackground();
 });
 
@@ -4096,40 +4105,6 @@ document.querySelectorAll('input[name="orientation"]').forEach((radio) => {
         updateLayoutBackground();
     })}
 );
-
-// Add click event listeners to each button in #image-layout-buttons
-document.getElementById('image-layout-buttons').addEventListener('click', function(event) {
-    if (event.target.tagName === 'BUTTON') {
-        console.log("button clicked: ", event.target.value);
-        const selectedLayout = event.target.value;
-        document.getElementById('imageLayoutSelectLabel').textContent = `Selected Image: ${selectedLayout}`;
-        // Update the image-wrapper display
-        document.querySelectorAll('#imageContainer .image-wrapper').forEach(wrapper => {
-            wrapper.style.display = wrapper.id === `image-${selectedLayout.replace(/\s+/g, '-')}` ? 'flex' : 'none';
-        });
-
-        // Remove 'button--primary' and add 'button--secondary' for all buttons
-        document.querySelectorAll('#image-layout-buttons button').forEach(button => {
-            button.classList.remove('button--primary');
-            button.classList.add('button--secondary');
-        });
-
-        // Add 'button--primary' and remove 'button--secondary' for the clicked button
-        event.target.classList.remove('button--secondary');
-        event.target.classList.add('button--primary');
-        
-        // Update the #imageLayoutSelect dropdown
-        const imageLayoutSelect = document.getElementById('imageLayoutSelect');
-        imageLayoutSelect.value = selectedLayout;
-        
-        // Trigger the change event on the select element to ensure any attached listeners are notified
-        const changeEvent = new Event('change');
-        imageLayoutSelect.dispatchEvent(changeEvent);
-    }
-});
-
-
-
 
 // Call these functions to initialize
 populateImageLayoutSelect();
@@ -4200,70 +4175,111 @@ function getFileType(fileName) {
 
 function displayUploadedImages() {
     const imageContainer = document.getElementById('imageContainer');
-    imageContainer.innerHTML = '';
-
-    const selectedLayout = document.getElementById('imageLayoutSelect').value;
     const imageList = document.getElementById('image-list');
-    imageList.innerHTML = '<h3>Uploaded Images:</h3>';
+    const ul = imageList.querySelector('ul') || document.createElement('ul');
 
-    const ul = document.createElement('ul');
-    imageList.appendChild(ul);
+    if (!imageList.contains(ul)) {
+        imageList.appendChild(ul);
+    }
 
     for (const [layoutKey, imageUrl] of Object.entries(layoutImages)) {
-        const imgWrapper = document.createElement('div');
-        imgWrapper.className = 'image-wrapper';
-        imgWrapper.id = `image-${layoutKey.replace(/\s+/g, '-')}`;
-        imgWrapper.style.display = layoutKey === selectedLayout ? 'flex' : 'none';
-
-        const img = document.createElement('img');
-        img.src = imageUrl;
-        img.alt = layoutKey;
-        img.style.height = 'auto';
-
-        const label = document.createElement('p');
-        label.textContent = layoutKey;
-
-        const removeButton = document.createElement('button');
-        removeButton.className = 'remove-button'
-        removeButton.textContent = 'Remove';
-        removeButton.onclick = function() {
-            document.getElementById('layout-object').style.backgroundImage = 'unset';
-            URL.revokeObjectURL(layoutImages[layoutKey]);
-            // Remove the image wrapper from the DOM
-            imgWrapper.remove();
-            const currentImageSelection = convertImageLayoutSelectionToJsonKeys();
-            defaultJsonOutput.representations[currentImageSelection.device][currentImageSelection.layout][currentImageSelection.orientation].assets.resizable = "";
+        // Check if this image is already in the list
+        if (!ul.querySelector(`li[data-layout-key="${layoutKey}"]`)) {
+            // Create list item
+            const listItem = document.createElement('li');
+            listItem.setAttribute('data-layout-key', layoutKey);
             
-            // Remove the corresponding list item from the image list
-            const listItems = ul.getElementsByTagName('li');
-            for (let i = 0; i < listItems.length; i++) {
-                if (listItems[i].textContent === layoutKey) {
-                    listItems[i].remove();
-                    break;
+            const imageActionItems = document.createElement('div');
+            imageActionItems.className = 'image-action-items';
+            
+            const listItemDeleteButton = document.createElement('button');
+            listItemDeleteButton.className = 'remove-button';
+            listItemDeleteButton.classList.add('button', 'button--primary');
+            listItemDeleteButton.innerHTML = '<i class="fa-solid fa-trash"></i>';
+            
+            const listItemViewButton = document.createElement('button');
+            listItemViewButton.className = 'view-button';
+            listItemViewButton.classList.add('button', 'button--primary');
+            listItemViewButton.innerHTML = '<i class="fa-solid fa-eye"></i>';
+            
+            imageActionItems.appendChild(listItemViewButton);
+            imageActionItems.appendChild(listItemDeleteButton);
+            
+            
+            listItem.appendChild(document.createTextNode(layoutKey));
+            listItem.appendChild(imageActionItems);
+            
+            ul.insertBefore(listItem, ul.firstChild);
+
+            listItemDeleteButton.onclick = function(event) {
+                event.stopPropagation();
+                document.getElementById('layout-object').style.backgroundImage = 'unset';
+                URL.revokeObjectURL(layoutImages[layoutKey]);
+                const currentImageSelection = convertImageLayoutSelectionToJsonKeys();
+                defaultJsonOutput.representations[currentImageSelection.device][currentImageSelection.layout][currentImageSelection.orientation].assets.resizable = "";
+                
+                listItem.remove();
+                
+                const [device, layout, orientation] = layoutKey.split(' - ');
+                if (defaultJsonOutput.representations[device] &&
+                    defaultJsonOutput.representations[device][layout] &&
+                    defaultJsonOutput.representations[device][layout][orientation]) {
+                    delete defaultJsonOutput.representations[device][layout][orientation].assets;
                 }
-            }
+                
+                updateJson();
+                delete layoutImages[layoutKey];
+                
+                const imgWrapper = document.getElementById(`image-${layoutKey.replace(/\s+/g, '-')}`);
+                if (imgWrapper) {
+                    imgWrapper.remove();
+                }
+            };
             
-            // Update the JSON output
-            const [device, layout, orientation] = layoutKey.split(' - ');
-            if (defaultJsonOutput.representations[device] &&
-                defaultJsonOutput.representations[device][layout] &&
-                defaultJsonOutput.representations[device][layout][orientation]) {
-                delete defaultJsonOutput.representations[device][layout][orientation].assets;
-            }
-            
-            // Update the displayed JSON
-            updateJson();
-            delete layoutImages[layoutKey];
-        };
+            listItemViewButton.onclick = function(event) {
+                const [device, layout, orientation] = layoutKey.split(/\s+|-/).filter(Boolean).map(word => word.replace(/\s|-/g, ''));
+                console.log([device, layout, orientation]);
+                
+                const layoutSelect = document.getElementById('layoutSelect');
+                layoutSelect.value = `${device} ${layout}`;
+                
+                const orientationRadio = document.getElementById(orientation);
+                if (orientationRadio) {
+                    orientationRadio.checked = true;
+                }
+                
+                layoutSelect.dispatchEvent(new Event('change'));
+                
+                if (orientationRadio) {
+                    orientationRadio.dispatchEvent(new Event('change'));
+                }
+                
+                updateLayoutBackground();
+                loadLayout();
+            };
 
-        imgWrapper.appendChild(img);
-        imgWrapper.appendChild(label);
-        imgWrapper.appendChild(removeButton);
-        imageContainer.appendChild(imgWrapper);
+            // Create image wrapper
+            const imgWrapper = document.createElement('div');
+            imgWrapper.className = 'image-wrapper';
+            imgWrapper.id = `image-${layoutKey.replace(/\s+/g, '-')}`;
+            imgWrapper.style.display = 'none';
 
-        const listItem = document.createElement('li');
-        listItem.textContent = layoutKey;
-        ul.appendChild(listItem);
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = layoutKey;
+            img.style.height = 'auto';
+
+            imgWrapper.appendChild(img);
+            imageContainer.appendChild(imgWrapper);
+
+            // Add click event to list item
+            listItem.addEventListener('click', function() {
+                ul.querySelectorAll('li').forEach(item => item.classList.remove('highlighted'));
+                this.classList.add('highlighted');
+                imageContainer.querySelectorAll('.image-wrapper').forEach(wrapper => wrapper.style.display = 'none');
+                imgWrapper.style.display = 'flex';
+            });
+        }
     } 
 
     updateLayoutBackground();
@@ -4468,3 +4484,11 @@ saveJsonButton.addEventListener('click', function() {
         console.log('Problematic JSON string:', codeContent);
     }
 });
+
+function showLoadingModal() {
+    document.getElementById('loadingModal').style.display = 'flex';
+  }
+  
+  function hideLoadingModal() {
+    document.getElementById('loadingModal').style.display = 'none';
+  }

@@ -288,6 +288,16 @@
 		overflow:hidden;
 	}
 
+	#layout-object > * {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
 	.layout-item {
 		background-clip: content-box;
 		background-color:rgba(200,200,200,.3);
@@ -777,6 +787,15 @@
 		border:1px solid lightgrey;
 		padding:.5em;
 		margin-top:-1px;
+		display:flex;
+		justify-content: space-between;
+		flex-direction: row;
+		flex-wrap:nowrap;
+		align-items:center;
+	}
+
+	#image-list li button {
+		width:unset;
 	}
 
 	.remove-button {
@@ -862,7 +881,7 @@
 
     .layout-item.locked, .screen-item.locked {
         /* pointer-events: none; */
-        opacity: 0.7;
+        opacity: 0.4;
     }
 
 	.item-info-container {
@@ -871,6 +890,85 @@
 		justify-content:space-between;
 		align-items:center;
 		gap: 1em;
+	}
+
+	#image-upload-container {
+		display:flex;
+		flex-direction:row;
+		justify-content:space-between;
+		align-items:unset;
+	}
+
+	#image-upload-container button {
+		aspect-ratio: 1/1;
+		border-radius: 0 var(--border-radius) var(--border-radius) 0;
+	}	
+
+	#image-upload-container input {
+		border-left: 1px solid var(--primary-color);
+		border-bottom:1px solid var(--primary-color);
+		border-top:1px solid var(--primary-color);
+		border-right:0px;
+		width:100%;
+		border-radius: var(--border-radius) 0 0 var(--border-radius);
+	}
+
+	.highlighted {
+		background-color:lightgrey;
+	}
+
+	.image-action-items {
+		display:flex;
+		flex-direction:row;
+		gap: .5em;
+	}
+
+	#image-uploader {
+		display:flex;
+		flex-direction:column;
+		gap: 1em;
+	}
+
+	.image-wrapper img {
+		background-color: black;
+	}
+
+	.modal {
+		display: none;
+		position: fixed;
+		z-index: 1000;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0,0,0,0.5);
+		justify-content: center;
+		align-items:center;
+	}
+
+	.modal-content {
+		background-color: #fefefe;
+		padding: 20px;
+		border: 1px solid #888;
+		width: 300px;
+		text-align: center;
+		border-radius:var(--border-radius);
+
+	}
+
+	.loader {
+		border: 5px solid #f3f3f3;
+		border-top: 5px solid var(--primary-color);;
+		border-radius: 50%;
+		width: 50px;
+		height: 50px;
+		animation: spin 1s linear infinite;
+		margin: 0 auto 20px;
+	}
+
+	@keyframes spin {
+		0% { transform: rotate(0deg); }
+		100% { transform: rotate(360deg); }
 	}
 
 </style>
@@ -959,6 +1057,7 @@
 						<div class="container__meta flex-row">
 							<p class="bubble" id="selectedConsole">Console</p>
 							<p class="bubble" id="selectedLayout">Layout</p>
+							<p class="bubble" id="selectedOrientation">Orientation</p>
 						</div>
 					</div>
 
@@ -988,7 +1087,7 @@
 						<h3 class="item-name"></h3>
 						<div class="focus-actions">
 							<button id="delete-button" style="display:none;" class="delete-button button button--primary"><i class="fa-solid fa-trash"></i></button>
-							<button id="lock-button" class="button button--secondary"><i class="fa-solid fa-unlock"></i></button>
+							<button id="lock-button" class="button button--primary"><i class="fa-solid fa-unlock"></i></button>
 						</div>
 					</div>
 				</div>
@@ -1007,15 +1106,16 @@
 
 			<section id="files" class="container flex-column">
 				<h2>Layout Images</h2>
-				<div class="flex-column" id="image-layout-options">
-					<select style="display:none;" disabled id="imageLayoutSelect"></select>
-					<h3 id="imageLayoutSelectLabel">Selected Image: </h3>
-					<input type="file" id="imageUpload" accept="image/*,application/pdf">
-					<button id="uploadImageButton" class="button button--primary">Upload Image</button>
-					 <div id="image-layout-buttons"></div>
-				</div>
-				<div id="imageContainer"></div>
 				<div id="image-list"></div>
+				<div id="imageContainer"></div>
+				<div id="image-uploader">				
+				<h3>Upload Images</h3>
+				<select id="imageLayoutSelect"></select>
+					<div id="image-upload-container">
+						<input type="file" id="imageUpload" accept="image/*,application/pdf">
+						<button id="uploadImageButton" class="button button--primary"><i class="fa-solid fa-upload"></i></button>
+					</div>
+				</div>
 			</section>
 		</div>
 		
@@ -1076,6 +1176,13 @@
 			</div>
 		</section>
 	</div>
+
+	<div id="loadingModal" class="modal">
+		<div class="modal-content">
+		  <div class="loader"></div>
+		  <p>Uploading files, please wait...</p>
+		</div>
+	  </div>
 	
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
