@@ -196,7 +196,7 @@
 	#setup {
 		display:grid;
 		gap: 1em;
-		width:280px;
+		min-width: 280px;
 	}
 
 	#metadata {
@@ -259,7 +259,7 @@
 		text-align:center;
 	}
 
-	label:hover {
+	.button label:hover {
 		background-color: var(--secondary-color-hover);
 	}
 
@@ -507,7 +507,7 @@
     }
 
 	#focus {
-		width:280px;
+		min-width: 280px;
 		display:flex;
 		flex-direction:column;
 		gap: 1em;
@@ -674,6 +674,12 @@
 			gap: 1em;
 		}
 
+		#other {
+			display:flex !important;
+			flex-direction:column !important;
+			gap: 1em;
+		}
+
 		#content {
 			display: flex;
 			flex-direction: column;
@@ -819,6 +825,14 @@
 		align-items:baseline;
 	}
 
+	.checkbox-wrapper {
+		display:flex;
+		flex-direction:row;
+		justify-content: center;
+		align-items: center;
+		gap: 1em
+	}
+
 </style>
 
 </head>
@@ -950,6 +964,8 @@
 				<h2>Layout Images</h2>
 				<div class="flex-column" id="image-layout-options">
 					<select id="imageLayoutSelect"></select>
+					<!-- TODO: make into buttons instead -->
+					<button id="imageLayoutButtons"></div>
 					<input type="file" id="imageUpload" accept="image/*,application/pdf">
 					<button id="uploadImageButton" class="button button--primary">Upload Image</button>
 					
@@ -968,13 +984,22 @@
 		<section class="container">
 			<div id="code-container" class="flex-column">
 				<div id="output-info">
-					<h2>Output</h2>
+					<h2>info.json</h2>
 					<div id="output-actions">
-					<button id="copy-json" class="button button--secondary">Copy JSON</button>
+						<div class="checkbox-wrapper">
+							<input type="checkbox" id="enableEditing" name="enableEditing">
+							<label for="enableEditing">Enable JSON Editing</label>
+						</div>
+						<button id="copy-json" class="button button--secondary">Copy JSON</button>
+					
 					</div>
 				</div>
-				<div id="code">
+				<div id="code" contenteditable="true">
 					<p>code</p>
+				</div>
+				<div id="code-actions">
+					<button id="save-json" class="button button--primary">Save JSON</button>
+					
 				</div>
 			</div>
 		</section>
@@ -1002,7 +1027,7 @@
 						<li>To avoid heavy server stress with file uploads and downloads, this editor uses blobs to convert, display and export images. To maintain transparency in your designs, please refrain from using #FFFFF white. I plan to look into using a server technology to upload files in a future version.</li>
 						<li>To try to maintain aspect ratios for screens without requiring the user to constantly whip out a calculator, I've locked gamescreen aspect ratios from changing from the UI. You can change the aspect ratio through the "Focus" interface.</li>
 					</ul>
-					</p>
+					<p span style="font-weight:700; color:var(--primary-color)">More to come! Let me know what you think and what ideas you have at info@playcase.gg</p>
 				</div>
 			</div>
 		</section>

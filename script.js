@@ -745,24 +745,6 @@ let defaultJsonOutput = {
                                 "right": 0
                             }
                         },
-                        {
-                            "inputs": {
-                                "x": "touchScreenX",
-                                "y": "touchScreenY"
-                            },
-                            "frame": {
-                                "x": 100,
-                                "y": 200,
-                                "width": 200,
-                                "height": 150
-                            },
-                            "extendedEdges": {
-                                "top": 0,
-                                "bottom": 0,
-                                "left": 0,
-                                "right": 0
-                            }
-                        }
                     ],
                     "mappingSize": {
                         "width": 430,
@@ -2537,7 +2519,6 @@ function loadLayout() {
             if (item.placement) {
                 div.dataset.placement = item.placement;
             }
-
             // Create and append the resize handle
             const resizeHandle = document.createElement('div');
             resizeHandle.className = 'resize-handle';
@@ -4294,3 +4275,49 @@ function updateLayoutObjectSize() {
 // Add this to your window resize event listener if you have one, or create one:
 window.addEventListener('resize', updateLayoutObjectSize);
 
+const enableEditingCheckbox = document.getElementById('enableEditing');
+const codeElement = document.getElementById('code');
+const saveJsonButton = document.getElementById('save-json');
+
+enableEditingCheckbox.addEventListener('change', function() {
+    codeElement.contentEditable = this.checked;
+    codeElement.style.backgroundColor = this.checked ? 'black' : 'lightgrey';
+    codeElement.style.padding = '10px';
+    saveJsonButton.disabled = !this.checked;
+    saveJsonButton.style.opacity = this.checked ? '1' : '0.5';
+});
+
+// Initialize the state
+codeElement.contentEditable = enableEditingCheckbox.checked;
+codeElement.style.backgroundColor = enableEditingCheckbox.checked ? 'black' : 'lightgrey';
+codeElement.style.padding = '10px';
+saveJsonButton.disabled = !enableEditingCheckbox.checked;
+saveJsonButton.style.opacity = enableEditingCheckbox.checked ? '1' : '0.5';
+
+// Modify the existing save-json event listener
+saveJsonButton.addEventListener('click', function() {
+    if (!enableEditingCheckbox.checked) {
+        alert('Editing is disabled. Enable editing to save changes.');
+        return;
+    }
+
+    const codeContent = document.getElementById('code').textContent;
+    try {
+        // Trim whitespace and remove any non-printable characters
+        const cleanedContent = codeContent.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+        const newJson = JSON.parse(cleanedContent);
+        // Update your defaultJsonOutput variable
+        defaultJsonOutput = newJson;
+         // Update the displayed JSON
+         updateJson();
+        // Call your function to update the layout
+        if (layoutSelection) {
+            loadLayout();
+        }
+        alert('JSON saved!');
+    } catch (error) {
+        alert('Error parsing JSON. Please check your syntax.');
+        console.error('JSON parse error:', error);
+        console.log('Problematic JSON string:', codeContent);
+    }
+});
