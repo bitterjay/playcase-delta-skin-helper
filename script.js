@@ -3006,12 +3006,17 @@ let isItemLocked = false;
 function toggleLockItem() {
     const lockButton = document.getElementById('lock-button');
     const selectedItem = document.querySelector('.layout-item.selected, .screen-item.selected');
-    
+
     if (selectedItem) {
         isItemLocked = !isItemLocked;
         selectedItem.classList.toggle('locked', isItemLocked);
-        lockButton.textContent = isItemLocked ? 'Unlock Item' : 'Lock Item';
+        lockButton.innerHTML = isItemLocked ? '<i class="fa-solid fa-lock"></i>' : '<i class="fa-solid fa-unlock"></i>';
         lockButton.classList.toggle('locked', isItemLocked);
+        // Hide the delete button when an item is locked, but only for layout items
+        const deleteButton = document.getElementById('delete-button');
+        if (deleteButton && selectedItem.classList.contains('layout-item')) {
+            deleteButton.style.display = isItemLocked ? 'none' : 'block';
+        }
         
         // Hide or show the resize handle based on the lock state
         const resizeHandle = selectedItem.querySelector('.resize-handle');
@@ -3019,6 +3024,17 @@ function toggleLockItem() {
             resizeHandle.style.display = isItemLocked ? 'none' : 'block';
         }
         
+        // Show or hide the .focus-item based on the lock state
+        const focusItem = document.querySelector('.focus-item');
+        if (focusItem) {
+            focusItem.style.display = isItemLocked ? 'none' : 'flex';
+        }
+
+        // Add a 1em gap to the .container if the item is unlocked
+        const containers = document.querySelectorAll('#focus > .container:first-child');
+        containers.forEach(container => {
+            container.style.gap = isItemLocked ? '0' : '1em';
+        });
         // Re-initialize draggable functionality
         makeDraggable(selectedItem);
     }
@@ -3029,6 +3045,14 @@ document.getElementById('lock-button').addEventListener('click', toggleLockItem)
     
 function selectItem(event) {
     event.stopPropagation(); // Prevent the click event from bubbling up to layout-object
+    
+    // Update the gap for the first container in #focus only if the item is unlocked
+    if (!isItemLocked) {
+        const firstFocusContainer = document.querySelector('#focus > .container:first-child');
+        if (firstFocusContainer) {
+            firstFocusContainer.style.gap = '1em';
+        }
+    }
 
     // Remove highlight from all .layout-item elements
     document.querySelectorAll('.layout-item, .screen-item').forEach(item => {
@@ -3083,9 +3107,15 @@ function selectItem(event) {
 
     const lockButton = document.getElementById('lock-button');
     isItemLocked = event.currentTarget.classList.contains('locked');
-    lockButton.textContent = isItemLocked ? 'Unlock Item' : 'Lock Item';
+    lockButton.innerHTML = isItemLocked ? '<i class="fa-solid fa-lock"></i>' : '<i class="fa-solid fa-unlock">';
     lockButton.classList.toggle('locked', isItemLocked);
-
+    lockButton.style.display = 'inline-block'; // Show the lock button
+    // Update the display of .focus-item based on the lock state
+    const focusItem = document.querySelector('.focus-item');
+    if (focusItem) {
+        focusItem.style.display = isItemLocked ? 'none' : 'flex';
+    }
+    
     // Display the matched item in the .focus-item div
     displayMatchedItem(selectedItem);
 }
@@ -3098,12 +3128,15 @@ function deselectAllItems() {
     document.querySelector('.item-name').innerText = '';
     document.querySelector('.focus-item').innerHTML = '';
     document.getElementById("delete-button").style.display = "none";
+    document.querySelector("#focus > .container:first-child").style.gap = "0";
+    document.getElementById('lock-button').style.display = 'none';
 }
 
 // Add this event listener to your existing code
 document.getElementById('layout-object').addEventListener('click', function(event) {
     if (event.target === this) {
         deselectAllItems();
+        document.getElementById('lock-button').style.display = 'none';
     }
 });
 
@@ -3129,8 +3162,9 @@ function selectScreen(event) {
     // Update lock button state
     const lockButton = document.getElementById('lock-button');
     isItemLocked = event.currentTarget.classList.contains('locked');
-    lockButton.textContent = isItemLocked ? 'Unlock Item' : 'Lock Item';
+    lockButton.innerHTML = isItemLocked ? '<i class="fa-solid fa-lock">' : '<i class="fa-solid fa-unlock">';
     lockButton.classList.toggle('locked', isItemLocked);
+    lockButton.style.display = 'inline-block'; // Show the lock button
 
     // Update the item name in the .item-name div
     document.querySelector('.item-name').innerText = screenId === 'game-screen-0' ? 'Game Screen 1' : 'Game Screen 2';
@@ -3173,7 +3207,9 @@ function selectScreen(event) {
 function displayMatchedItem(item) {
     const focusItemDiv = document.querySelector('.focus-item');
     focusItemDiv.innerHTML = ''; // Clear previous content
-    document.getElementById("delete-button").style.display = "block";
+    document.getElementById("delete-button").style.display = isItemLocked ? "none" : "block";
+
+    
 
     // Get the current device from the layout selection
     const currentState = getCurrentState();
@@ -3865,7 +3901,7 @@ function addButtons() {
         buttonDiv.style.border = '1px solid black';
         buttonDiv.style.backgroundColor = 'rgba(220,220,220,.8)';
         buttonDiv.innerText = buttonName;
-        newItem.classList.add('unlocked');
+        buttonDiv.classList.add('unlocked');
 
         // Append the button div to the layout-object
         layoutObject.appendChild(buttonDiv);
@@ -4347,7 +4383,6 @@ document.getElementById('consoleSelect').addEventListener('change', function() {
         defaultJsonOutput.gameTypeIdentifier = `com.rileytestut.delta.game.${selectedConsole}`;
         
         document.getElementById('identifierInput').value = defaultJsonOutput.gameTypeIdentifier;
-        
         updateMetadata();
 
         loadLayout();

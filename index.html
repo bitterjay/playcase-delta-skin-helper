@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>PlayCase - Delta Skin Helper</title>
 
+	<!-- icons -->
+	<script src="https://kit.fontawesome.com/90397d0bba.js" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
 
 	:root {
@@ -32,6 +35,11 @@
 	#focus > *:empty {
 		display: none;
 	}
+
+	#focus .container {
+		justify-content: baseline;
+	}	
+	
 
 	#content {
 		display: grid;
@@ -514,11 +522,15 @@
 		display:none;
 	}
 
+	#focus > .container:first-child {
+		gap: 0;
+	}
+
 	#focus-title {
 		display:flex;
 		flex-direction:row;
 		justify-content:space-between;
-		align-items:center;
+		align-items: flex-start;
 	}
 
 	#screen-size-info {
@@ -560,9 +572,9 @@
 	}
 
 	.focus-actions {
-		display:grid;
-		grid-template-columns: 1fr 1fr;
-		gap: .5em;
+		display: flex;
+    	justify-content: end;
+    	gap: .5em;
 	}
 
 	#buttons-container {
@@ -840,18 +852,26 @@
 		gap: .5em;
 	}
 
-	#lock-button {
-        margin-bottom: 0.5em;
-    }
-
     #lock-button.locked {
         background-color: var(--primary-color);
+    }
+
+	#lock-button {
+        display: none;
     }
 
     .layout-item.locked, .screen-item.locked {
         /* pointer-events: none; */
         opacity: 0.7;
     }
+
+	.item-info-container {
+		display:flex;
+		flex-direction:row;
+		justify-content:space-between;
+		align-items:center;
+		gap: 1em;
+	}
 
 </style>
 
@@ -964,17 +984,19 @@
 			<section class="container flex-column">
 				<div id="focus-title">
 					<h2>Focus</h2>
-					<h3 class="item-name"></h3>
+					<div class="item-info-container">
+						<h3 class="item-name"></h3>
+						<div class="focus-actions">
+							<button id="delete-button" style="display:none;" class="delete-button button button--primary"><i class="fa-solid fa-trash"></i></button>
+							<button id="lock-button" class="button button--secondary"><i class="fa-solid fa-unlock"></i></button>
+						</div>
+					</div>
 				</div>
 				<div id="focus-container" class="flex-column">
 					<div class="focus-item">
 						<div id="form-container"></div>
 					</div>
-					<div class="focus-actions">
-						<button id="delete-button" style="display:none;" class="delete-button button button--primary">Delete Item</button>
-						<button id="lock-button" class="button button--secondary">Lock Item</button>
-        <button id="delete-button" style="display:none;" class="delete-button button button--primary">Delete Item</button>
-					</div>
+					
 				</div>
 			</section>
 
