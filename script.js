@@ -11618,48 +11618,20 @@ let defaultJson_DS = {
 
 let consoleTypes = ["", "nes", "snes", "n64", "gbc", "gba", "ds"];
 
-//metadata select element
-
-let consoleScreenSizes = {
-    "nes:" : {
-       "inputFrame": { "x": 0, "y": 0, "width": 240, "height": 160
-        }
-    },
-    "snes" : {
-        "inputFrame": { "x": 0, "y": 0, "width": 240, "height": 160
-        }
-    },
-    "n64" : {
-        "inputFrame": { "x": 0, "y": 0, "width": 240, "height": 160
-        }
-    },
-    "gbc" : {
-        "inputFrame": { "x": 0, "y": 0, "width": 160, "height": 144
-        }
-    },
-    "gba" : {
-        "inputFrame": { "x": 0, "y": 0, "width": 240, "height": 160
-        }
-    },
-    "ds" : {
-        "inputFrame": { "x": 0, "y": 0, "width": 240, "height": 160
-        }
-    }
-};
 
 let devices = [
     "iphone",
     "ipad",
     "tv"
-]
+];
 
-let layoutTypes = [
-        "",
-        "iphone standard",
-        "iphone edgeToEdge",
-        "ipad standard",
-        "ipad splitView"
-    ];
+// let layoutTypes = [
+//         "",
+//         "iphone standard",
+//         "iphone edgeToEdge",
+//         "ipad standard",
+//         "ipad splitView"
+//     ];
 
 let orientationTypes = [
     "portrait",
@@ -11689,6 +11661,8 @@ const buttonConfigs = {
     n64: ['menu', 'dpad', 'thumbstick', 'a', 'b', 'start', 'l', 'r', 'cUp', 'cDown', 'cLeft', 'cRight', 'z', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward']
 };
 
+// Add this to your existing global variables
+let isItemLocked = false;
 
 //layout selection in metadata
 
@@ -11733,10 +11707,17 @@ consoleTypes.forEach(function(consoleType) {
 });
 
  // Populate the layout dropdown
+ const layoutTypes = [];
+ for (const device in defaultJsonOutput.representations) {
+     for (const layout in defaultJsonOutput.representations[device]) {
+         layoutTypes.push(`${device} ${layout}`);
+     }
+ }
+ 
  layoutTypes.forEach(function(layoutType) {
     let option = document.createElement('option');
     option.value = layoutType;
-    option.text = layoutType; // Optional: Display as uppercase
+    option.text = layoutType;
     selectLayout.appendChild(option);
 });
 
@@ -12189,9 +12170,6 @@ function makeResizable(resizableElement) {
     }
 }
 
-//once console is selected, load layouts into array
-
-
 function getCurrentElement(itemId) {
     // Split the selected layout into an array of individual words
     let parts = layoutSelection.split(" ");
@@ -12428,16 +12406,6 @@ const jsonString = JSON.stringify(defaultJsonOutput, null, 4);
 // Print the JSON string into the div with id "code" preserving the formatting
 document.getElementById('code').textContent = jsonString;
 
-function updateJson() {
-    // Convert the JSON object to a formatted string
-    const jsonString = JSON.stringify(defaultJsonOutput, null, 4);
-
-    // Print the JSON string into the div with id "code" preserving the formatting
-    document.getElementById('code').textContent = jsonString;
-};
-
-// Add this to your existing global variables
-let isItemLocked = false;
 
 function toggleLockItem() {
     const lockButton = document.getElementById('lock-button');
@@ -12831,7 +12799,6 @@ function displayMatchedScreen(screen) {
     }
 }
 
-
 function updateJson() {
     // Convert the JSON object to a formatted string
     const jsonString = JSON.stringify(defaultJsonOutput, null, 4);
@@ -12912,9 +12879,29 @@ async function handleZipUpload(event) {
                 defaultJsonOutput = jsonContent;
 
                 document.getElementById('nameInput').value = jsonContent.name || '';
-                document.getElementById('identifierInput').value = jsonContent.gameTypeIdentifier || '';
+                document.getElementById('identifierInput').value = jsonContent.identifier || '';
                 
                 selectConsoleBasedOnIdentifier(jsonContent);
+
+                // Clear existing options in layoutSelect
+                selectLayout.innerHTML = '';
+
+                // Get layout options from the updated jsonContent
+                const layoutOptions = [];
+                for (const device in jsonContent.representations) {
+                    for (const layout in jsonContent.representations[device]) {
+                        layoutOptions.push(`${device} ${layout}`);
+                    }
+                }
+
+                // Populate layoutSelect with new options
+                layoutOptions.forEach(option => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    selectLayout.appendChild(optionElement);
+                });
+
                 automaticSelectLayout();
 
                 const filenameMappings = createFilenameMappings(jsonContent);
@@ -13188,7 +13175,6 @@ function addScreenButton() {
     buttonContainer.appendChild(screenButton);
 }
 
-//here
 function addScreenToJsonAndLayout() {
     let layoutParts = layoutSelection.split(" ");
     let device = layoutParts[0];
@@ -13261,8 +13247,6 @@ function addScreenToJsonAndLayout() {
 
 // Call this function after the existing addButtons function
 addScreenButton();
-
-
 
 function addButtons() {
     let consoleTypes = ["", "nes", "snes", "n64", "gbc", "gba", "ds"];
@@ -13802,16 +13786,16 @@ function ensureExtendedEdges(jsonContent) {
 
 function selectConsoleBasedOnIdentifier(jsonContent) {
     const identifierMapping = {
-        "com.delta.n64.standard": "n64",
-        "com.delta.gba.standard": "gba",
-        "com.delta.gbc.standard": "gbc",
-        "com.delta.nes.standard": "nes",
-        "com.delta.snes.standard": "snes",
-        "com.delta.ds.standard": "ds"
+        "com.rileytestut.delta.game.n64": "n64",
+        "com.rileytestut.delta.game.gba": "gba",
+        "com.rileytestut.delta.game.gbc": "gbc",
+        "com.rileytestut.delta.game.nes": "nes",
+        "com.rileytestut.delta.game.snes": "snes",
+        "com.rileytestut.delta.game.ds": "ds"
     };
 
     // Check the identifier at the top level of the JSON
-    let identifier = jsonContent.identifier;
+    let identifier = jsonContent.gameTypeIdentifier;
     if (identifier && identifierMapping[identifier]) {
         document.getElementById('consoleSelect').value = identifierMapping[identifier];
         console.log(`Console selected: ${identifierMapping[identifier]}`);
@@ -14289,8 +14273,6 @@ function showLoadingModal() {
         });
     });
 });
-
-// Add this code to your existing JavaScript file
 
 // Create the "Save Layout PNG" button
 const saveLayoutPngButton = document.createElement('button');
