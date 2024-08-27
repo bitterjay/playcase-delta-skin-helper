@@ -30,6 +30,12 @@
 		display: none;
 	}
 
+	h2 {
+		font-size: 18px;
+	}
+
+	h3 {font-size: 16px;}
+
 	#setup > *:empty,
 	#design > *:empty,
 	#focus > *:empty {
@@ -236,7 +242,7 @@
 		display:flex;
 		flex-direction:row;
 		justify-content:left;
-		gap: 1em;
+		gap: .5em;
 	}
 
 	.flex-column {
@@ -389,6 +395,7 @@
 		display: flex;
    	 	flex-direction: column;
    	 	align-items: baseline;
+		overflow-y:scroll;
     }
 
 	#readme-content p {
@@ -400,11 +407,7 @@
     	height: 1000px;
     }
 
-	#readme-container {
-		display:flex;
-		flex-direction:column;
-	}
-
+	
 	#readme-info {
 		display:flex;
 		flex-direction:column;
@@ -481,8 +484,14 @@
     	display:grid;
     	grid-template-columns: 1fr 1fr;
     	border: 1px solid black;
-    	margin:20px; 
+    	margin-bottom:1em; 
+		aspect-ratio: 16/9;
+		background-color:rgba(200,200,200,.3);
     }
+
+	.screen-size-wrapper .form-group {
+		width:100px;
+	}
 
 
     #form-x input, #form-y input, #form-width input, #form-height input {
@@ -674,7 +683,7 @@
 
 		}
 
-		#focus:not(:empty) {
+		/* #focus:not(:empty) {
 			width: unset;
 			opacity: 1;
 			grid-column: 3fr !important;
@@ -682,12 +691,12 @@
 		}
 
 		#focus {
-			display:grid !important;
-			width:unset !important;
-			grid-column: span 3 !important;
+			display:grid;
+			width:unset;
+			grid-column: span 3;
 			grid-template-columns: 3fr 2fr;
 
-		}
+		} */
 	}
 
 	@media (max-width: 420px) {
@@ -697,8 +706,21 @@
 			gap: 1em;
 		}
 
+		.container__header {
+			flex-direction: column;
+			gap:1em;
+		}
+
+		.container__meta {
+			flex-direction:row;
+		}
+		
+		.container__meta p {
+			font-size:14px;
+		}
+
 		#other {
-			display:flex !important;
+			display:flex;
 			flex-direction:column !important;
 			gap: 1em;
 		}
@@ -996,6 +1018,7 @@
 		font-size: 1.2em;
 		cursor: pointer;
 		transition: transform 0.3s ease;
+		padding:var(--padding-xs);
 	}
 
 	.accordion-content {
@@ -1022,6 +1045,61 @@
 		border-radius:var(--border-radius);
 	}
 
+	#add-buttons__container {
+		display:flex;
+		flex-direction:row;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	#add-screen-button {
+		background-color:#8825F2;
+	}
+
+	#ref-table {
+		display:flex;
+		flex-direction:column;
+		width:100%;
+	}
+
+	table {
+		text-align:left;
+	}
+
+	th, td {
+		padding:var(--padding-m);
+	}
+
+	#readme-container {
+		height:1000px;
+	}
+
+	#ref-table table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1em;
+        margin-bottom: 1em;
+    }
+
+    #ref-table th, #ref-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+    #ref-table th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+
+    #ref-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    #ref-table tr:hover {
+        background-color: #f5f5f5;
+    }
+
 </style>
 
 </head>
@@ -1033,12 +1111,12 @@
 		<div class="flex-row">
 			<a href="https://playcase.gg"><img id="logo" src="playcase-icon.svg"></a>
 			<h1>Delta Skin Editor</h1>
-			<div id="version">v0.0.1</div>
+			<!-- <div id="version">v0.0.1</div> -->
 		</div>
 
 		<div id="header-actions">
 				<a class="button button--secondary" style="background-color:#8825F2" href="https://noah978.gitbook.io/delta-docs/skins" target="_blank"><i class="fa-solid fa-newspaper"></i></a>
-				<label for="importJsonButton" class="custom-file-upload button button--secondary">
+				<label for="importJsonButton" style="display:none" class="custom-file-upload button button--secondary">
 			    Import JSON</label>
 			<div id="file-actions">
 			<input type="file" id="importJsonButton" accept=".json">
@@ -1151,7 +1229,10 @@
 			</section>
 
 			<section class="container flex-column">
-				<h2>Add Buttons</h2>
+				<div id="add-buttons__container">
+					<h2>Add Buttons</h2>
+					<button id="remove-all-buttons" class="button button--primary"><i class="fa-solid fa-rotate-right"></i></button>
+				</div>
 				<div id="buttons-container"></div>
 			</section>
 
@@ -1226,6 +1307,50 @@
 							<li>To avoid heavy server stress with file uploads and downloads, this editor uses blobs to convert, display and export images. To maintain transparency in your designs, please refrain from using #FFFFF white. I plan to look into using a server technology to upload files in a future version.</li>
 							<li>To try to maintain aspect ratios for screens without requiring the user to constantly whip out a calculator, I've locked gamescreen aspect ratios from changing from the UI. You can change the aspect ratio through the "Focus" interface.</li>
 						</ul>
+						<div id="ref-table">
+							<h3>Aspect Ratio Reference</h3>
+							<table>
+								<thead>
+									<tr>
+										<th>Console</th>
+										<th>Full inputFrame</th>
+										<th>Aspect Ratio</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>GameBoy (Color)</td>
+										<td>160 x 144</td>
+										<td>10 : 9</td>
+									</tr>
+									<tr>
+										<td>GameBoy Advance</td>
+										<td>240 x 160</td>
+										<td>3 : 2</td>
+									</tr>
+									<tr>
+										<td>Nintendo DS</td>
+										<td>256 x 384</td>
+										<td>2 : 3</td>
+									</tr>
+									<tr>
+										<td>Nintendo Entertainment System</td>
+										<td>256 x 240</td>
+										<td>16 : 15</td>
+									</tr>
+									<tr>
+										<td>Super Nintendo Entertainment System</td>
+										<td>256 x 224</td>
+										<td>8 : 7</td>
+									</tr>
+									<tr>
+										<td>Nintendo 64</td>
+										<td>256 x 224</td>
+										<td>8 : 7</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 						<p span style="font-weight:700; color:var(--primary-color)">More to come! Let me know what you think and what ideas you have at info@playcase.gg</p>
 					</div>
 				</div>
