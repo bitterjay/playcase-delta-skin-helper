@@ -14289,3 +14289,131 @@ function showLoadingModal() {
         });
     });
 });
+
+// Add this code to your existing JavaScript file
+
+// Create the "Save Layout PNG" button
+const saveLayoutPngButton = document.createElement('button');
+saveLayoutPngButton.id = 'saveLayoutPngButton';
+saveLayoutPngButton.classList = 'button button--primary';
+saveLayoutPngButton.innerHTML = '<i class="fa-solid fa-image"></i>&nbsp;&nbsp;Save Layout PNG';
+document.getElementById('saveAsPngContainer').appendChild(saveLayoutPngButton);
+
+// Add event listener to the new button
+saveLayoutPngButton.addEventListener('click', saveLayoutAsPng);
+
+function saveLayoutAsPng() {
+    console.log("saveLayoutAsPng function called");
+    const layoutObject = document.getElementById('layout-object');
+    if (!layoutObject) {
+        console.error("Layout object not found");
+        alert("Error: Layout object not found");
+        return;
+    }
+    
+    // Create a canvas element
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Set canvas size to match the layout object
+    canvas.width = layoutObject.offsetWidth;
+    canvas.height = layoutObject.offsetHeight;
+    console.log(`Canvas size set to ${canvas.width}x${canvas.height}`);
+    
+    // Draw white background
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw the background image if it exists
+    if (layoutObject.style.backgroundImage) {
+        console.log("Background image found, attempting to draw");
+        const img = new Image();
+        img.onload = () => {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            drawLayoutElements();
+        };
+        img.onerror = (error) => {
+            console.error("Error loading background image:", error);
+            drawLayoutElements();
+        };
+        img.src = layoutObject.style.backgroundImage.replace(/url\((['"])?(.*?)\1\)/gi, '$2');
+    } else {
+        console.log("No background image, drawing layout elements directly");
+        drawLayoutElements();
+    }
+    
+    function drawLayoutElements() {
+        console.log("Drawing layout elements");
+        // Draw all child elements (buttons, screens, etc.)
+        layoutObject.querySelectorAll('.layout-item, .screen-item').forEach(item => {
+            const computedStyle = window.getComputedStyle(item);
+            const paddingLeft = parseFloat(computedStyle.paddingLeft);
+            const paddingRight = parseFloat(computedStyle.paddingRight);
+            const paddingTop = parseFloat(computedStyle.paddingTop);
+            const paddingBottom = parseFloat(computedStyle.paddingBottom);
+
+            // Draw the padding area
+            ctx.fillStyle = 'rgba(200, 200, 200, 0.5)';  // Light gray with 50% opacity
+            ctx.fillRect(
+                item.offsetLeft,
+                item.offsetTop,
+                item.offsetWidth,
+                item.offsetHeight
+            );
+
+            // Draw the main element area
+            ctx.fillStyle = computedStyle.backgroundColor || 'rgba(220, 220, 220, 0.8)';
+            ctx.fillRect(
+                item.offsetLeft + paddingLeft,
+                item.offsetTop + paddingTop,
+                item.offsetWidth - paddingLeft - paddingRight,
+                item.offsetHeight - paddingTop - paddingBottom
+            );
+            
+            // Draw border
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';  // Black with 50% opacity
+            ctx.strokeRect(
+                item.offsetLeft,
+                item.offsetTop,
+                item.offsetWidth,
+                item.offsetHeight
+            );
+            
+            // Draw text
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';  // Black with 70% opacity
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(
+                item.innerText,
+                item.offsetLeft + item.offsetWidth / 2,
+                item.offsetTop + item.offsetHeight / 2
+            );
+        });
+        
+        console.log("Attempting to save canvas as PNG");
+        // Convert canvas to PNG and trigger download
+        try {
+            canvas.toBlob((blob) => {
+                if (!blob) {
+                    console.error("Failed to create blob from canvas");
+                    alert("Error: Failed to create image file");
+                    return;
+                }
+                const link = document.createElement('a');
+                // Get the layout name from the selected layout and orientation
+                const layoutName = `${layoutSelection}_${document.querySelector('input[name="orientation"]:checked').id}`;
+                link.download = `${layoutName}.png`;
+                link.href = URL.createObjectURL(blob);
+                document.body.appendChild(link);  // Temporarily add to document
+                link.click();
+                document.body.removeChild(link);  // Remove from document
+                URL.revokeObjectURL(link.href);
+                console.log(`PNG file "${layoutName}.png" should be downloading now`);
+            }, 'image/png');
+        } catch (error) {
+            console.error("Error saving canvas as PNG:", error);
+            alert("Error: Failed to save image");
+        }
+    }
+}
