@@ -11653,12 +11653,12 @@ let assets = {
 let currentItem = "";
 
 const buttonConfigs = {
-    gbc: ['menu', 'dpad', 'thumbstick', 'a', 'b', 'start', 'select', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
-    gba: ['menu', 'dpad', 'thumbstick', 'a', 'b', 'start', 'select', 'l', 'r', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
-    nds: ['menu', 'dpad', 'thumbstick', 'xy', 'a', 'b', 'x', 'y', 'start', 'select', 'l', 'r', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
-    nes: ['menu', 'dpad', 'thumbstick', 'a', 'b', 'start', 'select', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
-    snes: ['menu', 'dpad', 'thumbstick', 'a', 'b', 'x', 'y', 'start', 'select', 'menu', 'l', 'r', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
-    n64: ['menu', 'dpad', 'thumbstick', 'a', 'b', 'start', 'l', 'r', 'cUp', 'cDown', 'cLeft', 'cRight', 'z', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward']
+    gbc: ['menu', 'dpad', 'thumbstick', 'a', 'b', 'start', 'select', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'quickSettings'],
+    gba: ['menu', 'dpad', 'thumbstick', 'a', 'b', 'start', 'select', 'l', 'r', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'quickSettings'],
+    nds: ['menu', 'dpad', 'thumbstick', 'xy', 'a', 'b', 'x', 'y', 'start', 'select', 'l', 'r', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'quickSettings'],
+    nes: ['menu', 'dpad', 'thumbstick', 'a', 'b', 'start', 'select', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'quickSettings'],
+    snes: ['menu', 'dpad', 'thumbstick', 'a', 'b', 'x', 'y', 'start', 'select', 'menu', 'l', 'r', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'quickSettings'],
+    n64: ['menu', 'dpad', 'thumbstick', 'a', 'b', 'start', 'l', 'r', 'cUp', 'cDown', 'cLeft', 'cRight', 'z', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'quickSettings']
 };
 
 // Add this to your existing global variables
@@ -11892,6 +11892,18 @@ function loadLayout() {
             const innerDiv = document.createElement('div');
             div.className = 'layout-item';
             innerDiv.className = 'layout-item-inner';
+            
+            // Create a 10px by 10px crosshair in the center of the layout-item
+            const crosshair = document.createElement('div');
+            crosshair.style.position = 'absolute';
+            crosshair.style.width = '10px';
+            crosshair.style.height = '10px';
+            crosshair.style.top = '50%';
+            crosshair.style.left = '50%';
+            crosshair.style.transform = 'translate(-50%, -50%)';
+            crosshair.style.zIndex = '10';
+            crosshair.style.backgroundImage = 'linear-gradient(to bottom, transparent 45%, red 45%, red 55%, transparent 55%), linear-gradient(to right, transparent 45%, red 45%, red 55%, transparent 55%)';
+            innerDiv.appendChild(crosshair);
 
             // Handle relative positioning for TV
             if (device === "tv") {
@@ -11950,6 +11962,16 @@ function loadLayout() {
             makeResizable(div, resizeHandle);
 
             div.addEventListener('click', selectItem);
+
+            // if (item.thumbstick && item.thumbstick.image) {
+            //     const img = document.createElement('img');
+            //     img.src = item.thumbstick.image;
+            //     img.style.width = '100%';
+            //     img.style.height = '100%';
+            //     div.appendChild(img);
+            // } else {
+            //     div.innerText = item.inputs ? Object.keys(item.inputs).join(', ') : 'Item';
+            // }
         });
 
         // Safely get the screen array from the JSON if it exists
@@ -12009,6 +12031,59 @@ function loadLayout() {
         }
     }
     
+    if (thumbstickImageFile) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.src = event.target.result;
+
+            const { device, layout, orientation } = getCurrentState();
+            const thumbstickConfig = defaultJsonOutput["representations"][device][layout][orientation]["items"].find(item => {
+                if (typeof item.inputs === 'object') {
+                    return item.inputs.up === "analogStickUp" &&
+                           item.inputs.down === "analogStickDown" &&
+                           item.inputs.left === "analogStickLeft" &&
+                           item.inputs.right === "analogStickRight";
+                }
+                return false;
+            });
+            const thumbstickWidth = thumbstickConfig ? thumbstickConfig.thumbstick.width : null;
+            const thumbstickHeight = thumbstickConfig ? thumbstickConfig.thumbstick.height : null;
+
+            // Set the image inside the padding of #thumbstick
+            const thumbstickElement = document.querySelector('#thumbstick .layout-item-inner');
+            if (thumbstickElement) {
+                const thumbstickStyle = window.getComputedStyle(document.getElementById("thumbstick"));
+                const innerImg = document.createElement('img');
+                innerImg.src = img.src;
+                innerImg.style.position = "absolute";
+                innerImg.style.top = "50%";
+                innerImg.style.left = "50%";
+                innerImg.style.transform = "translate(-50%, -50%)";
+                innerImg.style.width = thumbstickWidth + "px";
+                innerImg.style.height = thumbstickHeight + "px";
+               // innerImg.style.objectFit = 'contain';
+                innerImg.style.backgroundPosition = "center";
+                thumbstickElement.innerHTML = ''; // Clear any existing content
+                thumbstickElement.appendChild(innerImg);
+
+                 // Create a 10px by 10px crosshair in the center of the layout-item
+                const crosshair = document.createElement('div');
+                crosshair.style.position = 'absolute';
+                crosshair.style.width = '10px';
+                crosshair.style.height = '10px';
+                crosshair.style.top = '50%';
+                crosshair.style.left = '50%';
+                crosshair.style.transform = 'translate(-50%, -50%)';
+                crosshair.style.zIndex = '10';
+                crosshair.style.backgroundImage = 'linear-gradient(to bottom, transparent 45%, red 45%, red 55%, transparent 55%), linear-gradient(to right, transparent 45%, red 45%, red 55%, transparent 55%)';
+                document.querySelector('#thumbstick .layout-item-inner').appendChild(crosshair);
+            }
+           
+
+        };
+        reader.readAsDataURL(thumbstickImageFile);
+    }
 
 }
 
@@ -12318,85 +12393,85 @@ function makeDraggable(draggableElement) {
         isResizing = false;
         draggableElement.style.cursor = 'grab';
     }
+}
 
-    function updateItemPosition(itemId, newX, newY) {
-        // Split the selected layout into an array of individual words
-        let parts = layoutSelection.split(" ");
-        let device = parts[0].toString();
-        let layout = parts[1].toString();
-        let orientation = document.querySelector('input[name="orientation"]:checked').id;
+function updateScreenPosition(screenId, newScreenX, newScreenY) {
+    // Split the selected layout into an array of individual words
+    let parts = layoutSelection.split(" ");
+    let device = parts[0].toString();
+    let layout = parts[1].toString();
+    let orientation = document.querySelector('input[name="orientation"]:checked').id;
 
-        // Get the items array from the selected layout
-        let currentItemArray = defaultJsonOutput["representations"][device][layout][orientation]["items"];
+    // Get the screens array from the selected layout
+    let screensArray = defaultJsonOutput["representations"][device][layout][orientation]["screens"];
 
-        // Find the matching item in the array
-        let item = currentItemArray.find(item => {
-            if (itemId === "d-pad") {
-                const dPadInputs = ["up", "down", "left", "right"];
-                return item.inputs && typeof item.inputs === "object" && dPadInputs.every(direction => direction in item.inputs) && !item.thumbstick;
-            } else if (itemId === "thumbstick") {
-                return item.thumbstick !== undefined;
-            } else if (itemId === "touch-screen") {
-                return item.inputs && item.inputs.x === "touchScreenX" && item.inputs.y === "touchScreenY";
-            } else if (Array.isArray(item.inputs)) {
-                return item.inputs.includes(itemId);
-            } else if (typeof item.inputs === 'object') {
-                return Object.values(item.inputs).includes(itemId);
-            }
-            return false;
-        });
+    // Extract the index from the screenId (assuming format "game-screen-X")
+    let screenIndex = parseInt(screenId.split('-')[2]);
 
-        if (item && item.frame) {
+    if (screenIndex >= 0 && screenIndex < screensArray.length) {
+        let screen = screensArray[screenIndex];
+        
+        if (screen && screen.outputFrame) {
             if (device === "tv") {
-                item.frame.x = newX / layoutObject.clientWidth;
-                item.frame.y = newY / layoutObject.clientHeight;
+                screen.outputFrame.x = newScreenX / layoutObject.clientWidth;
+                screen.outputFrame.y = newScreenY / layoutObject.clientHeight;
             } else {
-                item.frame.x = newX;
-                item.frame.y = newY;
+                screen.outputFrame.x = newScreenX;
+                screen.outputFrame.y = newScreenY;
             }
-            //console.log(`Updated ${itemId}: x=${newX}, y=${newY}`);
+            console.log(`Updated screen ${screenIndex}: x=${screen.outputFrame.x}, y=${screen.outputFrame.y}`);
+
+            // Update the JSON
+            updateJson();
+
+            // Update the focus
+            const focusItemDiv = document.querySelector('.focus-item');
+            const xInput = focusItemDiv.querySelector('#form-x input');
+            const yInput = focusItemDiv.querySelector('#form-y input');
+            xInput.value = screen.outputFrame.x;
+            yInput.value = screen.outputFrame.y;
         }
+    } else {
+        console.error(`Screen with id ${screenId} not found in the screens array.`);
     }
+}
 
-    function updateScreenPosition(screenId, newScreenX, newScreenY) {
-        // Split the selected layout into an array of individual words
-        let parts = layoutSelection.split(" ");
-        let device = parts[0].toString();
-        let layout = parts[1].toString();
-        let orientation = document.querySelector('input[name="orientation"]:checked').id;
+function updateItemPosition(itemId, newX, newY) {
+    // Split the selected layout into an array of individual words
+    let parts = layoutSelection.split(" ");
+    let device = parts[0].toString();
+    let layout = parts[1].toString();
+    let orientation = document.querySelector('input[name="orientation"]:checked').id;
 
-        // Get the screens array from the selected layout
-        let screensArray = defaultJsonOutput["representations"][device][layout][orientation]["screens"];
+    // Get the items array from the selected layout
+    let currentItemArray = defaultJsonOutput["representations"][device][layout][orientation]["items"];
 
-        // Extract the index from the screenId (assuming format "game-screen-X")
-        let screenIndex = parseInt(screenId.split('-')[2]);
-
-        if (screenIndex >= 0 && screenIndex < screensArray.length) {
-            let screen = screensArray[screenIndex];
-            
-            if (screen && screen.outputFrame) {
-                if (device === "tv") {
-                    screen.outputFrame.x = newScreenX / layoutObject.clientWidth;
-                    screen.outputFrame.y = newScreenY / layoutObject.clientHeight;
-                } else {
-                    screen.outputFrame.x = newScreenX;
-                    screen.outputFrame.y = newScreenY;
-                }
-                console.log(`Updated screen ${screenIndex}: x=${screen.outputFrame.x}, y=${screen.outputFrame.y}`);
-
-                // Update the JSON
-                updateJson();
-
-                // Update the focus
-                const focusItemDiv = document.querySelector('.focus-item');
-                const xInput = focusItemDiv.querySelector('#form-x input');
-                const yInput = focusItemDiv.querySelector('#form-y input');
-                xInput.value = screen.outputFrame.x;
-                yInput.value = screen.outputFrame.y;
-            }
-        } else {
-            console.error(`Screen with id ${screenId} not found in the screens array.`);
+    // Find the matching item in the array
+    let item = currentItemArray.find(item => {
+        if (itemId === "d-pad") {
+            const dPadInputs = ["up", "down", "left", "right"];
+            return item.inputs && typeof item.inputs === "object" && dPadInputs.every(direction => direction in item.inputs) && !item.thumbstick;
+        } else if (itemId === "thumbstick") {
+            return item.thumbstick !== undefined;
+        } else if (itemId === "touch-screen") {
+            return item.inputs && item.inputs.x === "touchScreenX" && item.inputs.y === "touchScreenY";
+        } else if (Array.isArray(item.inputs)) {
+            return item.inputs.includes(itemId);
+        } else if (typeof item.inputs === 'object') {
+            return Object.values(item.inputs).includes(itemId);
         }
+        return false;
+    });
+
+    if (item && item.frame) {
+        if (device === "tv") {
+            item.frame.x = newX / layoutObject.clientWidth;
+            item.frame.y = newY / layoutObject.clientHeight;
+        } else {
+            item.frame.x = newX;
+            item.frame.y = newY;
+        }
+        //console.log(`Updated ${itemId}: x=${newX}, y=${newY}`);
     }
 }
 
@@ -12633,6 +12708,7 @@ function displayMatchedItem(item) {
                 if (device === "tv" && (label === "X" || label === "Y" || label === "Width" || label === "Height")) {
                     newValue /= (label === "X" || label === "Width") ? layoutObject.clientWidth : layoutObject.clientHeight;
                 }
+                //here
                 updateNestedProperty(item, path, newValue);
                 updateDivStyle(item, currentItemId); // Update the corresponding div's CSS
                 updateJson(); // Update the displayed JSON
@@ -12659,10 +12735,6 @@ function displayMatchedItem(item) {
                 if (item.frame) {
                     div.style.top = item.frame.y-item.extendedEdges.top + 'px';
                     div.style.left = item.frame.x-item.extendedEdges.left + 'px';
-                   
-
-                    // div.style.left = item.frame.x + 'px';
-                    // div.style.top = item.frame.y + 'px';
 
                     div.style.width = item.frame.width + 'px';
                     div.style.height = item.frame.height + 'px';
@@ -12671,6 +12743,16 @@ function displayMatchedItem(item) {
                     div.style.paddingBottom = item.extendedEdges.bottom + 'px';
                     div.style.paddingLeft = item.extendedEdges.left + 'px';
                     div.style.paddingRight = item.extendedEdges.right + 'px';
+
+                    // Check if the item is a thumbstick
+                    if (item.thumbstick) {
+                        // Get the layout-item-inner img for the thumbstick
+                        const thumbstickImg = div.querySelector('.layout-item-inner img');
+                        if (thumbstickImg) {
+                            thumbstickImg.style.width = item.thumbstick.width + 'px';
+                            thumbstickImg.style.height = item.thumbstick.height + 'px';
+                        }
+                    }
                 }
             }
         }
@@ -12685,6 +12767,11 @@ function displayMatchedItem(item) {
         sizeWrapper.classList = 'size-wrapper'; // Add a class for styling if needed
         focusItemDiv.appendChild(sizeWrapper); // Append the wrapper to focusItemDiv
 
+        // Create a new div to wrap thumbstick fields
+        const thumbstickWrapper = document.createElement('div');
+        thumbstickWrapper.classList.add('thumbstick-wrapper'); // Add a class for styling if needed
+        focusItemDiv.appendChild(thumbstickWrapper); // Append the wrapper to focusItemDiv
+
         // Create form fields for each relevant property
         if (item.frame) {
             let multiplier = device === "tv" ? layoutObject.clientWidth : 1;
@@ -12695,8 +12782,9 @@ function displayMatchedItem(item) {
             createFormField('form-width', 'Width', item.frame.width * multiplier, ['frame', 'width'], sizeWrapper);
             multiplier = device === "tv" ? layoutObject.clientHeight : 1;
             createFormField('form-height', 'Height', item.frame.height * multiplier, ['frame', 'height'], sizeWrapper);
-        
         }
+
+        
 
         if (item.extendedEdges) {
             
@@ -12707,6 +12795,13 @@ function displayMatchedItem(item) {
         
         }
 
+        // Check if the item is a thumbstick
+        if (item.thumbstick) {
+            // Create form fields for thumbstick width and height
+            createFormField('form-thumbstick-width', 'Thumbstick Width', item.thumbstick.width, ['thumbstick', 'width'], thumbstickWrapper);
+            createFormField('form-thumbstick-height', 'Thumbstick Height', item.thumbstick.height, ['thumbstick', 'height'], thumbstickWrapper);
+        }
+
         document.querySelectorAll('input[type="number"]').forEach(input => {
             input.addEventListener('input', function() {
                 if (this.value < 0) {
@@ -12714,8 +12809,6 @@ function displayMatchedItem(item) {
                 }
             });
         });
-
-
         // You can similarly wrap other fields in separate divs if needed
     } else {
         focusItemDiv.innerHTML = `<p>No matching item found.</p>`;
@@ -12902,9 +12995,46 @@ async function handleZipUpload(event) {
                     selectLayout.appendChild(optionElement);
                 });
 
+                // Check if there are any thumbsticks in the file
+                const thumbstickNames = [];
+                for (const device in defaultJsonOutput.representations) {
+                    for (const layout in defaultJsonOutput.representations[device]) {
+                        for (const orientation in defaultJsonOutput.representations[device][layout]) {
+                            const items = defaultJsonOutput.representations[device][layout][orientation].items;
+                            items.forEach(item => {
+                                if (item.thumbstick && item.thumbstick.name) {
+                                    if (!thumbstickNames.includes(item.thumbstick.name)) {
+                                        thumbstickNames.push(item.thumbstick.name);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+
+                updateJson();
+
+                if (thumbstickNames.length > 0) {
+                    console.log('Thumbstick names found:', thumbstickNames);
+                    thumbstickImageFile = zipContent.file(thumbstickNames[0]);
+                    if (thumbstickImageFile) {
+                        thumbstickImageFile = await thumbstickImageFile.async('blob');
+                        thumbstickImageFile.name = thumbstickNames[0];
+                        console.log(`Set thumbstick image file name to: ${thumbstickImageFile.name}`);
+                        handleThumbstick(thumbstickImageFile);
+                    } else {
+                        console.warn(`Thumbstick image file '${thumbstickNames[0]}' not found in the zip.`);
+                    }
+                } else {
+                    console.log('No thumbsticks found in the file.');
+                }
+                
+
                 automaticSelectLayout();
 
                 const filenameMappings = createFilenameMappings(jsonContent);
+
+
 
                 for (const fileName in zipContent.files) {
                     if (fileName !== 'info.json') {
@@ -12999,6 +13129,7 @@ async function handleSingleFileUpload(file, fileType, fileName, selectedLayout) 
                 }
             } else if (['png', 'jpg', 'jpeg', 'gif'].includes(fileType)) {
                 layoutImages[layoutKey] = e.target.result;
+                updateDefaultJsonOutput(layoutKey, fileName);
                 resolve();
             } else {
                 console.warn(`Unsupported file type: ${fileType} for file ${fileName}. Skipping this file.`);
@@ -13045,6 +13176,7 @@ async function handleMultiFileUpload(file, fileName, filenameMappings) {
                 resolve();
             }
         };
+
         reader.onerror = reject;
 
         if (getFileType(fileName) === 'pdf') {
@@ -13144,6 +13276,20 @@ document.getElementById('delete-button').addEventListener('click', function() {
         // Clear the focus section
         document.querySelector('.focus-item').innerHTML = '';
         document.querySelector('.item-name').innerText = '';
+
+        // Add the deleted button back to the buttons-container
+        if (selectedItem.classList.contains('layout-item')) {
+            let buttonContainer = document.getElementById('buttons-container');
+            let newButton = document.createElement('button');
+            newButton.innerText = currentItemName === "touch-screen" ? "Touch Screen" : currentItemName;
+            newButton.id = currentItemName;
+            newButton.className = 'console-button button button--primary';
+            newButton.addEventListener('click', function() {
+                addButtonToJsonAndLayout(currentItemName, selectedConsole);
+                this.remove(); // Remove the button from the button container after it's added
+            });
+            buttonContainer.appendChild(newButton);
+        }
 
         loadLayout();
         updateJson();
@@ -13251,15 +13397,6 @@ addScreenButton();
 function addButtons() {
     let consoleTypes = ["", "nes", "snes", "n64", "gbc", "gba", "ds"];
 
-    const buttonConfigs = {
-        gbc: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'select', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
-        gba: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'select', 'l', 'r', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
-        ds: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'x', 'y', 'start', 'select', 'l', 'r', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'screenInput'],
-        nes: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'select', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
-        snes: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'x', 'y', 'start', 'select', 'l', 'r', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
-        n64: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'l', 'r', 'cUp', 'cDown', 'cLeft', 'cRight', 'z', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward']
-    };
-
     let consoleSelect = document.getElementById('consoleSelect');
     let buttonContainer = document.getElementById('buttons-container');
     let layoutObject = document.getElementById('layout-object');
@@ -13330,12 +13467,6 @@ function addButtons() {
             button.remove(); // Remove the button from the button container after it's added
         });
         buttonContainer.appendChild(button);
-    }
-
-    // Function to update the JSON view in #code
-    function updateJsonView() {
-        const jsonString = JSON.stringify(defaultJsonOutput, null, 4);
-        document.getElementById('code').textContent = jsonString;
     }
 
     // Add event listener to all console buttons
@@ -13502,16 +13633,6 @@ function restartLayout() {
 
     console.log("Layout restarted. All items removed.");
 
-    // Populate buttons-container with all possible buttons for the selected console
-    const buttonConfigs = {
-        gbc: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'select', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
-        gba: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'select', 'l', 'r', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
-        ds: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'x', 'y', 'start', 'select', 'l', 'r', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'screenInput'],
-        nes: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'select', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
-        snes: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'x', 'y', 'start', 'select', 'l', 'r', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward'],
-        n64: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'l', 'r', 'cUp', 'cDown', 'cLeft', 'cRight', 'z', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward']
-    };
-
     let buttonContainer = document.getElementById('buttons-container');
     buttonContainer.innerHTML = ''; // Clear existing buttons
    
@@ -13565,129 +13686,128 @@ function restartLayout() {
         });
     });
 
-    // Function to add the button configuration to the JSON array and layout-object
-    function addButtonToJsonAndLayout(buttonName, consoleType) {
+    console.log(`Buttons-container populated with all possible buttons for ${consoleSelected}.`);
+}
+// Function to add the button configuration to the JSON array and layout-object
+function addButtonToJsonAndLayout(buttonName, consoleType) {
 
-        let layoutObjectWidth = document.getElementById('layout-object').clientWidth;
-        let layoutObjectHeight = document.getElementById('layout-object').clientHeight;
-        let layoutParts = layoutSelection.split(" ");
-        let device = layoutParts[0];
-        let layout = layoutParts[1];
-        let orientation = getSelectedOrientation();
+    let layoutObjectWidth = document.getElementById('layout-object').clientWidth;
+    let layoutObjectHeight = document.getElementById('layout-object').clientHeight;
+    let layoutParts = layoutSelection.split(" ");
+    let device = layoutParts[0];
+    let layout = layoutParts[1];
+    let orientation = getSelectedOrientation();
 
-        let buttonFormat;
+    let buttonFormat;
 
-        // Handle special cases for d-pad, thumbstick, and screen input
-        if (buttonName === 'd-pad') {
-            buttonFormat = {
-                "inputs": {
-                    "up": "up",
-                    "down": "down",
-                    "left": "left",
-                    "right": "right"
-                },
-                "frame": {
-                    "x": layoutObjectWidth / 2 - 60,
-                    "y": layoutObjectHeight / 2 - 60,
-                    "width": 120,
-                    "height": 120
-                },
-                "extendedEdges": {
-                    "top": 5,
-                    "bottom": 5,
-                    "left": 5,
-                    "right": 5
-                }
-            };
-        } else if (buttonName === 'thumbstick') {
-            buttonFormat = {
-                "thumbstick": {
-                    "name": `${orientation}_thumbstick.pdf`,
-                    "width": 50,
-                    "height": 50
-                },
-                "inputs": {
-                    "up": "analogStickUp",
-                    "down": "analogStickDown",
-                    "left": "analogStickLeft",
-                    "right": "analogStickRight"
-                },
-                "frame": {
-                    "x": layoutObjectWidth / 2 - 25,
-                    "y": layoutObjectHeight / 2 - 25,
-                    "width": 50,
-                    "height": 50
-                },
-                "extendedEdges": {
-                    "top": 5,
-                    "bottom": 5,
-                    "left": 5,
-                    "right": 5
-                }
-            };
-        } else if (buttonName === 'screenInput') {
-            buttonFormat = {
-                "inputs": {
-                    "x": "touchScreenX",
-                    "y": "touchScreenY"
-                },
-                "frame": {
-                    "x": layoutObjectWidth / 2 - 100,
-                    "y": layoutObjectHeight / 2 - 75,
-                    "width": 200,
-                    "height": 150
-                },
-                "extendedEdges": {
-                    "top": 0,
-                    "bottom": 0,
-                    "left": 0,
-                    "right": 0
-                }
-            };
-        } else {
-            // Default format for other buttons
-            buttonFormat = {
-                "inputs": [buttonName],
-                "frame": {
-                    "x": layoutObjectWidth / 2 - 25,
-                    "y": layoutObjectHeight / 2 - 25,
-                    "width": 50,
-                    "height": 50
-                },
-                "extendedEdges": {
-                    "top": 5,
-                    "bottom": 5,
-                    "left": 5,
-                    "right": 5
-                }
-            };
-        }
-
-        // Add the button configuration to the correct JSON array
-        defaultJsonOutput.representations[device][layout][orientation].items.push(buttonFormat);
-
-        // Create a new div for the button in the layout-object
-        let buttonDiv = document.createElement('div');
-        buttonDiv.className = 'layout-item';
-        buttonDiv.style.width = buttonFormat.frame.width + 'px';
-        buttonDiv.style.height = buttonFormat.frame.height + 'px';
-        buttonDiv.style.position = 'absolute';
-        buttonDiv.style.left = buttonFormat.frame.x + 'px';
-        buttonDiv.style.top = buttonFormat.frame.y + 'px';
-        buttonDiv.style.border = '1px solid black';
-        buttonDiv.style.backgroundColor = 'rgba(220,220,220,.8)';
-        buttonDiv.innerText = buttonName;
-        buttonDiv.classList.add('unlocked');
-
-        // Append the button div to the layout-object
-        layoutObject.appendChild(buttonDiv);
-
-        loadLayout();
-
-        console.log(`${buttonName} added to layout.`);
+    // Handle special cases for d-pad, thumbstick, and screen input
+    if (buttonName === 'd-pad') {
+        buttonFormat = {
+            "inputs": {
+                "up": "up",
+                "down": "down",
+                "left": "left",
+                "right": "right"
+            },
+            "frame": {
+                "x": layoutObjectWidth / 2 - 60,
+                "y": layoutObjectHeight / 2 - 60,
+                "width": 120,
+                "height": 120
+            },
+            "extendedEdges": {
+                "top": 5,
+                "bottom": 5,
+                "left": 5,
+                "right": 5
+            }
+        };
+    } else if (buttonName === 'thumbstick') {
+        buttonFormat = {
+            "thumbstick": {
+                "name": `${orientation}_thumbstick.pdf`,
+                "width": 50,
+                "height": 50
+            },
+            "inputs": {
+                "up": "analogStickUp",
+                "down": "analogStickDown",
+                "left": "analogStickLeft",
+                "right": "analogStickRight"
+            },
+            "frame": {
+                "x": layoutObjectWidth / 2 - 25,
+                "y": layoutObjectHeight / 2 - 25,
+                "width": 50,
+                "height": 50
+            },
+            "extendedEdges": {
+                "top": 5,
+                "bottom": 5,
+                "left": 5,
+                "right": 5
+            }
+        };
+    } else if (buttonName === 'screenInput') {
+        buttonFormat = {
+            "inputs": {
+                "x": "touchScreenX",
+                "y": "touchScreenY"
+            },
+            "frame": {
+                "x": layoutObjectWidth / 2 - 100,
+                "y": layoutObjectHeight / 2 - 75,
+                "width": 200,
+                "height": 150
+            },
+            "extendedEdges": {
+                "top": 0,
+                "bottom": 0,
+                "left": 0,
+                "right": 0
+            }
+        };
+    } else {
+        // Default format for other buttons
+        buttonFormat = {
+            "inputs": [buttonName],
+            "frame": {
+                "x": layoutObjectWidth / 2 - 25,
+                "y": layoutObjectHeight / 2 - 25,
+                "width": 50,
+                "height": 50
+            },
+            "extendedEdges": {
+                "top": 5,
+                "bottom": 5,
+                "left": 5,
+                "right": 5
+            }
+        };
     }
 
-    console.log(`Buttons-container populated with all possible buttons for ${consoleSelected}.`);
+    // Add the button configuration to the correct JSON array
+    defaultJsonOutput.representations[device][layout][orientation].items.push(buttonFormat);
+
+    // Create a new div for the button in the layout-object
+    let buttonDiv = document.createElement('div');
+    buttonDiv.className = 'layout-item';
+    buttonDiv.style.width = buttonFormat.frame.width + 'px';
+    buttonDiv.style.height = buttonFormat.frame.height + 'px';
+    buttonDiv.style.position = 'absolute';
+    buttonDiv.style.left = buttonFormat.frame.x + 'px';
+    buttonDiv.style.top = buttonFormat.frame.y + 'px';
+    buttonDiv.style.border = '1px solid black';
+    buttonDiv.style.backgroundColor = 'rgba(220,220,220,.8)';
+    buttonDiv.innerText = buttonName;
+    buttonDiv.classList.add('unlocked');
+
+    // Append the button div to the layout-object
+    layoutObject.appendChild(buttonDiv);
+
+    loadLayout();
+
+    console.log(`${buttonName} added to layout.`);
 }
 
 // Add event listener to the new button
@@ -13906,7 +14026,13 @@ function updateDefaultJsonOutput(layoutKey, fileName) {
         defaultJsonOutput.representations[device][layout] &&
         defaultJsonOutput.representations[device][layout][orientation] &&
         defaultJsonOutput.representations[device][layout][orientation].assets) {
-        defaultJsonOutput.representations[device][layout][orientation].assets.resizable = fileName;
+        if (fileName.toLowerCase().includes('.png')) {
+            defaultJsonOutput.representations[device][layout][orientation].assets.large = fileName;
+            // Remove the 'resizable' key if it exists
+            delete defaultJsonOutput.representations[device][layout][orientation].assets.resizable;
+        } else {
+            defaultJsonOutput.representations[device][layout][orientation].assets.resizable = fileName;
+        }
         console.log(`Updated defaultJsonOutput for ${device} ${layout} ${orientation} with filename: ${fileName}`);
     } else {
         console.error(`Could not update defaultJsonOutput for ${device} ${layout} ${orientation}. Path does not exist.`);
@@ -14086,8 +14212,13 @@ async function saveProjectAsZip() {
 
     function getCorrectFilename(device, layout, orientation) {
         const representation = defaultJsonOutput.representations[device][layout][orientation];
-        if (representation && representation.assets && representation.assets.resizable) {
-            return representation.assets.resizable;
+        if (representation && representation.assets) {
+            if (representation.assets.resizable) {
+                return representation.assets.resizable;
+            }
+            if (representation.assets.large) {
+                return representation.assets.large;
+            }
         }
         return null;
     }
@@ -14116,19 +14247,62 @@ async function saveProjectAsZip() {
 
         await new Promise((resolve) => {
             img.onload = () => {
-                const pdf = new jspdf.jsPDF({
-                    orientation: img.width > img.height ? 'l' : 'p',
-                    unit: 'px',
-                    format: [img.width, img.height]
-                });
+                const representation = defaultJsonOutput.representations[device][layout][orientation];
+                if (representation.assets.resizable) {
+                    const pdf = new jspdf.jsPDF({
+                        orientation: img.width > img.height ? 'l' : 'p',
+                        unit: 'px',
+                        format: [img.width, img.height]
+                    });
 
-                pdf.addImage(img, 'PNG', 0, 0, img.width, img.height);
-                
-                zip.file(correctFilename, pdf.output('arraybuffer'));
+                    pdf.addImage(img, 'PNG', 0, 0, img.width, img.height);
+                    
+                    zip.file(correctFilename, pdf.output('arraybuffer'));
+                } else if (representation.assets.large) {
+                    // Convert image data URL to Blob
+                    fetch(imageDataUrl)
+                        .then(res => res.blob())
+                        .then(blob => {
+                            zip.file(correctFilename, blob);
+                        });
+                }
 
                 resolve();
             };
         });
+
+        if (thumbstickImageFile) {
+            const thumbstickImg = new Image();
+            thumbstickImg.src = URL.createObjectURL(thumbstickImageFile);
+
+            await new Promise((resolve) => {
+                thumbstickImg.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = thumbstickImg.width;
+                    canvas.height = thumbstickImg.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(thumbstickImg, 0, 0);
+
+                    canvas.toBlob((blob) => {
+                        zip.file(thumbstickImageFileName, blob);
+                        resolve();
+                    }, 'image/png');
+                };
+            });
+        }
+
+    // Change the icon to a "loading" icon
+    const saveButton = document.getElementById('saveProjectButton');
+    const originalIconClass = saveButton.querySelector('i').className;
+    saveButton.querySelector('i').className = 'fa-solid fa-spinner'; // Replace with the actual class for the loading icon
+    // Add a CSS class to make the icon rotate
+    saveButton.querySelector('i').classList.add('rotate-icon');
+
+    // Generate the zip content
+    const content = await zip.generateAsync({type: "blob"});
+
+    // Revert the icon back to the original icon
+    saveButton.querySelector('i').className = originalIconClass;
     }
 
     const content = await zip.generateAsync({type: "blob"});
@@ -14399,3 +14573,207 @@ function saveLayoutAsPng() {
         }
     }
 }
+
+let thumbstickImageFile;
+
+let thumbstickImageFileName;
+
+document.getElementById('thubstickImageUpload').addEventListener('change', function(event) {
+    thumbstickImageFile = event.target.files[0];
+});
+
+document.getElementById('uploadThumbstickButton').addEventListener('click', function() {
+    handleThumbstick();
+});
+
+function handleThumbstick(thumbstick) {
+    if (thumbstickImageFile) {
+        const thumbstickImageContainer = document.getElementById('thumbstickImageContainer');
+        thumbstickImageContainer.innerHTML = ''; // Clear any existing content
+
+        const img = document.createElement('img');
+        //HERE
+        img.src = URL.createObjectURL(thumbstickImageFile);
+        img.onload = function() {
+            URL.revokeObjectURL(img.src); // Free up memory
+        };
+
+        // Set the image inside the padding of #thumbstick
+        const thumbstickElement = document.querySelector('#thumbstick .layout-item-inner');
+        if (thumbstickElement) {
+            
+
+            const thumbstickStyle = window.getComputedStyle(document.getElementById("thumbstick"));
+            const paddingTop = thumbstickStyle.getPropertyValue('padding-top');
+            const paddingRight = thumbstickStyle.getPropertyValue('padding-right');
+            const paddingBottom = thumbstickStyle.getPropertyValue('padding-bottom');
+            const paddingLeft = thumbstickStyle.getPropertyValue('padding-left');
+            //console.log(`Padding values - Top: ${paddingTop}, Right: ${paddingRight}, Bottom: ${paddingBottom}, Left: ${paddingLeft}`);
+            
+            const innerImg = document.createElement('img');
+            innerImg.src = img.src;
+            innerImg.style.position = "absolute";
+
+            getCurrentState();
+            // Get the current state
+            const { device, layout, orientation } = getCurrentState();
+            
+            // Find the thumbstick item in the current representation
+            const items = defaultJsonOutput.representations[device][layout][orientation].items;
+            const thumbstickItem = items.find(item => item.thumbstick);
+            
+            if (thumbstickItem && thumbstickItem.thumbstick) {
+                const { width, height } = thumbstickItem.thumbstick;
+                
+                // Set the image dimensions to match the thumbstick width and height
+                innerImg.style.width = `${width}px`;
+                innerImg.style.height = `${height}px`;
+                
+                console.log(`Thumbstick image dimensions set to ${width}x${height}`);
+            } else {
+                console.warn('Thumbstick item not found in the current representation');
+            }
+
+            //innerImg.style.objectFit = 'contain';
+            innerImg.style.backgroundPosition = "center";
+            thumbstickElement.innerHTML = ''; // Clear any existing content
+            thumbstickElement.appendChild(innerImg);
+
+            // Create a 10px by 10px crosshair in the center of the layout-item
+            const crosshair = document.createElement('div');
+            crosshair.style.position = 'absolute';
+            crosshair.style.width = '10px';
+            crosshair.style.height = '10px';
+            crosshair.style.top = '50%';
+            crosshair.style.left = '50%';
+            crosshair.style.transform = 'translate(-50%, -50%)';
+            crosshair.style.zIndex = '10';
+            crosshair.style.backgroundImage = 'linear-gradient(to bottom, transparent 45%, red 45%, red 55%, transparent 55%), linear-gradient(to right, transparent 45%, red 45%, red 55%, transparent 55%)';
+            document.querySelector('#thumbstick .layout-item-inner').appendChild(crosshair);
+        }
+
+
+        thumbstickImageContainer.appendChild(img);
+        
+        // Store the uploaded image file name
+        thumbstickImageFileName = thumbstickImageFile.name;
+    } else {
+        alert('Please select a thumbstick image file first.');
+    }
+
+    let jsonString = defaultJsonOutput;
+    
+    function updateThumbstickNameInJson(jsonObject, newName) {
+        for (const device in jsonObject.representations) {
+            for (const layout in jsonObject.representations[device]) {
+                for (const orientation in jsonObject.representations[device][layout]) {
+                    const items = jsonObject.representations[device][layout][orientation].items;
+                    items.forEach(item => {
+                        if (item.thumbstick && item.thumbstick.name) {
+                            item.thumbstick.name = newName;
+                            updateJson();
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    const newThumbstickName = thumbstickImageFile.name;
+    updateThumbstickNameInJson(defaultJsonOutput, newThumbstickName);
+    updateJson();
+    updateJsonView();
+    console.log(`Updated thumbstick.name to ${newThumbstickName} in the JSON.`);
+    console.log('thumbstick file name: ' + thumbstickImageFileName);
+}
+
+// Function to update the JSON view in #code
+function updateJsonView() {
+    const jsonString = JSON.stringify(defaultJsonOutput, null, 4);
+    document.getElementById('code').textContent = jsonString;
+}
+
+function enableKeyboardMovement() {
+    document.addEventListener('keydown', function(event) {
+        
+
+        const selectedItem = document.querySelector('.layout-item.selected, .screen-item.selected');
+        if (!selectedItem || selectedItem.classList.contains('locked')) return;
+
+        let dx = 0, dy = 0;
+        switch (event.key) {
+            case 'ArrowLeft':
+                dx = -1;
+                break;
+            case 'ArrowRight':
+                dx = 1;
+                break;
+            case 'ArrowUp':
+                dy = -1;
+                break;
+            case 'ArrowDown':
+                dy = 1;
+                break;
+            default:
+                return; // Exit if not an arrow key
+        }
+
+        event.preventDefault(); // Prevent default scrolling behavior
+
+        // Get current position
+        let currentLeft = parseInt(selectedItem.style.left) || 0;
+        let currentTop = parseInt(selectedItem.style.top) || 0;
+
+        // Update position
+        selectedItem.style.left = (currentLeft + dx) + 'px';
+        selectedItem.style.top = (currentTop + dy) + 'px';
+
+        // Update JSON and UI
+        if (selectedItem.classList.contains('screen-item')) {
+            updateScreenPosition(selectedItem.id, currentLeft + dx, currentTop + dy);
+        } else {
+            const item = getCurrentElement(selectedItem.id);
+            const extendedLeft = item && item.extendedEdges ? item.extendedEdges.left : 0;
+            const extendedTop = item && item.extendedEdges ? item.extendedEdges.top : 0;
+            updateItemPosition(selectedItem.id, currentLeft + dx + extendedLeft, currentTop + dy + extendedTop);
+            
+            // Handle thumbstick width and height
+            if (item && item.thumbstick) {
+                const thumbstickWidth = item.thumbstick.width;
+                const thumbstickHeight = item.thumbstick.height;
+                //updateThumbstickSize(selectedItem.id, thumbstickWidth, thumbstickHeight);
+            }
+        }
+        updateJson();
+
+        // Update focus item inputs
+        const focusItemDiv = document.querySelector('.focus-item');
+        const xInput = focusItemDiv.querySelector('#form-x input');
+        const yInput = focusItemDiv.querySelector('#form-y input');
+        if (xInput) xInput.value = parseInt(xInput.value) + dx;
+        if (yInput) yInput.value = parseInt(yInput.value) + dy;
+    });
+}
+
+// Call this function to enable keyboard movement
+enableKeyboardMovement();
+
+// Add this function to your existing JavaScript file
+function toggleTransparency() {
+    const layoutItems = document.querySelectorAll('.layout-item, .layout-item-inner');
+    const button = document.getElementById('toggle-transparency');
+    
+    layoutItems.forEach(item => {
+        if (item.classList.contains('transparent')) {
+            item.classList.remove('transparent');
+        } else {
+            item.classList.add('transparent');
+        }
+    });
+    
+    // Update button text
+    button.textContent = button.textContent === 'Toggle Transparency' ? 'Restore Opacity' : 'Toggle Transparency';
+}
+
+// Add this event listener after your DOM content is loaded
+document.getElementById('toggle-transparency').addEventListener('click', toggleTransparency);

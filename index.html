@@ -2,6 +2,16 @@
 <html>
 <head>
 
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-CN4KWFJ4RC"></script>
+	<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+
+	gtag('config', 'G-CN4KWFJ4RC');
+	</script>
+
 	<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>PlayCase - Delta Skin Helper</title>
@@ -311,8 +321,8 @@
         border: 1px solid black; /* Optional: for better visualization */
         font-size:var(--text-xs);
         display:flex;
-        justify-content:center;
-        align-items:center;
+        justify-content:flex-start;
+        align-items:flex-start;
         cursor: move;
         z-index:2;
     }
@@ -327,6 +337,10 @@
 	    bottom:0;
 	    z-index:0;
 	    pointer-events:none;
+	}
+
+	.layout-item p {
+		margin:5px;
 	}
 
 	.item-text {
@@ -425,27 +439,28 @@
 		display:none;
 	}
 
-	.position-wrapper .form-group, .screen-position-wrapper .form-group {
+	.position-wrapper .form-group, .screen-position-wrapper .form-group, .thumbstick-wrapper .form-group {
 		display:flex;
 		flex-direction:row;
 		flex-wrap:wrap;
 		justify-content:center;
 		align-items:center;
+		gap: .5em;
 	}
 
-    .position-wrapper {
+    .position-wrapper, .thumbstick-wrapper {
     	grid-column: span 4;
     	display:grid;
     	grid-template-columns: 1fr 1fr;
     }
 
-    .screen-position-wrapper {
+    .screen-position-wrapper, .thumbstick-wrapper {
     	grid-column: span 4;
     	display:grid;
     	grid-template-columns: 1fr 1fr;
     }
 
-    .screen-position-wrapper .form-group input, .screen-size-wrapper .form-group input, .position-wrapper .form-group input {
+    .screen-position-wrapper .form-group input, .screen-size-wrapper .form-group input, .position-wrapper .form-group input, , .thumbstick-wrapper .form-group input {
     	width:80px;
     }
 
@@ -616,7 +631,6 @@
 		align-items: center;
 		justify-content: center;
 		gap: 1em;
-		padding: var(--padding-m);
 	}
 
 	.item-text {
@@ -858,7 +872,6 @@
 	.slider-container {
 	display: flex;
 	align-items: center;
-	margin-bottom: 10px;
 	}
 
 	#scaleSlider {
@@ -916,19 +929,19 @@
 		gap: .5em;
 	}
 
-	#image-upload-container {
+	#image-upload-container, #thumbstick-image-upload-container {
 		display:flex;
 		flex-direction:row;
 		justify-content:space-between;
 		align-items:unset;
 	}
 
-	#image-upload-container button {
+	#image-upload-container button, #thumbstick-image-upload-container button {
 		aspect-ratio: 1/1;
 		border-radius: 0 var(--border-radius) var(--border-radius) 0;
 	}	
 
-	#image-upload-container input {
+	#image-upload-container input, #thumbstick-image-upload-container input {
 		border-left: 1px solid var(--primary-color);
 		border-bottom:1px solid var(--primary-color);
 		border-top:1px solid var(--primary-color);
@@ -947,7 +960,7 @@
 		gap: .5em;
 	}
 
-	#image-uploader {
+	#image-uploader, #thumbstick-image-uploader {
 		display:flex;
 		flex-direction:column;
 		gap: 1em;
@@ -1101,6 +1114,112 @@
     #ref-table tr:hover {
         background-color: #f5f5f5;
     }
+	
+    .rotate-icon {
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+	.layout-item.transparent {
+    background-color: rgba(0, 0, 0, 0) !important;
+	border: 1px solid red;
+	}
+
+	.layout-item-inner.transparent {
+		background-color: rgba(0, 0, 0, 0) !important;
+		/* border: 1px solid red; */
+	}
+
+	.layout-item-inner.transparent img {
+		opacity:0;
+	}
+
+	/* Ensure text remains visible when transparent */
+	.layout-item.transparent .item-text,
+	.layout-item-inner.transparent .item-text {
+		color: #000;
+		text-shadow: 1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
+	}
+
+	#thumbstickImageContainer {
+		display:flex;
+		align-items:center;
+		justify-content:center;
+	}
+
+	#thumbstickImageContainer img {
+		width:150px;
+	}
+
+	#layout-actions {
+		display:flex;
+		flex-direction:row;
+		gap: 1em;
+		flex-wrap:wrap;
+		justify-content:center;
+		align-items:center;
+		padding:var(--padding-m);
+		background-color:#f0f0f0;
+		border-radius:var(--border-radius);
+	}
+
+	.toggle-switch {
+			position: relative;
+			display: inline-block;
+			/* width: 60px; */
+			height: 34px;
+		}
+		.toggle-input {
+			display:none;
+			opacity: 0;
+			width: 0;
+			height: 0;
+		}
+		.toggle-label {
+			position: relative;
+			display: inline-flex;
+			align-items: center;
+			cursor: pointer;
+			font-size: 14px;
+		}
+		.toggle-text {
+			margin-right: 10px;
+		}
+		.toggle-slider {
+			position: relative;
+			width: 60px;
+			height: 34px;
+			background-color: #ccc;
+			border-radius: 34px;
+			transition: .4s;
+		}
+		.toggle-slider:before {
+			position: absolute;
+			content: "";
+			height: 26px;
+			width: 26px;
+			left: 4px;
+			bottom: 4px;
+			background-color: white;
+			border-radius: 50%;
+			transition: .4s;
+		}
+		.toggle-input:checked + .toggle-label .toggle-slider {
+			background-color: #2196F3;
+		}
+		.toggle-input:checked + .toggle-label .toggle-slider:before {
+			transform: translateX(26px);
+		}
+
+		#thumbstick .layout-item-inner {
+			display:flex;
+			align-items:center;
+			justify-content:center;
+		}
 
 
 </style>
@@ -1197,17 +1316,28 @@
 						<div id="layout-object" style="box-shadow: inset 0 0 0 2000px rgba(255, 255, 255, 0);">
 						</div>
 						<p id="screen-size-info"></p>
-						<div id="display-manipulation">
-							<label for="shadowOpacitySlider">Background Image Opacity</label>
-							<input type="range" id="shadowOpacitySlider" min="0" max="100" value="0">
+						<div id="layout-actions">
+							<div id="display-manipulation">
+								<label for="shadowOpacitySlider">BG Img Opacity</label>
+								<input type="range" id="shadowOpacitySlider" min="0" max="100" value="0">
+							</div>
+							<div class="slider-container" style="display:none">
+								<label for="scaleSlider">Scale: </label>
+								<input type="range" id="scaleSlider" min="50" max="100" value="100">
+								<span id="scaleValue">100%</span>
+							</div>
+							<div id="toggleTransparencyContainer">
+								<div class="toggle-switch">
+									<input type="checkbox" id="toggle-transparency" class="toggle-input">
+									<label for="toggle-transparency" class="toggle-label">
+										<span class="toggle-text">Button Transparency</span>
+										<span class="toggle-slider"></span>
+									</label>
+								</div>
+							</div>
+							<div id="saveAsPngContainer">
+							</div>
 						</div>
-						<div class="slider-container">
-							<label for="scaleSlider">Scale: </label>
-							<input type="range" id="scaleSlider" min="50" max="100" value="100">
-							<span id="scaleValue">100%</span>
-						  </div>
-						  <div id="saveAsPngContainer">
-						  </div>
 					</div>
 					
 			</section>
@@ -1251,6 +1381,18 @@
 					<div id="image-upload-container">
 						<input type="file" id="imageUpload" accept="image/*,application/pdf">
 						<button id="uploadImageButton" class="button button--primary"><i class="fa-solid fa-upload"></i></button>
+					</div>
+				</div>
+			</section>
+
+			<section id="files" class="container flex-column">
+				<h2>Thumbstick Image</h2>
+				<div id="thumbstickImageContainer"></div>
+				<div id="thumbstick-image-uploader">				
+				<h3>Upload Thumbstick Image</h3>
+					<div id="thumbstick-image-upload-container">
+						<input type="file" id="thubstickImageUpload" accept="image/*,application/pdf">
+						<button id="uploadThumbstickButton" class="button button--primary"><i class="fa-solid fa-upload"></i></button>
 					</div>
 				</div>
 			</section>
@@ -1302,9 +1444,11 @@
 							<li>Supports all consoles available for the App Store version of Delta.</li>
 							<li>Drag and drop buttons around the canvas</li>
 							<li>Background opacity controls</li>
+							<li>Button opacity controls</li>
 							<li>Scale controls to support users designing on their phone</li>
 							<li>Supports multiple screens for DS skins!</li>
 							<li>Export .deltaskin files</li>
+							<li>When a button is selected, use the keyboard to nudge it one pixel at a time</li>
 							<li>More to come!</li>
 						</ul>
 						<h3>Caviats</h3>
@@ -1346,7 +1490,7 @@
 									<tr>
 										<td>Super Nintendo Entertainment System</td>
 										<td>256 x 224</td>
-										<td>8 : 7</td>
+										<td>8 : 7 actual, 4 : 3 rendered</td>
 									</tr>
 									<tr>
 										<td>Nintendo 64</td>
