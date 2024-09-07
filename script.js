@@ -11625,6 +11625,8 @@ let devices = [
     "tv"
 ];
 
+
+
 // let layoutTypes = [
 //         "",
 //         "iphone standard",
@@ -11651,6 +11653,102 @@ let assets = {
 }
 
 let currentItem = "";
+
+// Find the div with the "selected" class and store it in currentSelectedItem
+let currentSelectedItem;
+
+// Create alignment buttons
+const alignmentTools = document.getElementById('alignmentTools');
+
+// Left align button
+const leftAlignButton = document.createElement('button');
+leftAlignButton.innerHTML = '<i class="fa-solid fa-align-left"></i>';
+leftAlignButton.classList.add('button', 'button--primary');
+leftAlignButton.addEventListener('click', () => alignItem('left'));
+
+// Center align button
+const centerAlignButton = document.createElement('button');
+centerAlignButton.innerHTML = '<i class="fa-solid fa-align-center"></i>';
+centerAlignButton.classList.add('button', 'button--primary');
+centerAlignButton.addEventListener('click', () => alignItem('center'));
+
+// Right align button
+const rightAlignButton = document.createElement('button');
+rightAlignButton.innerHTML = '<i class="fa-solid fa-align-right"></i>';
+rightAlignButton.classList.add('button', 'button--primary');
+rightAlignButton.addEventListener('click', () => alignItem('right'));
+
+// Add buttons to alignmentTools
+alignmentTools.appendChild(leftAlignButton);
+alignmentTools.appendChild(centerAlignButton);
+alignmentTools.appendChild(rightAlignButton);
+
+// Function to align the selected item
+function alignItem(alignment) {
+    // Change #alignmentTools to display: flex
+   
+
+    let currentSelectedItem = document.querySelector('.selected');
+    if (!currentSelectedItem) return;
+
+    
+    const layoutObject = document.getElementById('layout-object');
+    const layoutWidth = layoutObject.offsetWidth;
+    const itemWidth = currentSelectedItem.offsetWidth;
+
+    switch (alignment) {
+        case 'left':
+            currentSelectedItem.style.left = '0px';
+            break;
+        case 'center':
+            currentSelectedItem.style.left = `${(layoutWidth - itemWidth) / 2}px`;
+            break;
+        case 'right':
+            currentSelectedItem.style.left = `${layoutWidth - itemWidth}px`;
+            break;
+            
+    }
+
+    let item = getCurrentElement(currentSelectedItem.id);
+
+    const newLeft = parseInt(currentSelectedItem.style.left, 10);
+    const newTop = parseInt(currentSelectedItem.style.top, 10);
+    if (currentSelectedItem.classList.contains("screen-item")) {
+        updateScreenPosition(currentSelectedItem.id, newLeft, newTop);
+    } else {
+        const extendedLeft = item && item.extendedEdges ? item.extendedEdges.left : 0;
+        const extendedTop = item && item.extendedEdges ? item.extendedEdges.top : 0;
+        updateItemPosition(currentSelectedItem.id, newLeft + extendedLeft, newTop + extendedTop);
+    }
+               
+    // Update the JSON representation
+    updateItemPosition(currentSelectedItem.id, newLeft, newTop);
+
+    // Update the form-x input value
+    const formXInput = document.querySelector('#form-x input');
+    if (formXInput) {
+        formXInput.value = newLeft;
+    }
+
+    updateJson();
+
+}
+
+// // Function to update item position in JSON
+// function updateItemPosition(item) {
+//     const state = getCurrentState();
+//     const items = defaultJsonOutput.representations[state.device][state.layout][state.orientation].items;
+//     const itemIndex = Array.from(item.parentNode.children).indexOf(item);
+
+//     if (items[itemIndex]) {
+//         items[itemIndex].frame.x = parseInt(item.style.left);
+//         items[itemIndex].frame.y = parseInt(item.style.top);
+//     }
+
+//     updateJson();
+// }
+
+
 
 const buttonConfigs = {
     gbc: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'select', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'quickSettings'],
@@ -11930,7 +12028,7 @@ function loadLayout() {
                 div.innerHTML = "<p class='item-text'>Thumbstick</p>";
                 div.id = "thumbstick";
             } else if (item.inputs && item.inputs.up === "up" && item.inputs.down === "down" && item.inputs.left === "left" && item.inputs.right === "right") {
-                div.innerHTML = "<p class='item-text'>D-Pad</p>";
+                div.innerHTML = "<p class='item-text'>d-pad</p>";
                 div.id = "d-pad";
             } else if (item.inputs && item.inputs.x === "touchScreenX" && item.inputs.y === "touchScreenY") {
                 div.innerHTML = "<p class='item-text'>Touch Screen</p>";
@@ -12540,6 +12638,11 @@ function selectItem(event) {
 
     // Add the highlight to the clicked element
     event.currentTarget.classList.add('selected');
+    // Change #alignmentTools to display: flex
+    const alignmentTools = document.getElementById('alignmentTools');
+    if (alignmentTools) {
+        alignmentTools.style.display = 'flex';
+    }
 
     // Get the selected item ID
     const itemId = event.currentTarget.id;
@@ -12611,6 +12714,13 @@ function deselectAllItems() {
     document.querySelector("#focus > .container:first-child").style.gap = "0";
     document.getElementById('lock-button').style.display = 'none';
     document.querySelector('.item-name').style.display = 'none';
+
+    // Change #alignmentTools to display: none
+    const alignmentTools = document.getElementById('alignmentTools');
+    if (alignmentTools) {
+        alignmentTools.style.display = 'none';
+    }
+    
 }
 
 document.getElementById('layout-object').addEventListener('click', function(event) {
@@ -12635,6 +12745,11 @@ function selectScreen(event) {
 
     // Add the highlight to the clicked element
     event.currentTarget.classList.add('selected');
+    // Change #alignmentTools to display: flex
+    const alignmentTools = document.getElementById('alignmentTools');
+    if (alignmentTools) {
+        alignmentTools.style.display = 'flex';
+    }
 
     // Get the selected item ID
     const screenId = event.currentTarget.id;
@@ -13229,11 +13344,143 @@ async function processPdf(pdfData, layoutKey, fileName) {
     updateDefaultJsonOutput(layoutKey, fileName);
 }
 
+// Function to check if any element has the "selected" class and update #focusContainer visibility
+function updateFocusContainerVisibility() {
+    const selectedElement = document.querySelector('.selected');
+    const focusContainer = document.getElementById('focusContainer');
+    
+    if (focusContainer) {
+        if (!selectedElement) {
+            focusContainer.style.display = 'none';
+        } else {
+            focusContainer.style.display = ''; // Reset to default display value
+        }
+    }
+}
+
+// Call the function initially
+updateFocusContainerVisibility();
+
+// Set up a MutationObserver to watch for changes in the DOM
+const observer = new MutationObserver(updateFocusContainerVisibility);
+
+// Configure the observer to watch for changes to the entire document body
+observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['class']
+});
+
+// Function to add the "Fit Width" button for screens
+function addFitWidthButton() {
+    const otherTools = document.getElementById('otherTools');
+    if (!otherTools) return;
+
+    // Remove existing "Fit Width" button if it exists
+    const existingButton = otherTools.querySelector('#fitWidthButton');
+    if (existingButton) {
+        existingButton.remove();
+    }
+
+    // Create and add the "Fit Width" button
+    const fitWidthButton = document.createElement('button');
+    fitWidthButton.id = 'fitWidthButton';
+    fitWidthButton.classList.add('button', 'button--primary');
+    fitWidthButton.innerHTML = '<i class="fa-solid fa-expand"></i>';
+    fitWidthButton.addEventListener('click', fitScreenToWidth);
+    otherTools.appendChild(fitWidthButton);
+}
+
+// Function to fit the screen to the width of #layout-object
+function fitScreenToWidth() {
+    const selectedScreen = document.querySelector('.screen-item.selected');
+    if (!selectedScreen) return;
+
+    const layoutObject = document.getElementById('layout-object');
+    const layoutWidth = layoutObject.offsetWidth;
+
+    // Get the current aspect ratio
+    const currentWidth = selectedScreen.offsetWidth;
+    const currentHeight = selectedScreen.offsetHeight;
+    const aspectRatio = currentHeight / currentWidth;
+
+    // Set new dimensions
+    const newWidth = layoutWidth;
+    const newHeight = Math.round(newWidth * aspectRatio);
+
+    // Update screen style
+    selectedScreen.style.left = '0px';
+    selectedScreen.style.width = `${newWidth}px`;
+    selectedScreen.style.height = `${newHeight}px`;
+
+    // Update JSON
+    updateScreenDimensions(selectedScreen.id, 0, newWidth, newHeight);
+
+    // Update form inputs
+    updateFormInputs(0, newWidth, newHeight);
+
+    // Update JSON display
+    updateJson();
+}
+
+// Function to update screen dimensions in JSON
+function updateScreenDimensions(screenId, newX, newWidth, newHeight) {
+    const currentState = getCurrentState();
+    const screenIndex = parseInt(screenId.split('-')[2]);
+    const screen = defaultJsonOutput.representations[currentState.device][currentState.layout][currentState.orientation].screens[screenIndex];
+
+    if (screen) {
+        screen.frame = {
+            x: newX,
+            y: screen.inputFrame.y, // Keep the original y position
+            width: newWidth,
+            height: newHeight
+        };
+    }
+}
+
+// Function to update form inputs
+function updateFormInputs(newX, newWidth, newHeight) {
+    const formXInput = document.querySelector('#form-x input');
+    const formWidthInput = document.querySelector('#form-width input');
+    const formHeightInput = document.querySelector('#form-height input');
+
+    if (formXInput) formXInput.value = newX;
+    if (formWidthInput) formWidthInput.value = newWidth;
+    if (formHeightInput) formHeightInput.value = newHeight;
+}
+
+// Modify the selectScreen function to add the "Fit Width" button
+const originalSelectScreen = selectScreen;
+selectScreen = function(event) {
+    originalSelectScreen.call(this, event);
+    addFitWidthButton();
+};
+
+// Modify the deselectAllItems function to remove the "Fit Width" button
+const originalDeselectAllItems = deselectAllItems;
+deselectAllItems = function() {
+    originalDeselectAllItems.call(this);
+    const fitWidthButton = document.getElementById('fitWidthButton');
+    if (fitWidthButton) {
+        fitWidthButton.remove();
+    }
+};
+
+
+
 document.getElementById('delete-button').addEventListener('click', function() {
     let currentItemName = document.querySelector(".item-name").innerHTML;
     document.querySelector('.item-name').style.display = "none";
     document.getElementById('lock-button').style.display = "none";
     document.querySelector('#focus > .container:first-child').style.gap = "0"
+
+    // Change #alignmentTools to display: none
+    const alignmentTools = document.getElementById('alignmentTools');
+    if (alignmentTools) {
+        alignmentTools.style.display = 'none';
+    }
 
     document.getElementById("delete-button").style.display = "none";
 

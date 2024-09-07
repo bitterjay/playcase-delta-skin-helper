@@ -656,7 +656,7 @@
 	}
 
 	.image-wrapper img {
-		max-width: 100% !important;
+		max-height: 340px !important;
 	}
 
 	.image-wrapper {
@@ -1221,6 +1221,20 @@
 			justify-content:center;
 		}
 
+		#alignmentTools {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			gap: .5em;
+			display:none;
+		}
+
+		#tools {
+			display:flex;
+			flex-direction:row;
+			justify-content:space-between;
+		}
+
 
 </style>
 
@@ -1344,7 +1358,7 @@
 		</div>
 
 		<div id="focus">
-			<section class="container flex-column">
+			<section class="container flex-column" id="focusContainer">
 				<div id="focus-title">
 					<h2>Focus</h2>
 					<div class="item-info-container">
@@ -1358,6 +1372,13 @@
 				<div id="focus-container" class="flex-column">
 					<div class="focus-item">
 						<div id="form-container"></div>
+						
+					</div>
+					<div id="tools">
+						<div id="alignmentTools">
+						</div>
+						<div id="otherTools">
+						</div>
 					</div>
 					
 				</div>
