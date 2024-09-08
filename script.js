@@ -11625,7 +11625,32 @@ let devices = [
     "tv"
 ];
 
-
+let aspectRatio = {
+    "nes": {
+        "x": 8,
+        "y": 7
+        },
+    "snes": {
+        "x": 4,
+        "y": 3
+        },
+    "n64": {
+        "x": 4,
+        "y": 3
+        },
+    "gbc": {
+        "x": 10,
+        "y": 9
+        },
+    "gba": {
+        "x": 3,
+        "y": 2
+        },
+    "ds": {
+        "x": 2,
+        "y": 3
+        }
+    }
 
 // let layoutTypes = [
 //         "",
@@ -11657,82 +11682,7 @@ let currentItem = "";
 // Find the div with the "selected" class and store it in currentSelectedItem
 let currentSelectedItem;
 
-// Create alignment buttons
-const alignmentTools = document.getElementById('alignmentTools');
 
-// Left align button
-const leftAlignButton = document.createElement('button');
-leftAlignButton.innerHTML = '<i class="fa-solid fa-align-left"></i>';
-leftAlignButton.classList.add('button', 'button--primary');
-leftAlignButton.addEventListener('click', () => alignItem('left'));
-
-// Center align button
-const centerAlignButton = document.createElement('button');
-centerAlignButton.innerHTML = '<i class="fa-solid fa-align-center"></i>';
-centerAlignButton.classList.add('button', 'button--primary');
-centerAlignButton.addEventListener('click', () => alignItem('center'));
-
-// Right align button
-const rightAlignButton = document.createElement('button');
-rightAlignButton.innerHTML = '<i class="fa-solid fa-align-right"></i>';
-rightAlignButton.classList.add('button', 'button--primary');
-rightAlignButton.addEventListener('click', () => alignItem('right'));
-
-// Add buttons to alignmentTools
-alignmentTools.appendChild(leftAlignButton);
-alignmentTools.appendChild(centerAlignButton);
-alignmentTools.appendChild(rightAlignButton);
-
-// Function to align the selected item
-function alignItem(alignment) {
-    // Change #alignmentTools to display: flex
-   
-
-    let currentSelectedItem = document.querySelector('.selected');
-    if (!currentSelectedItem) return;
-
-    
-    const layoutObject = document.getElementById('layout-object');
-    const layoutWidth = layoutObject.offsetWidth;
-    const itemWidth = currentSelectedItem.offsetWidth;
-
-    switch (alignment) {
-        case 'left':
-            currentSelectedItem.style.left = '0px';
-            break;
-        case 'center':
-            currentSelectedItem.style.left = `${(layoutWidth - itemWidth) / 2}px`;
-            break;
-        case 'right':
-            currentSelectedItem.style.left = `${layoutWidth - itemWidth}px`;
-            break;
-            
-    }
-
-    let item = getCurrentElement(currentSelectedItem.id);
-
-    const newLeft = parseInt(currentSelectedItem.style.left, 10);
-    const newTop = parseInt(currentSelectedItem.style.top, 10);
-    if (currentSelectedItem.classList.contains("screen-item")) {
-        updateScreenPosition(currentSelectedItem.id, newLeft, newTop);
-    } else {
-        const extendedLeft = item && item.extendedEdges ? item.extendedEdges.left : 0;
-        const extendedTop = item && item.extendedEdges ? item.extendedEdges.top : 0;
-        updateItemPosition(currentSelectedItem.id, newLeft + extendedLeft, newTop + extendedTop);
-    }
-               
-    // Update the JSON representation
-    updateItemPosition(currentSelectedItem.id, newLeft, newTop);
-
-    // Update the form-x input value
-    const formXInput = document.querySelector('#form-x input');
-    if (formXInput) {
-        formXInput.value = newLeft;
-    }
-
-    updateJson();
-
-}
 
 // // Function to update item position in JSON
 // function updateItemPosition(item) {
@@ -11991,17 +11941,10 @@ function loadLayout() {
             div.className = 'layout-item';
             innerDiv.className = 'layout-item-inner';
             
-            // Create a 10px by 10px crosshair in the center of the layout-item
-            const crosshair = document.createElement('div');
-            crosshair.style.position = 'absolute';
-            crosshair.style.width = '10px';
-            crosshair.style.height = '10px';
-            crosshair.style.top = '50%';
-            crosshair.style.left = '50%';
-            crosshair.style.transform = 'translate(-50%, -50%)';
-            crosshair.style.zIndex = '10';
-            crosshair.style.backgroundImage = 'linear-gradient(to bottom, transparent 45%, red 45%, red 55%, transparent 55%), linear-gradient(to right, transparent 45%, red 45%, red 55%, transparent 55%)';
-            innerDiv.appendChild(crosshair);
+            // Get the computed style of the div
+            // Append the div to the layout object before getting computed style
+            layoutObject.appendChild(div);
+            
 
             // Handle relative positioning for TV
             if (device === "tv") {
@@ -12022,6 +11965,8 @@ function loadLayout() {
                 div.style.paddingLeft = item.extendedEdges.left + 'px';
                 div.style.paddingRight = item.extendedEdges.right + 'px';
             }
+
+            const computedStyle = window.getComputedStyle(div);
             
             // Check for special cases
             if (item.thumbstick) {
@@ -12042,6 +11987,21 @@ function loadLayout() {
                 div.innerHTML = "<p class='item-text'>" + inputName + "</p>";
                 div.id = inputName;
             }
+
+            // Create a 10px by 10px crosshair in the center of the layout-item
+            const crosshair = document.createElement('div');
+            crosshair.style.position = 'absolute';
+            crosshair.style.width = '10px';
+            crosshair.style.height = '10px';
+            // 10% of the smaller dimension
+            crosshair.style.width = `15px`;
+            crosshair.style.height = `15px`;
+            crosshair.style.top = `calc(${item.frame.height/2 + item.extendedEdges.top}px)`;
+            crosshair.style.left = `calc(${item.frame.width/2 + item.extendedEdges.left}px)`;
+            crosshair.style.transform = 'translate(-50%, -50%)';
+            crosshair.style.zIndex = '10';
+            crosshair.style.backgroundImage = 'linear-gradient(to bottom, transparent 45%, red 45%, red 55%, transparent 55%), linear-gradient(to right, transparent 45%, red 45%, red 55%, transparent 55%)';
+            div.appendChild(crosshair);
 
             if (item.placement) {
                 div.dataset.placement = item.placement;
@@ -12165,13 +12125,14 @@ function loadLayout() {
                 thumbstickElement.innerHTML = ''; // Clear any existing content
                 thumbstickElement.appendChild(innerImg);
 
+                
                  // Create a 10px by 10px crosshair in the center of the layout-item
                 const crosshair = document.createElement('div');
                 crosshair.style.position = 'absolute';
                 crosshair.style.width = '10px';
                 crosshair.style.height = '10px';
-                crosshair.style.top = '50%';
-                crosshair.style.left = '50%';
+                crosshair.style.top = `calc(${item.frame.height/2 + item.extendedEdges.top}px)`;
+            crosshair.style.left = `calc(${item.frame.width/2 + item.extendedEdges.left}px)`;
                 crosshair.style.transform = 'translate(-50%, -50%)';
                 crosshair.style.zIndex = '10';
                 crosshair.style.backgroundImage = 'linear-gradient(to bottom, transparent 45%, red 45%, red 55%, transparent 55%), linear-gradient(to right, transparent 45%, red 45%, red 55%, transparent 55%)';
@@ -12580,6 +12541,7 @@ const jsonString = JSON.stringify(defaultJsonOutput, null, 4);
 document.getElementById('code').textContent = jsonString;
 
 
+
 function toggleLockItem() {
     const lockButton = document.getElementById('lock-button');
     const selectedItem = document.querySelector('.layout-item.selected, .screen-item.selected');
@@ -12636,12 +12598,31 @@ function selectItem(event) {
         item.classList.remove('selected');
     });
 
+    
+
     // Add the highlight to the clicked element
     event.currentTarget.classList.add('selected');
     // Change #alignmentTools to display: flex
     const alignmentTools = document.getElementById('alignmentTools');
     if (alignmentTools) {
         alignmentTools.style.display = 'flex';
+    }
+
+    // Check if the clicked item is a layout-item or screen-item
+    const isLayoutItem = event.currentTarget.classList.contains('layout-item');
+    const isScreenItem = event.currentTarget.classList.contains('screen-item');
+    
+    // Get the #otherTools element
+    const otherTools = document.getElementById('otherTools');
+    
+    if (otherTools) {
+        if (isLayoutItem) {
+            // Hide #otherTools for layout-items
+            otherTools.style.display = 'none';
+        } else if (isScreenItem) {
+            // Show #otherTools for screen-items
+            otherTools.style.display = 'flex';
+        }
     }
 
     // Get the selected item ID
@@ -12705,7 +12686,7 @@ function selectItem(event) {
 }
 
 function deselectAllItems() {
-    document.querySelectorAll('.layout-item').forEach(item => {
+    document.querySelectorAll('.layout-item, .screen-item').forEach(item => {
         item.classList.remove('selected');
     });
     document.querySelector('.item-name').innerText = '';
@@ -12789,6 +12770,22 @@ function selectScreen(event) {
         console.log("Screen array does not exist.");
     }
 
+    // Check if the clicked item is a layout-item or screen-item
+    const isLayoutItem = event.currentTarget.classList.contains('layout-item');
+    const isScreenItem = event.currentTarget.classList.contains('screen-item');
+    
+    // Get the #otherTools element
+    const otherTools = document.getElementById('otherTools');
+    
+    if (otherTools) {
+        if (isLayoutItem) {
+            // Hide #otherTools for layout-items
+            otherTools.style.display = 'none';
+        } else if (isScreenItem) {
+            // Show #otherTools for screen-items
+            otherTools.style.display = 'flex';
+        }
+    }
     
 }
 
@@ -13387,7 +13384,7 @@ function addFitWidthButton() {
     const fitWidthButton = document.createElement('button');
     fitWidthButton.id = 'fitWidthButton';
     fitWidthButton.classList.add('button', 'button--primary');
-    fitWidthButton.innerHTML = '<i class="fa-solid fa-expand"></i>';
+    fitWidthButton.innerHTML = '<i class="fa-solid fa-up-right-and-down-left-from-center"></i>';
     fitWidthButton.addEventListener('click', fitScreenToWidth);
     otherTools.appendChild(fitWidthButton);
 }
@@ -14891,8 +14888,8 @@ function handleThumbstick(thumbstick) {
             crosshair.style.position = 'absolute';
             crosshair.style.width = '10px';
             crosshair.style.height = '10px';
-            crosshair.style.top = '50%';
-            crosshair.style.left = '50%';
+            crosshair.style.top = `calc(${item.frame.height/2 + item.extendedEdges.top}px)`;
+            crosshair.style.left = `calc(${item.frame.width/2 + item.extendedEdges.left}px)`;
             crosshair.style.transform = 'translate(-50%, -50%)';
             crosshair.style.zIndex = '10';
             crosshair.style.backgroundImage = 'linear-gradient(to bottom, transparent 45%, red 45%, red 55%, transparent 55%), linear-gradient(to right, transparent 45%, red 45%, red 55%, transparent 55%)';
@@ -15024,3 +15021,180 @@ function toggleTransparency() {
 
 // Add this event listener after your DOM content is loaded
 document.getElementById('toggle-transparency').addEventListener('click', toggleTransparency);
+
+// Function to update screen size based on console aspect ratio
+function updateScreenAspectRatio() {
+    const selectedScreen = document.querySelector('.screen-item.selected');
+    if (!selectedScreen) {
+        alert("Please select a screen first.");
+        return;
+    }
+
+    const currentConsole = consoleSelection;
+    if (!currentConsole || !aspectRatio[currentConsole]) {
+        alert("Invalid console selection or aspect ratio not defined.");
+        return;
+    }
+
+    const { x: widthRatio, y: heightRatio } = aspectRatio[currentConsole];
+    const currentWidth = parseInt(selectedScreen.style.width);
+    const newHeight = Math.round(currentWidth * (heightRatio / widthRatio));
+
+    selectedScreen.style.height = `${newHeight}px`;
+
+    // Update the JSON data
+    const screenId = selectedScreen.id;
+    const screenData = getCurrentElement(screenId);
+    if (screenData) {
+        screenData.outputFrame.height = newHeight;
+        updateJson();
+    }
+
+    // Update UI if necessary
+    const focusItemDiv = document.querySelector('.focus-item');
+    const heightInput = focusItemDiv.querySelector('#form-height input');
+    if (heightInput) heightInput.value = newHeight;
+}
+
+// Create and add the button
+const aspectRatioButton = document.createElement('button');
+aspectRatioButton.innerHTML = '<i class="fa-solid fa-expand"></i>';
+aspectRatioButton.classList.add('button', 'button--primary');
+aspectRatioButton.addEventListener('click', updateScreenAspectRatio);
+
+const otherTools = document.getElementById('otherTools');
+otherTools.appendChild(aspectRatioButton);
+
+// Function to set the Y position of the selected screen to 60
+function setScreenYPosition() {
+    const selectedScreen = document.querySelector('.screen-item.selected');
+    if (!selectedScreen) {
+        alert("Please select a screen first.");
+        return;
+    }
+
+    selectedScreen.style.top = '60px';
+
+    // Update the JSON data
+    const screenId = selectedScreen.id;
+    const screenData = getCurrentElement(screenId);
+    if (screenData) {
+        screenData.frame.y = 60;
+        updateJson();
+    }
+
+    // Update UI if necessary
+    const focusItemDiv = document.querySelector('.focus-item');
+    const yInput = focusItemDiv.querySelector('#form-y input');
+    if (yInput) yInput.value = 60;
+}
+
+// Create and add the button with notch.svg icon
+const setYPositionButton = document.createElement('button');
+setYPositionButton.classList.add('button', 'button--primary');
+setYPositionButton.id = 'aspectRatioButton';
+const notchIcon = document.createElement('img');
+notchIcon.src = 'notch.svg';
+notchIcon.alt = 'Notch icon';
+notchIcon.style.width = '16px';
+notchIcon.style.height = '16px';
+setYPositionButton.appendChild(notchIcon);
+
+setYPositionButton.addEventListener('click', setScreenYPosition);
+
+otherTools.appendChild(setYPositionButton);
+
+// Create alignment buttons
+const alignmentTools = document.getElementById('alignmentTools');
+
+// Left align button
+const leftAlignButton = document.createElement('button');
+leftAlignButton.innerHTML = '<i class="fa-solid fa-align-left"></i>';
+leftAlignButton.classList.add('button', 'button--primary');
+leftAlignButton.addEventListener('click', () => alignItem('left'));
+
+// Center align button
+const centerAlignButton = document.createElement('button');
+centerAlignButton.innerHTML = '<i class="fa-solid fa-align-center"></i>';
+centerAlignButton.classList.add('button', 'button--primary');
+centerAlignButton.addEventListener('click', () => alignItem('center'));
+
+// Right align button
+const rightAlignButton = document.createElement('button');
+rightAlignButton.innerHTML = '<i class="fa-solid fa-align-right"></i>';
+rightAlignButton.classList.add('button', 'button--primary');
+rightAlignButton.addEventListener('click', () => alignItem('right'));
+
+// Top align button
+const topAlignButton = document.createElement('button');
+const topAlignIcon = document.createElement('img');
+topAlignIcon.src = 'align-top.svg';
+topAlignIcon.alt = 'Align top';
+topAlignIcon.style.width = '13px';
+topAlignIcon.style.height = '13px';
+topAlignButton.innerHTML = '';
+topAlignButton.appendChild(topAlignIcon);
+topAlignButton.classList.add('button', 'button--primary');
+topAlignButton.addEventListener('click', () => alignItem('top'));
+
+// Add buttons to alignmentTools
+alignmentTools.appendChild(leftAlignButton);
+alignmentTools.appendChild(centerAlignButton);
+alignmentTools.appendChild(rightAlignButton);
+alignmentTools.appendChild(topAlignButton);
+
+// Function to align the selected item
+function alignItem(alignment) {
+    let currentSelectedItem = document.querySelector('.selected');
+    if (!currentSelectedItem) return;
+
+    const layoutObject = document.getElementById('layout-object');
+    const layoutWidth = layoutObject.offsetWidth;
+    const layoutHeight = layoutObject.offsetHeight;
+    const itemWidth = currentSelectedItem.offsetWidth;
+    const itemHeight = currentSelectedItem.offsetHeight;
+
+    switch (alignment) {
+        case 'left':
+            currentSelectedItem.style.left = '1px';
+            break;
+        case 'center':
+            currentSelectedItem.style.left = `${(layoutWidth - itemWidth) / 2 + 1}px`;
+            break;
+        case 'right':
+            currentSelectedItem.style.left = `${layoutWidth - itemWidth}px`;
+            break;
+        case 'top':
+            currentSelectedItem.style.top = '0px';
+            break;
+    }
+
+    let item = getCurrentElement(currentSelectedItem.id);
+
+    const newLeft = parseInt(currentSelectedItem.style.left, 10);
+    const newTop = parseInt(currentSelectedItem.style.top, 10);
+    if (currentSelectedItem.classList.contains("screen-item")) {
+        updateScreenPosition(currentSelectedItem.id, newLeft, newTop);
+    } else {
+        const extendedLeft = item && item.extendedEdges ? item.extendedEdges.left : 0;
+        const extendedTop = item && item.extendedEdges ? item.extendedEdges.top : 0;
+        updateItemPosition(currentSelectedItem.id, newLeft + extendedLeft, newTop + extendedTop);
+    }
+               
+    // Update the JSON representation
+    updateItemPosition(currentSelectedItem.id, newLeft, newTop);
+
+    // Update the form-x and form-y input values
+    const formXInput = document.querySelector('#form-x input');
+    const formYInput = document.querySelector('#form-y input');
+    if (formXInput) {
+        formXInput.value = newLeft;
+    }
+    if (formYInput) {
+        formYInput.value = newTop;
+    }
+
+    updateJson();
+}
+
+
