@@ -13615,7 +13615,6 @@ document.getElementById('delete-button').addEventListener('click', function() {
 function addScreenButton() {
     let buttonContainer = document.getElementById('buttons-container');
     let consoleSelect = document.getElementById('consoleSelect');
-    let selectedConsole = consoleSelect.value;
 
     // Add the screen button for all consoles
     let screenButton = document.createElement('button');
@@ -14212,6 +14211,8 @@ function ensureExtendedEdges(jsonContent) {
     return jsonContent;
 }
 
+let selectedConsole;
+
 function selectConsoleBasedOnIdentifier(jsonContent) {
     const identifierMapping = {
         "com.rileytestut.delta.game.n64": "n64",
@@ -14226,7 +14227,9 @@ function selectConsoleBasedOnIdentifier(jsonContent) {
     let identifier = jsonContent.gameTypeIdentifier;
     if (identifier && identifierMapping[identifier]) {
         document.getElementById('consoleSelect').value = identifierMapping[identifier];
+        selectedConsole = document.getElementById('consoleSelect').value;
         console.log(`Console selected: ${identifierMapping[identifier]}`);
+
     } else {
         console.log("No matching identifier found or identifier is missing.");
     }
@@ -15086,13 +15089,21 @@ function toggleTransparency() {
 // Add this event listener after your DOM content is loaded
 document.getElementById('toggle-transparency').addEventListener('click', toggleTransparency);
 
+// Function to get the current console selection
+function getCurrentConsoleSelection() {
+
+}
+//here
+
 // Function to update screen size based on console aspect ratio
 function updateScreenAspectRatio() {
+    
     const selectedScreen = document.querySelector('.screen-item.selected');
     if (!selectedScreen) {
         alert("Please select a screen first.");
         return;
     }
+    
 
     const currentConsole = consoleSelection;
     if (!currentConsole || !aspectRatio[currentConsole]) {
