@@ -15153,9 +15153,12 @@ function setScreenYPosition() {
 
     // Update the JSON data
     const screenId = selectedScreen.id;
-    const screenData = getCurrentElement(screenId);
+    const screenIndex = parseInt(screenId.split('-')[2]);
+    const { device, layout, orientation } = getCurrentState();
+    const screenArray = defaultJsonOutput?.representations?.[device]?.[layout]?.[orientation]?.screens || [];
+    const screenData = screenArray[screenIndex];
     if (screenData) {
-        screenData.frame.y = 60;
+        screenData.outputFrame.y = 60;
         updateJson();
     }
 
