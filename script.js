@@ -9715,10 +9715,10 @@ let defaultJson_DS = {
                   "height": 128
                 },
                 "extendedEdges": {
-                  "top": 15,
-                  "bottom": 15,
-                  "left": 17,
-                  "right": 10
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -9735,7 +9735,7 @@ let defaultJson_DS = {
                   "top": 0,
                   "bottom": 0,
                   "left": 0,
-                  "right": 16
+                  "right": 0
                 }
               },
               {
@@ -9750,6 +9750,7 @@ let defaultJson_DS = {
                 },
                 "extendedEdges": {
                   "top": 0,
+                  "bottom": 0,
                   "left": 0,
                   "right": 0
                 }
@@ -9765,8 +9766,10 @@ let defaultJson_DS = {
                   "height": 112
                 },
                 "extendedEdges": {
-                  "right": 0,
-                  "left": 18
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -9780,8 +9783,10 @@ let defaultJson_DS = {
                   "height": 112
                 },
                 "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
                   "left": 0,
-                  "right": 18
+                  "right": 0
                 }
               },
               {
@@ -9795,10 +9800,10 @@ let defaultJson_DS = {
                   "height": 18
                 },
                 "extendedEdges": {
-                  "top": 15,
+                  "top": 0,
                   "bottom": 0,
                   "left": 0,
-                  "right": 45
+                  "right": 0
                 }
               },
               {
@@ -9813,9 +9818,9 @@ let defaultJson_DS = {
                 },
                 "extendedEdges": {
                   "top": 0,
-                  "bottom": 15,
+                  "bottom": 0,
                   "left": 0,
-                  "right": 45
+                  "right": 0
                 }
               },
               {
@@ -9829,8 +9834,10 @@ let defaultJson_DS = {
                   "height": 18
                 },
                 "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
                   "left": 0,
-                  "right": 45
+                  "right": 0
                 }
               },
               {
@@ -9846,6 +9853,7 @@ let defaultJson_DS = {
                 "extendedEdges": {
                   "top": 0,
                   "bottom": 0,
+                  "left": 0,
                   "right": 0
                 }
               },
@@ -9860,6 +9868,7 @@ let defaultJson_DS = {
                   "height": 47
                 },
                 "extendedEdges": {
+                  "top": 0,
                   "bottom": 0,
                   "left": 0,
                   "right": 0
@@ -9919,10 +9928,10 @@ let defaultJson_DS = {
               "height" : 667
             },
             "extendedEdges" : {
-              "top" : 7,
-              "bottom" : 7,
-              "left" : 7,
-              "right" : 7
+              "top" : 0,
+              "bottom" : 0,
+              "left" : 0,
+              "right" : 0
             }
           },
           "landscape" : {
@@ -9944,10 +9953,10 @@ let defaultJson_DS = {
                   "height": 123
                 },
                 "extendedEdges": {
-                  "top": 15,
-                  "bottom": 20,
-                  "left": 20,
-                  "right": 20
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -9964,7 +9973,7 @@ let defaultJson_DS = {
                   "top": 0,
                   "bottom": 0,
                   "left": 0,
-                  "right": 30
+                  "right": 0
                 }
               },
               {
@@ -9979,6 +9988,7 @@ let defaultJson_DS = {
                 },
                 "extendedEdges": {
                   "top": 0,
+                  "bottom": 0,
                   "left": 0,
                   "right": 0
                 }
@@ -9994,7 +10004,10 @@ let defaultJson_DS = {
                   "height": 33
                 },
                 "extendedEdges": {
-                  "top": 0
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10008,7 +10021,10 @@ let defaultJson_DS = {
                   "height": 33
                 },
                 "extendedEdges": {
-                  "top": 0
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10022,7 +10038,10 @@ let defaultJson_DS = {
                   "height": 18
                 },
                 "extendedEdges": {
-                  "right": 50
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10036,7 +10055,10 @@ let defaultJson_DS = {
                   "height": 18
                 },
                 "extendedEdges": {
-                  "right": 50
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10050,7 +10072,10 @@ let defaultJson_DS = {
                   "height": 18
                 },
                 "extendedEdges": {
-                  "right": 50
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10064,7 +10089,7 @@ let defaultJson_DS = {
                   "height": 47
                 },
                 "extendedEdges": {
-                  "top": 8,
+                  "top": 0,
                   "bottom": 0,
                   "left": 0,
                   "right": 0
@@ -10083,6 +10108,7 @@ let defaultJson_DS = {
                 "extendedEdges": {
                   "top": 0,
                   "bottom": 0,
+                  "left": 0,
                   "right": 0
                 }
               },
@@ -10140,10 +10166,10 @@ let defaultJson_DS = {
               }
             ],
             "extendedEdges" : {
-              "top" : 15,
-              "bottom" : 15,
-              "left" : 15,
-              "right" : 15
+              "top" : 0,
+              "bottom" : 0,
+              "left" : 0,
+              "right" : 0
             }
           }
         },
@@ -10166,11 +10192,11 @@ let defaultJson_DS = {
                   "width" : 165,
                   "height" : 165
                 },
-                "extendedEdges" : {
-                  "top" : 15,
-                  "bottom" : 15,
-                  "left" : 18,
-                  "right" : 10
+                "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10183,11 +10209,11 @@ let defaultJson_DS = {
                   "width" : 60,
                   "height" : 60
                 },
-                "extendedEdges" : {
-                  "top" : 0,
-                  "bottom" : 0,
-                  "left" : 0,
-                  "right" : 18
+                "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10200,10 +10226,11 @@ let defaultJson_DS = {
                   "width" : 60,
                   "height" : 60
                 },
-                "extendedEdges" : {
-                  "top" : 0,
-                  "left" : 0,
-                  "right" : 0
+                "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10219,7 +10246,9 @@ let defaultJson_DS = {
               ,
                 "extendedEdges": {
                   "top": 0,
-                  "left": 29
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10235,7 +10264,9 @@ let defaultJson_DS = {
               ,
                 "extendedEdges": {
                   "top": 0,
-                  "right": 29
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10248,10 +10279,11 @@ let defaultJson_DS = {
                   "width" : 20,
                   "height" : 20
                 },
-                "extendedEdges" : {
-                  "bottom": 32,
-                  "left": 15,
-                  "right" : 75
+                "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10265,9 +10297,10 @@ let defaultJson_DS = {
                   "height" : 20
                 },
                 "extendedEdges": {
-                  "bottom": 32,
-                  "left": 75,
-                  "right": 25
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10281,9 +10314,10 @@ let defaultJson_DS = {
                   "height" : 20
                 },
                 "extendedEdges": {
-                  "bottom": 32,
-                  "left": 25,
-                  "right": 75
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10296,10 +10330,11 @@ let defaultJson_DS = {
                   "width" : 60,
                   "height" : 60
                 },
-                "extendedEdges" : {
-                  "top" : 0,
-                  "bottom" : 0,
-                  "right" : 0
+                "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10312,10 +10347,11 @@ let defaultJson_DS = {
                   "width" : 60,
                   "height" : 60
                 },
-                "extendedEdges" : {
-                  "bottom" : 0,
-                  "left" : 0,
-                  "right" : 0
+                "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10372,27 +10408,11 @@ let defaultJson_DS = {
               "width" : 414,
               "height" : 896
             },
-            "screens": [
-                        {
-                            "inputFrame": {
-                                "x": 0,
-                                "y": 0,
-                                "width": 256,
-                                "height": 192
-                            },
-                            "outputFrame": {
-                                "x": 317,
-                                "y": 0,
-                                "width": 62,
-                                "height": 62
-                            }
-                        }
-                    ],
-            "extendedEdges" : {
-              "top" : 7,
-              "bottom" : 7,
-              "left" : 7,
-              "right" : 7
+            "extendedEdges": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0
             }
           },
           "landscape" : {
@@ -10413,11 +10433,11 @@ let defaultJson_DS = {
                   "width" : 136,
                   "height" : 136
                 },
-                "extendedEdges" : {
-                  "left" : 30,
-                  "top" : 20,
-                  "right" : 20,
-                  "bottom" : 20
+                "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10430,11 +10450,11 @@ let defaultJson_DS = {
                   "width" : 51,
                   "height" : 51
                 },
-                "extendedEdges" : {
-                  "top" : 0,
-                  "bottom" : 0,
-                  "left" : 0,
-                  "right" : 30
+                "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10447,10 +10467,11 @@ let defaultJson_DS = {
                   "width" : 51,
                   "height" : 51
                 },
-                "extendedEdges" : {
-                  "top" : 0,
-                  "left" : 0,
-                  "right" : 0
+                "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10465,7 +10486,9 @@ let defaultJson_DS = {
                 }
               ,
                 "extendedEdges": {
-                  "left": 50,
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
                   "right": 0
                 }
               },
@@ -10481,8 +10504,10 @@ let defaultJson_DS = {
                 }
               ,
                 "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
                   "left": 0,
-                  "right": 50
+                  "right": 0
                 }
               },
               {
@@ -10496,7 +10521,10 @@ let defaultJson_DS = {
                   "height" : 20
                 },
                 "extendedEdges": {
-                  "right": 50
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10509,8 +10537,11 @@ let defaultJson_DS = {
                   "width" : 20,
                   "height" : 20
                 },
-                "extendedEdges" : {
-                  "right" : 50
+                "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10524,7 +10555,10 @@ let defaultJson_DS = {
                   "height" : 20
                 },
                 "extendedEdges": {
-                  "right": 50
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10537,10 +10571,11 @@ let defaultJson_DS = {
                   "width" : 51,
                   "height" : 51
                 },
-                "extendedEdges" : {
-                  "bottom" : 0,
-                  "left" : 0,
-                  "right" : 0
+                "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10553,10 +10588,11 @@ let defaultJson_DS = {
                   "width" : 51,
                   "height" : 51
                 },
-                "extendedEdges" : {
-                  "top" : 0,
-                  "bottom" : 0,
-                  "right" : 0
+                "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10613,11 +10649,11 @@ let defaultJson_DS = {
                 }
               }
             ],
-            "extendedEdges" : {
-              "top" : 15,
-              "bottom" : 15,
-              "left" : 15,
-              "right" : 15
+            "extendedEdges": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0
             }
           }
         }
@@ -10643,10 +10679,10 @@ let defaultJson_DS = {
                   "height": 132
                 },
                 "extendedEdges": {
-                  "top": 30,
-                  "bottom": 30,
-                  "left": 30,
-                  "right": 30
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10660,10 +10696,10 @@ let defaultJson_DS = {
                   "height": 48
                 },
                 "extendedEdges": {
-                  "top": 10,
-                  "bottom": 10,
+                  "top": 0,
+                  "bottom": 0,
                   "left": 0,
-                  "right": 30
+                  "right": 0
                 }
               },
               {
@@ -10678,8 +10714,9 @@ let defaultJson_DS = {
                 },
                 "extendedEdges": {
                   "top": 0,
-                  "left": 10,
-                  "right": 10
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10693,9 +10730,10 @@ let defaultJson_DS = {
                   "height": 48
                 },
                 "extendedEdges": {
+                  "top": 0,
                   "bottom": 0,
-                  "left": 10,
-                  "right": 10
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10709,8 +10747,9 @@ let defaultJson_DS = {
                   "height": 48
                 },
                 "extendedEdges": {
-                  "top": 10,
-                  "bottom": 10,
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
                   "right": 0
                 }
               },
@@ -10723,6 +10762,12 @@ let defaultJson_DS = {
                   "y": 485,
                   "width": 148,
                   "height": 53
+                },
+                "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10734,6 +10779,12 @@ let defaultJson_DS = {
                   "y": 485,
                   "width": 148,
                   "height": 53
+                },
+                "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10747,9 +10798,10 @@ let defaultJson_DS = {
                   "height": 19
                 },
                 "extendedEdges": {
-                  "top": 10,
-                  "bottom": 10,
-                  "right": 73
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10763,8 +10815,10 @@ let defaultJson_DS = {
                   "height": 19
                 },
                 "extendedEdges": {
-                  "top": 10,
-                  "right": 73
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10778,8 +10832,10 @@ let defaultJson_DS = {
                   "height": 19
                 },
                 "extendedEdges": {
-                  "bottom": 10,
-                  "right": 73
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10835,27 +10891,11 @@ let defaultJson_DS = {
               "width": 768,
               "height": 1024
             },
-            "screens": [
-                        {
-                            "inputFrame": {
-                                "x": 0,
-                                "y": 0,
-                                "width": 256,
-                                "height": 192
-                            },
-                            "outputFrame": {
-                                "x": 317,
-                                "y": 0,
-                                "width": 62,
-                                "height": 62
-                            }
-                        }
-                    ],
             "extendedEdges": {
-              "top": 20,
-              "bottom": 20,
-              "left": 20,
-              "right": 20
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0
             }
           },
           "landscape": {
@@ -10877,10 +10917,10 @@ let defaultJson_DS = {
                   "height": 135
                 },
                 "extendedEdges": {
-                  "top": 30,
-                  "bottom": 30,
-                  "left": 81,
-                  "right": 30
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10894,10 +10934,10 @@ let defaultJson_DS = {
                   "height": 50
                 },
                 "extendedEdges": {
-                  "top": 10,
-                  "bottom": 10,
+                  "top": 0,
+                  "bottom": 0,
                   "left": 0,
-                  "right": 75
+                  "right": 0
                 }
               },
               {
@@ -10912,8 +10952,9 @@ let defaultJson_DS = {
                 },
                 "extendedEdges": {
                   "top": 0,
-                  "left": 10,
-                  "right": 10
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10927,9 +10968,10 @@ let defaultJson_DS = {
                   "height": 50
                 },
                 "extendedEdges": {
+                  "top": 0,
                   "bottom": 0,
-                  "left": 10,
-                  "right": 10
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10943,8 +10985,9 @@ let defaultJson_DS = {
                   "height": 50
                 },
                 "extendedEdges": {
-                  "top": 10,
-                  "bottom": 10,
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
                   "right": 0
                 }
               },
@@ -10957,6 +11000,12 @@ let defaultJson_DS = {
                   "y": 358,
                   "width": 148,
                   "height": 52
+                },
+                "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10968,6 +11017,12 @@ let defaultJson_DS = {
                   "y": 358,
                   "width": 148,
                   "height": 52
+                },
+                "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10981,9 +11036,10 @@ let defaultJson_DS = {
                   "height": 19
                 },
                 "extendedEdges": {
-                  "top": 10,
-                  "bottom": 10,
-                  "right": 70
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -10997,8 +11053,10 @@ let defaultJson_DS = {
                   "height": 19
                 },
                 "extendedEdges": {
-                  "top": 10,
-                  "right": 70
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -11012,8 +11070,10 @@ let defaultJson_DS = {
                   "height": 19
                 },
                 "extendedEdges": {
-                  "bottom": 10,
-                  "right": 70
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -11069,27 +11129,11 @@ let defaultJson_DS = {
               "width": 1024,
               "height": 768
             },
-            "screens": [
-                        {
-                            "inputFrame": {
-                                "x": 0,
-                                "y": 0,
-                                "width": 256,
-                                "height": 192
-                            },
-                            "outputFrame": {
-                                "x": 317,
-                                "y": 0,
-                                "width": 62,
-                                "height": 62
-                            }
-                        }
-                    ],
             "extendedEdges": {
-              "top": 20,
-              "bottom": 20,
-              "left": 20,
-              "right": 20
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0
             }
           }
         }
@@ -11114,10 +11158,10 @@ let defaultJson_DS = {
                   "height": 218
                 },
                 "extendedEdges": {
-                  "top": 30,
-                  "bottom": 95,
-                  "left": 84,
-                  "right": 30
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -11131,10 +11175,10 @@ let defaultJson_DS = {
                   "height": 83
                 },
                 "extendedEdges": {
-                  "top": 10,
-                  "bottom": 10,
+                  "top": 0,
+                  "bottom": 0,
                   "left": 0,
-                  "right": 82
+                  "right": 0
                 }
               },
               {
@@ -11149,9 +11193,9 @@ let defaultJson_DS = {
                 },
                 "extendedEdges": {
                   "top": 0,
-                  "bottom": 84,
-                  "left": 10,
-                  "right": 10
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -11165,9 +11209,10 @@ let defaultJson_DS = {
                   "height": 83
                 },
                 "extendedEdges": {
+                  "top": 0,
                   "bottom": 0,
-                  "left": 10,
-                  "right": 10
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -11181,8 +11226,9 @@ let defaultJson_DS = {
                   "height": 83
                 },
                 "extendedEdges": {
-                  "top": 10,
-                  "bottom": 10,
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
                   "right": 0
                 }
               },
@@ -11195,6 +11241,12 @@ let defaultJson_DS = {
                   "y": 0,
                   "width": 199,
                   "height": 70
+                },
+                "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -11206,6 +11258,12 @@ let defaultJson_DS = {
                   "y": 0,
                   "width": 199,
                   "height": 70
+                },
+                "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -11219,9 +11277,10 @@ let defaultJson_DS = {
                   "height": 31
                 },
                 "extendedEdges": {
-                  "top": 10,
-                  "bottom": 10,
-                  "right": 83
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -11235,8 +11294,10 @@ let defaultJson_DS = {
                   "height": 31
                 },
                 "extendedEdges": {
-                  "top": 10,
-                  "right": 83
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -11250,8 +11311,10 @@ let defaultJson_DS = {
                   "height": 31
                 },
                 "extendedEdges": {
-                  "bottom": 10,
-                  "right": 83
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -11310,27 +11373,11 @@ let defaultJson_DS = {
               "width": 1024,
               "height": 472
             },
-            "screens": [
-                        {
-                            "inputFrame": {
-                                "x": 0,
-                                "y": 0,
-                                "width": 256,
-                                "height": 192
-                            },
-                            "outputFrame": {
-                                "x": 317,
-                                "y": 0,
-                                "width": 62,
-                                "height": 62
-                            }
-                        }
-                    ],
             "extendedEdges": {
-              "top": 20,
-              "bottom": 20,
-              "left": 20,
-              "right": 20
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0
             }
           },
           "landscape": {
@@ -11352,8 +11399,8 @@ let defaultJson_DS = {
                   "height": 194
                 },
                 "extendedEdges": {
-                  "top": 30,
-                  "right": 30
+                  "top": 0,
+                  "right": 0
                 }
               },
               {
@@ -11370,7 +11417,7 @@ let defaultJson_DS = {
                   "top": 0,
                   "bottom": 0,
                   "left": 0,
-                  "right": 42
+                  "right": 0
                 }
               },
               {
@@ -11385,7 +11432,7 @@ let defaultJson_DS = {
                 },
                 "extendedEdges": {
                   "top": 0,
-                  "bottom": 42,
+                  "bottom": 0,
                   "left": 0,
                   "right": 0
                 }
@@ -11401,6 +11448,7 @@ let defaultJson_DS = {
                   "height": 64
                 },
                 "extendedEdges": {
+                  "top": 0,
                   "bottom": 0,
                   "left": 0,
                   "right": 0
@@ -11419,6 +11467,7 @@ let defaultJson_DS = {
                 "extendedEdges": {
                   "top": 0,
                   "bottom": 0,
+                  "left": 0,
                   "right": 0
                 }
               },
@@ -11431,6 +11480,12 @@ let defaultJson_DS = {
                   "y": 17,
                   "width": 120,
                   "height": 48
+                },
+                "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -11442,6 +11497,12 @@ let defaultJson_DS = {
                   "y": 17,
                   "width": 120,
                   "height": 48
+                },
+                "extendedEdges": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -11455,8 +11516,10 @@ let defaultJson_DS = {
                   "height": 31
                 },
                 "extendedEdges": {
-                  "top": 10,
-                  "left": 12
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -11470,8 +11533,10 @@ let defaultJson_DS = {
                   "height": 31
                 },
                 "extendedEdges": {
-                  "top": 10,
-                  "right": 12
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -11485,7 +11550,10 @@ let defaultJson_DS = {
                   "height": 31
                 },
                 "extendedEdges": {
-                  "bottom": 10
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0
                 }
               },
               {
@@ -11538,27 +11606,11 @@ let defaultJson_DS = {
               "width": 1024,
               "height": 384
             },
-            "screens": [
-                        {
-                            "inputFrame": {
-                                "x": 0,
-                                "y": 0,
-                                "width": 256,
-                                "height": 192
-                            },
-                            "outputFrame": {
-                                "x": 317,
-                                "y": 0,
-                                "width": 62,
-                                "height": 62
-                            }
-                        }
-                    ],
             "extendedEdges": {
-              "top": 20,
-              "bottom": 20,
-              "left": 20,
-              "right": 20
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0
             },
             "translucent": false
           }
@@ -11614,7 +11666,7 @@ let defaultJson_DS = {
         ]
       }
     }
-  };
+  }
 
 let consoleTypes = ["", "nes", "snes", "n64", "gbc", "gba", "ds"];
 
@@ -11703,11 +11755,12 @@ let currentSelectedItem;
 const buttonConfigs = {
     gbc: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'select', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'quickSettings'],
     gba: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'select', 'l', 'r', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'quickSettings'],
-    nds: ['menu', 'd-pad', 'thumbstick', 'xy', 'a', 'b', 'x', 'y', 'start', 'select', 'l', 'r', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'quickSettings'],
+    ds: ['menu', 'd-pad', 'thumbstick', 'xy', 'a', 'b', 'x', 'y', 'start', 'select', 'l', 'r', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'quickSettings'],
     nes: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'select', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'quickSettings'],
     snes: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'x', 'y', 'start', 'select', 'menu', 'l', 'r', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'quickSettings'],
     n64: ['menu', 'd-pad', 'thumbstick', 'a', 'b', 'start', 'l', 'r', 'cUp', 'cDown', 'cLeft', 'cRight', 'z', 'menu', 'quickSave', 'quickLoad', 'fastForward', 'toggleFastForward', 'quickSettings']
 };
+
 
 // Add this to your existing global variables
 let isItemLocked = false;
@@ -12187,6 +12240,15 @@ function makeResizable(resizableElement) {
                 // Allow free resizing for layout-item
                 newWidth = initialWidth + dx;
                 newHeight = initialHeight + dy;
+            
+            }
+
+            // Get the crosshair div
+            const crosshair = resizableElement.querySelector('div[style*="background-image: linear-gradient"]');
+            if (crosshair) {
+                // Recenter the crosshair
+                crosshair.style.top = `${newHeight / 2}px`;
+                crosshair.style.left = `${newWidth / 2}px`;
             }
 
             // Apply the new width and height
@@ -13110,16 +13172,18 @@ async function handleZipUpload(event) {
                 // Check if there are any thumbsticks in the file
                 const thumbstickNames = [];
                 for (const device in defaultJsonOutput.representations) {
-                    for (const layout in defaultJsonOutput.representations[device]) {
-                        for (const orientation in defaultJsonOutput.representations[device][layout]) {
-                            const items = defaultJsonOutput.representations[device][layout][orientation].items;
-                            items.forEach(item => {
-                                if (item.thumbstick && item.thumbstick.name) {
-                                    if (!thumbstickNames.includes(item.thumbstick.name)) {
-                                        thumbstickNames.push(item.thumbstick.name);
+                    if (device !== "tv") {
+                        for (const layout in defaultJsonOutput.representations[device]) {
+                            for (const orientation in defaultJsonOutput.representations[device][layout]) {
+                                const items = defaultJsonOutput.representations[device][layout][orientation].items;
+                                items.forEach(item => {
+                                    if (item.thumbstick && item.thumbstick.name) {
+                                        if (!thumbstickNames.includes(item.thumbstick.name)) {
+                                            thumbstickNames.push(item.thumbstick.name);
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            }
                         }
                     }
                 }
@@ -15196,5 +15260,3 @@ function alignItem(alignment) {
 
     updateJson();
 }
-
-
