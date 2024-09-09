@@ -13492,7 +13492,7 @@ function updateScreenDimensions(screenId, newX, newWidth, newHeight) {
     const screen = defaultJsonOutput.representations[currentState.device][currentState.layout][currentState.orientation].screens[screenIndex];
 
     if (screen) {
-        screen.frame = {
+        screen.outputFrame = {
             x: newX,
             y: screen.inputFrame.y, // Keep the original y position
             width: newWidth,
@@ -15097,7 +15097,8 @@ function getCurrentConsoleSelection() {
 
 // Function to update screen size based on console aspect ratio
 function updateScreenAspectRatio() {
-    
+    //here
+    selectedConsole = document.getElementById("consoleSelect").value;
     const selectedScreen = document.querySelector('.screen-item.selected');
     if (!selectedScreen) {
         alert("Please select a screen first.");
@@ -15105,7 +15106,7 @@ function updateScreenAspectRatio() {
     }
     
 
-    const currentConsole = consoleSelection;
+    const currentConsole = selectedConsole;
     if (!currentConsole || !aspectRatio[currentConsole]) {
         alert("Invalid console selection or aspect ratio not defined.");
         return;
