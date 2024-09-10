@@ -12041,20 +12041,20 @@ function loadLayout() {
                 div.id = inputName;
             }
 
-            // Create a 10px by 10px crosshair in the center of the layout-item
-            const crosshair = document.createElement('div');
-            crosshair.style.position = 'absolute';
-            crosshair.style.width = '10px';
-            crosshair.style.height = '10px';
-            // 10% of the smaller dimension
-            crosshair.style.width = `15px`;
-            crosshair.style.height = `15px`;
-            crosshair.style.top = `calc(${item.frame.height/2 + item.extendedEdges.top}px)`;
-            crosshair.style.left = `calc(${item.frame.width/2 + item.extendedEdges.left}px)`;
-            crosshair.style.transform = 'translate(-50%, -50%)';
-            crosshair.style.zIndex = '10';
-            crosshair.style.backgroundImage = 'linear-gradient(to bottom, transparent 45%, red 45%, red 55%, transparent 55%), linear-gradient(to right, transparent 45%, red 45%, red 55%, transparent 55%)';
-            div.appendChild(crosshair);
+            // // Create a 10px by 10px crosshair in the center of the layout-item
+            // const crosshair = document.createElement('div');
+            // crosshair.style.position = 'absolute';
+            // crosshair.style.width = '10px';
+            // crosshair.style.height = '10px';
+            // // 10% of the smaller dimension
+            // crosshair.style.width = `15px`;
+            // crosshair.style.height = `15px`;
+            // crosshair.style.top = `calc(${item.frame.height/2 + item.extendedEdges.top}px)`;
+            // crosshair.style.left = `calc(${item.frame.width/2 + item.extendedEdges.left}px)`;
+            // crosshair.style.transform = 'translate(-50%, -50%)';
+            // crosshair.style.zIndex = '10';
+            // crosshair.style.backgroundImage = 'linear-gradient(to bottom, transparent 45%, red 45%, red 55%, transparent 55%), linear-gradient(to right, transparent 45%, red 45%, red 55%, transparent 55%)';
+            // div.appendChild(crosshair);
 
             if (item.placement) {
                 div.dataset.placement = item.placement;
@@ -12150,11 +12150,8 @@ function loadLayout() {
 
             const { device, layout, orientation } = getCurrentState();
             const thumbstickConfig = defaultJsonOutput["representations"][device][layout][orientation]["items"].find(item => {
-                if (typeof item.inputs === 'object') {
-                    return item.inputs.up === "analogStickUp" &&
-                           item.inputs.down === "analogStickDown" &&
-                           item.inputs.left === "analogStickLeft" &&
-                           item.inputs.right === "analogStickRight";
+                if (typeof item === 'object' && 'thumbstick' in item) {
+                    return true;
                 }
                 return false;
             });
@@ -12179,17 +12176,17 @@ function loadLayout() {
                 thumbstickElement.appendChild(innerImg);
 
                 
-                 // Create a 10px by 10px crosshair in the center of the layout-item
-                const crosshair = document.createElement('div');
-                crosshair.style.position = 'absolute';
-                crosshair.style.width = '10px';
-                crosshair.style.height = '10px';
-                crosshair.style.top = `calc(${item.frame.height/2 + item.extendedEdges.top}px)`;
-            crosshair.style.left = `calc(${item.frame.width/2 + item.extendedEdges.left}px)`;
-                crosshair.style.transform = 'translate(-50%, -50%)';
-                crosshair.style.zIndex = '10';
-                crosshair.style.backgroundImage = 'linear-gradient(to bottom, transparent 45%, red 45%, red 55%, transparent 55%), linear-gradient(to right, transparent 45%, red 45%, red 55%, transparent 55%)';
-                document.querySelector('#thumbstick .layout-item-inner').appendChild(crosshair);
+                //  // Create a 10px by 10px crosshair in the center of the layout-item
+                // const crosshair = document.createElement('div');
+                // crosshair.style.position = 'absolute';
+                // crosshair.style.width = '10px';
+                // crosshair.style.height = '10px';
+                // crosshair.style.top = `calc(${thumbstickConfig.frame.height/2 + thumbstickConfig.extendedEdges.top}px)`;
+                // crosshair.style.left = `calc(${thumbstickConfig.frame.width/2 + thumbstickConfig.extendedEdges.left}px)`;
+                // crosshair.style.transform = 'translate(-50%, -50%)';
+                // crosshair.style.zIndex = '10';
+                // crosshair.style.backgroundImage = 'linear-gradient(to bottom, transparent 45%, red 45%, red 55%, transparent 55%), linear-gradient(to right, transparent 45%, red 45%, red 55%, transparent 55%)';
+                // document.querySelector('#thumbstick .layout-item-inner').appendChild(crosshair);
             }
            
 
@@ -12243,13 +12240,13 @@ function makeResizable(resizableElement) {
             
             }
 
-            // Get the crosshair div
-            const crosshair = resizableElement.querySelector('div[style*="background-image: linear-gradient"]');
-            if (crosshair) {
-                // Recenter the crosshair
-                crosshair.style.top = `${newHeight / 2}px`;
-                crosshair.style.left = `${newWidth / 2}px`;
-            }
+            // // Get the crosshair div
+            // const crosshair = resizableElement.querySelector('div[style*="background-image: linear-gradient"]');
+            // if (crosshair) {
+            //     // Recenter the crosshair
+            //     crosshair.style.top = `${newHeight / 2}px`;
+            //     crosshair.style.left = `${newWidth / 2}px`;
+            // }
 
             // Apply the new width and height
             if (newWidth > 0 && newHeight > 0) {
@@ -12855,8 +12852,7 @@ function displayMatchedItem(item) {
     const focusItemDiv = document.querySelector('.focus-item');
     focusItemDiv.innerHTML = ''; // Clear previous content
     document.getElementById("delete-button").style.display = isItemLocked ? "none" : "block";
-
-    
+    addDPadModeCheckbox();
 
     // Get the current device from the layout selection
     const currentState = getCurrentState();
@@ -12974,6 +12970,15 @@ function displayMatchedItem(item) {
             // Create form fields for thumbstick width and height
             createFormField('form-thumbstick-width', 'Thumbstick Width', item.thumbstick.width, ['thumbstick', 'width'], thumbstickWrapper);
             createFormField('form-thumbstick-height', 'Thumbstick Height', item.thumbstick.height, ['thumbstick', 'height'], thumbstickWrapper);
+            // Check if the item represents a thumbstick
+                // If the thumbstick has "up": "up", it's in d-pad mode
+            if (item.inputs.up === 'up') {
+                // Find and check the 'd-pad mode' checkbox
+                const dpadModeCheckbox = document.getElementById('dpad-mode');
+                if (dpadModeCheckbox) {
+                    dpadModeCheckbox.checked = true;
+                }
+            }
         }
 
         document.querySelectorAll('input[type="number"]').forEach(input => {
@@ -13739,8 +13744,8 @@ function addButtons() {
                        item.inputs.left === 'left' && item.inputs.right === 'right';
             } else if (buttonName === 'thumbstick') {
                 // Check if the item represents a thumbstick
-                return item.inputs && item.inputs.up === 'analogStickUp' && item.inputs.down === 'analogStickDown' && 
-                       item.inputs.left === 'analogStickLeft' && item.inputs.right === 'analogStickRight';
+                
+                return 'thumbstick' in item;
             } else if (buttonName === 'screenInput') {
                 // Check if the item represents a touch screen input
                 return item.inputs && item.inputs.x === 'touchScreenX' && item.inputs.y === 'touchScreenY';
@@ -14915,11 +14920,6 @@ function handleThumbstick(thumbstick) {
             
 
             const thumbstickStyle = window.getComputedStyle(document.getElementById("thumbstick"));
-            const paddingTop = thumbstickStyle.getPropertyValue('padding-top');
-            const paddingRight = thumbstickStyle.getPropertyValue('padding-right');
-            const paddingBottom = thumbstickStyle.getPropertyValue('padding-bottom');
-            const paddingLeft = thumbstickStyle.getPropertyValue('padding-left');
-            //console.log(`Padding values - Top: ${paddingTop}, Right: ${paddingRight}, Bottom: ${paddingBottom}, Left: ${paddingLeft}`);
             
             const innerImg = document.createElement('img');
             innerImg.src = img.src;
@@ -14950,17 +14950,17 @@ function handleThumbstick(thumbstick) {
             thumbstickElement.innerHTML = ''; // Clear any existing content
             thumbstickElement.appendChild(innerImg);
 
-            // Create a 10px by 10px crosshair in the center of the layout-item
-            const crosshair = document.createElement('div');
-            crosshair.style.position = 'absolute';
-            crosshair.style.width = '10px';
-            crosshair.style.height = '10px';
-            crosshair.style.top = `calc(${item.frame.height/2 + item.extendedEdges.top}px)`;
-            crosshair.style.left = `calc(${item.frame.width/2 + item.extendedEdges.left}px)`;
-            crosshair.style.transform = 'translate(-50%, -50%)';
-            crosshair.style.zIndex = '10';
-            crosshair.style.backgroundImage = 'linear-gradient(to bottom, transparent 45%, red 45%, red 55%, transparent 55%), linear-gradient(to right, transparent 45%, red 45%, red 55%, transparent 55%)';
-            document.querySelector('#thumbstick .layout-item-inner').appendChild(crosshair);
+            // // Create a 10px by 10px crosshair in the center of the layout-item
+            // const crosshair = document.createElement('div');
+            // crosshair.style.position = 'absolute';
+            // crosshair.style.width = '10px';
+            // crosshair.style.height = '10px';
+            // crosshair.style.top = `calc(${thumbstickItem.frame.height/2 + thumbstickItem.extendedEdges.top}px)`;
+            // crosshair.style.left = `calc(${thumbstickItem.frame.width/2 + thumbstickItem.extendedEdges.left}px)`;
+            // crosshair.style.transform = 'translate(-50%, -50%)';
+            // crosshair.style.zIndex = '10';
+            // crosshair.style.backgroundImage = 'linear-gradient(to bottom, transparent 45%, red 45%, red 55%, transparent 55%), linear-gradient(to right, transparent 45%, red 45%, red 55%, transparent 55%)';
+            // document.querySelector('#thumbstick .layout-item-inner').appendChild(crosshair);
         }
 
 
@@ -15278,3 +15278,64 @@ function alignItem(alignment) {
 
     updateJson();
 }
+
+function addDPadModeCheckbox() {
+    const currentSelectedItem = document.querySelector('.layout-item.selected');
+    const otherTools = document.getElementById('dPadButtonContainer');
+    
+    if (currentSelectedItem && currentSelectedItem.id === 'thumbstick') {
+        // Remove existing checkbox if present
+        const existingCheckbox = document.getElementById('dpad-mode-checkbox');
+        if (existingCheckbox) {
+            existingCheckbox.parentNode.removeChild(existingCheckbox);
+        }
+
+
+
+        // Create new checkbox
+        const checkboxContainer = document.createElement('div');
+        checkboxContainer.id = 'dpad-mode-checkbox';
+        checkboxContainer.innerHTML = `
+            <input type="checkbox" id="dpad-mode" name="dpad-mode">
+            <label for="dpad-mode">D-pad mode</label>
+        `;
+        otherTools.appendChild(checkboxContainer);
+
+        // Add event listener
+        const checkbox = document.getElementById('dpad-mode');
+        checkbox.addEventListener('change', toggleDPadMode);
+    } else {
+        // Remove checkbox if thumbstick is not selected
+        const existingCheckbox = document.getElementById('dpad-mode-checkbox');
+        if (existingCheckbox) {
+            existingCheckbox.parentNode.removeChild(existingCheckbox);
+        }
+    }
+}
+
+function toggleDPadMode() {
+    const checkbox = document.getElementById('dpad-mode');
+    const item = getCurrentElement('thumbstick');
+    
+    if (item && item.inputs) {
+        if (checkbox.checked) {
+            item.inputs = {
+                up: "up",
+                down: "down",
+                left: "left",
+                right: "right"
+            };
+        } else {
+            item.inputs = {
+                up: "analogStickUp",
+                down: "analogStickDown",
+                left: "analogStickLeft",
+                right: "analogStickRight"
+            };
+        }
+        updateJson();
+    }
+}
+
+// Initial call in case thumbstick is already selected when the page loads
+addDPadModeCheckbox();
