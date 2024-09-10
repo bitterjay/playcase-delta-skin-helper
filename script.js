@@ -15006,7 +15006,10 @@ function updateJsonView() {
 
 function enableKeyboardMovement() {
     document.addEventListener('keydown', function(event) {
-        
+        // Check if an input field is in focus
+        if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+            return; // Exit the function if an input field is focused
+        }
 
         const selectedItem = document.querySelector('.layout-item.selected, .screen-item.selected');
         if (!selectedItem || selectedItem.classList.contains('locked')) return;
